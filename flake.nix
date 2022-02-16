@@ -29,6 +29,11 @@
               # the .bazelversion file in your project directory.
               # https://github.com/bazelbuild/bazelisk
               pkgs.bazelisk
+              # gpg cli
+              pkgs.gnupg
+              pkgs.awscli2
+              pkgs.terraform
+              pkgs.terragrunt
             ];
           };
         }
