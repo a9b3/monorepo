@@ -1,9 +1,11 @@
 locals {
   account_vars = read_terragrunt_config(find_in_parent_folders("account.hcl"))
   region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  env_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
   account_id = local.account_vars.locals.aws_account_id
   aws_region = local.region_vars.locals.aws_region
+  env = local.env_vars.locals.env
 }
 
 # Terragrunt manage provider so you can run terragrunt from any subdirectory.
