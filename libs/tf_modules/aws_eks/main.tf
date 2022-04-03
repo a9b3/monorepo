@@ -12,8 +12,23 @@ variable "workers_additional_policies" {
   default     = []
 }
 
-variable "node_groups" {
-  type = map(any)
+variable "vpc_id" {
+  type        = string
+  description = "VPC to create eks cluster in"
+}
+
+variable "private_subnets" {
+  type        = string
+  description = "VPC to create eks cluster in"
+}
+
+variable "tags" {
+  type    = map(any)
+  default = {}
+}
+
+variable "path" {
+  type = string
 }
 
 # ------------------------------------------------
@@ -34,32 +49,6 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
-data "aws_availability_zones" "available" {}
-
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "2.68.0"
-
-  name                 = "vpc-${var.cluster_name}"
-  cidr                 = "172.16.0.0/16"
-  azs                  = data.aws_availability_zones.available.names
-  private_subnets      = ["172.16.1.0/24", "172.16.2.0/24", "172.16.3.0/24"]
-  public_subnets       = ["172.16.4.0/24", "172.16.5.0/24", "172.16.6.0/24"]
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
-
-  public_subnet_tags = {
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-    "kubernetes.io/role/elb"                    = "1"
-  }
-
-  private_subnet_tags = {
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"           = "1"
-  }
-}
-
 resource "aws_iam_policy" "worker_policy" {
   name        = "worker-policy"
   description = "worker policy for the ALB ingress"
@@ -69,12 +58,13 @@ resource "aws_iam_policy" "worker_policy" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.6.0"
+  version = "18.7.2"
 
   cluster_name                    = var.cluster_name
   cluster_version                 = "1.21"
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
+  cluster_ip_family               = "ipv6"
 
   cluster_addons = {
     coredns = {
@@ -86,32 +76,60 @@ module "eks" {
     }
   }
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id     = var.vpc_id
+  subnet_ids = var.private_subnets
 
-  node_groups_defaults = {
-    ami_type  = "AL2_x86_64"
-    disk_size = 50
+  eks_managed_node_group_defaults = {
+    ami_type       = "BOTTLEROCKET_x86_64"
+    disk_size      = 50
+    instance_types = ["m5.large"]
   }
 
-  node_groups = {
-    # node label
-    # eks.amazonaws.com/capacityType: ON_DEMAND
-    # https://docs.amazonaws.cn/en_us/eks/latest/userguide/managed-node-groups.html
-    on_demand = {
-      desired_capacity = 1
-      max_capacity     = 3
-      min_capacity     = 1
+  # cluster_name                    = var.cluster_name
+  # cluster_version                 = "1.21"
+  # cluster_endpoint_private_access = true
+  # cluster_endpoint_public_access  = true
+  #
+  # cluster_addons = {
+  #   coredns = {
+  #     resolve_conflicts = "OVERWRITE"
+  #   }
+  #   kube-proxy = {}
+  #   vpc-cni = {
+  #     resolve_conflicts = "OVERWRITE"
+  #   }
+  # }
+  #
+  # vpc_id     = var.vpc_id
+  # subnet_ids = var.private_subnets
+  #
+  # # Node groups
+  # self_managed_node_groups_defaults = {
+  #   # ami_type                               = "AL2_x86_64"
+  #   # disk_size                              = 50
+  #   update_launch_template_default_version = true
+  # }
+  #
+  # self_managed_node_groups = {
+  #   one = {
+  #     name = "spot-1"
+  #
+  #     public_ip    = true
+  #     max_size     = 5
+  #     desired_size = 1
+  #
+  #     use_mixed_instances_policy = true
+  #     instance_type              = ["m5.large"]
+  #   }
+  # }
+  #
+  # # get this after applying terraform changes by seeing the output of the state
+  # # use the output variable 'kubeconfig' below
+  # write_kubeconfig = false
+  #
+  # workers_additional_policies = concat([aws_iam_policy.worker_policy.arn], var.workers_additional_policies)
 
-      instance_type = ["m5.large"]
-    }
-  }
-
-  # get this after applying terraform changes by seeing the output of the state
-  # use the output variable 'kubeconfig' below
-  write_kubeconfig = false
-
-  workers_additional_policies = concat([aws_iam_policy.worker_policy.arn], var.workers_additional_policies)
+  tags = var.tags
 }
 
 data "tls_certificate" "cluster" {
@@ -137,10 +155,10 @@ output "eks_cluster_auth_token" {
   description = "eks cluster auth token"
 }
 
-output "kubeconfig" {
-  value       = module.eks.kubeconfig
-  description = "kubeconfig to be used by local kubectl"
-}
+# output "kubeconfig" {
+#   value       = module.eks.kubeconfig
+#   description = "kubeconfig to be used by local kubectl"
+# }
 
 output "eks_oidc_issuer" {
   value = data.aws_eks_cluster.cluster.identity.0.oidc.0.issuer

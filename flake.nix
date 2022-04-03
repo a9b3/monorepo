@@ -34,6 +34,7 @@
               pkgs.awscli2
               pkgs.terraform
               pkgs.terragrunt
+              pkgs.kubectx
             ];
           };
         }
