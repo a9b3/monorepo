@@ -41,3 +41,8 @@ setup_http_archives()
 load("//devx/go:workspace.bzl", "setup_go_workspace")
 
 setup_go_workspace()
+
+load("//:deps.bzl", "go_dependencies")
+
+# gazelle:repository_macro deps.bzl%go_dependencies
+go_dependencies()

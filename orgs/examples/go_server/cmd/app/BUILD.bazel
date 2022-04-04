@@ -3,6 +3,6 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "app",
     srcs = ["main.go"],
-    importpath = "",
+    importpath = "monorepo/orgs/examples/go_server/cmd/app",
     visibility = ["//visibility:public"],
 )
