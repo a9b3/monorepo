@@ -12,6 +12,7 @@ _providers.tf
 # Bazel
 bazel-out
 .bazel
+/bazel-*
 
 # Node
 node_modules

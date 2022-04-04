@@ -1,0 +1,2 @@
+# Cache outputs to local disk
+build --disk_cache=~/.cache/bazel-disk-cache
