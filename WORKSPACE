@@ -10,6 +10,7 @@ load(
     "http_archive",
 )
 
+# ----------------------------------------------------------------
 # Bazel
 # ----------------------------------------------------------------
 http_archive(
@@ -24,3 +25,19 @@ http_archive(
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
+
+# ----------------------------------------------------------------
+# http_archive
+# ----------------------------------------------------------------
+
+load("//devx:workspace.bzl", "setup_http_archives")
+
+setup_http_archives()
+
+# ----------------------------------------------------------------
+# golang
+# ----------------------------------------------------------------
+
+load("//devx/go:workspace.bzl", "setup_go_workspace")
+
+setup_go_workspace()
