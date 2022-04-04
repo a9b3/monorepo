@@ -4,7 +4,7 @@ go_library(
     name = "app_lib",
     srcs = ["main.go"],
     importpath = "monorepo/orgs/examples/go_server/internal/app",
-    visibility = ["//visibility:private"],
+    visibility = ["//orgs/examples/go_server:__subpackages__"],
 )
 
 go_binary(
