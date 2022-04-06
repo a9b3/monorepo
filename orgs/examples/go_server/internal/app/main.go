@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"fmt"
@@ -6,8 +6,4 @@ import (
 
 func Hello() {
 	fmt.Println("hello")
-}
-
-func main() {
-	Hello()
 }

@@ -6,9 +6,3 @@ go_library(
     importpath = "monorepo/orgs/examples/go_server/internal/app",
     visibility = ["//orgs/examples/go_server:__subpackages__"],
 )
-
-go_binary(
-    name = "app",
-    embed = [":app_lib"],
-    visibility = ["//orgs/examples/go_server:__subpackages__"],
-)
