@@ -46,3 +46,12 @@ load("//:deps.bzl", "go_dependencies")
 
 # gazelle:repository_macro deps.bzl%go_dependencies
 go_dependencies()
+
+# ----------------------------------------------------------------
+# js
+# ----------------------------------------------------------------
+
+load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
+build_bazel_rules_nodejs_dependencies()
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
+node_repositories()
