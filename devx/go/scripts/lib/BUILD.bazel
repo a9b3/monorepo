@@ -1,0 +1,8 @@
+sh_binary(
+    name = "mklib",
+    srcs = ["mklib.sh"],
+    data = [
+        "lib.go",
+        "lib_test.go",
+    ],
+)

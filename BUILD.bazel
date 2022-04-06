@@ -1,6 +1,7 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix monorepo
+# gazelle:exclude devx/go/scripts/lib
 gazelle(name = "gazelle")
 
 gazelle(
