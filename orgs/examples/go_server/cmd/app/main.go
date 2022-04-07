@@ -1,9 +1,9 @@
 package main
 
 import (
-	api "monorepo/orgs/examples/go_server/internal/api"
+	rpc "monorepo/orgs/examples/go_server/internal/rpc"
 )
 
 func main() {
-	api.Hello()
+	rpc.Start()
 }

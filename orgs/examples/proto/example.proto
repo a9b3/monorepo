@@ -1,0 +1,16 @@
+syntax = "proto3";
+package example;
+
+service Persons {
+  rpc GetPersons(GetPersonsRequest) returns (GetPersonsResponse) {};
+}
+
+message GetPersonsRequest {}
+
+message GetPersonsResponse {
+  repeated Person persons = 1;
+}
+
+message Person {
+  string name = 1;
+}

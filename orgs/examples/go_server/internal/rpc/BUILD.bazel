@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "rpc",
+    srcs = ["main.go"],
+    importpath = "monorepo/orgs/examples/go_server/internal/rpc",
+    visibility = ["//orgs/examples/go_server:__subpackages__"],
+    deps = [
+        "//orgs/examples/proto",
+        "@com_github_sirupsen_logrus//:logrus",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//reflection",
+    ],
+)

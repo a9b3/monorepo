@@ -1,15 +1,28 @@
-package api
+package rpc
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"os"
 
+	pb "monorepo/orgs/examples/proto"
+
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
-func Hello() {
+type server struct {
+	pb.UnimplementedPersonsServer
+}
+
+func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.GetPersonsResponse, error) {
+	fmt.Println("hello")
+	return &pb.GetPersonsResponse{}, nil
+}
+
+func Start() {
 	fmt.Println("hello")
 
 	log.SetFormatter(&log.TextFormatter{
@@ -21,12 +34,12 @@ func Hello() {
 	port, ok = os.LookupEnv("PORT")
 
 	if ok {
-		log.WithField(log.Fields{
+		log.WithFields(log.Fields{
 			"PORT": port,
 		}).Info("PORT env var defined")
 	} else {
-		port = "9000"
-		log.WithField(log.Fields{
+		port = "50051"
+		log.WithFields(log.Fields{
 			"PORT": port,
 		}).Info("PORT env var not defined, going with default")
 	}
@@ -39,6 +52,9 @@ func Hello() {
 	}
 
 	grpcServer := grpc.NewServer()
+
+	pb.RegisterPersonsServer(grpcServer, &server{})
+	reflection.Register(grpcServer)
 
 	log.Info("gRPC server started at ", port)
 	if err := grpcServer.Serve(l); err != nil {
