@@ -1,9 +1,9 @@
 package main
 
 import (
-	app "monorepo/orgs/examples/go_server/internal/app"
+	api "monorepo/orgs/examples/go_server/internal/api"
 )
 
 func main() {
-	app.Hello()
+	api.Hello()
 }

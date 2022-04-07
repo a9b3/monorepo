@@ -55,3 +55,11 @@ load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_d
 build_bazel_rules_nodejs_dependencies()
 load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
 node_repositories()
+
+# ----------------------------------------------------------------
+# protobuf
+# ----------------------------------------------------------------
+
+load("//devx/protobuf:workspace.bzl", "setup_protobuf_workspace")
+
+setup_protobuf_workspace()

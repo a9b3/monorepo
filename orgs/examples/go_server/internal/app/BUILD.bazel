@@ -1,8 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
-
-go_library(
-    name = "app_lib",
-    srcs = ["main.go"],
-    importpath = "monorepo/orgs/examples/go_server/internal/app",
-    visibility = ["//orgs/examples/go_server:__subpackages__"],
-)
