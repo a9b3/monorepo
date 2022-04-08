@@ -3,7 +3,7 @@ load("//devx/go:exports.bzl", "go_library", "go_test")
 go_library(
     name = "go_lib",
     srcs = ["main.go"],
-    importpath = "monorepo/orgs/examples/go_lib",
+    importpath = "github.com/publiclabel/monorepo/orgs/examples/go_lib",
     visibility = ["//visibility:public"],
     deps = ["@com_github_code_hex_neo_cowsay_v2//:Neo-cowsay"],
 )

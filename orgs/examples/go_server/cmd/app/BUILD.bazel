@@ -3,7 +3,7 @@ load("//devx/go:exports.bzl", "go_binary", "go_library")
 go_library(
     name = "app_lib",
     srcs = ["main.go"],
-    importpath = "monorepo/orgs/examples/go_server/cmd/app",
+    importpath = "github.com/publiclabel/monorepo/orgs/examples/go_server/cmd/app",
     visibility = ["//visibility:private"],
     deps = ["//orgs/examples/go_server/internal/rpc"],
 )

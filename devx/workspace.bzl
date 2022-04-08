@@ -61,16 +61,9 @@ def setup_http_archives():
         ],
     )
 
-    # Branch: master
-    # Commit: 7c95feba87ae269d09690fcebb18c77d8b8bcf6a
-    # Date: 2021-11-16 02:17:58 +0000 UTC
-    # URL: https://github.com/stackb/rules_proto/commit/7c95feba87ae269d09690fcebb18c77d8b8bcf6a
-    #
-    # V2 (#193)
-    # Size: 885598 (886 kB)
     http_archive(
         name = "build_stack_rules_proto",
-        sha256 = "1190c296a9f931343f70e58e5f6f9ee2331709be4e17001bb570e41237a6c497",
-        strip_prefix = "rules_proto-7c95feba87ae269d09690fcebb18c77d8b8bcf6a",
-        urls = ["https://github.com/stackb/rules_proto/archive/7c95feba87ae269d09690fcebb18c77d8b8bcf6a.tar.gz"],
+        sha256 = "8ce4f6630c8a277a78c05c2193da4b4687c208f0ce5a88e9cbf10150508c6fa0",
+        strip_prefix = "rules_proto-0160632ba19048c87c84a46f788cf89738f223cf",
+        urls = ["https://github.com/stackb/rules_proto/archive/0160632ba19048c87c84a46f788cf89738f223cf.tar.gz"],
     )

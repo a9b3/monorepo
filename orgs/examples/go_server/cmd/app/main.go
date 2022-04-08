@@ -1,7 +1,7 @@
 package main
 
 import (
-	rpc "monorepo/orgs/examples/go_server/internal/rpc"
+	rpc "github.com/publiclabel/monorepo/orgs/examples/go_server/internal/rpc"
 )
 
 func main() {

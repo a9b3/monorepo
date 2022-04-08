@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package example;
 
-option go_package = "github.com/publiclabel/monorepo/orgs/examples/proto;example"
+option go_package = "github.com/publiclabel/monorepo/orgs/examples/proto;example";
 
 service Persons {
   rpc GetPersons(GetPersonsRequest) returns (GetPersonsResponse) {};

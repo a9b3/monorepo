@@ -1,6 +1,7 @@
 load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
 
-# gazelle:prefix monorepo
+# gazelle:prefix github.com/publiclabel/monorepo
+#
 #
 # -----------------------------------------------------------------------------
 # Proto Rule
@@ -44,7 +45,7 @@ load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary
 # Gazelle generates go_proto_library + go_library rules both with the same
 # importpath causing a matches multiple rules error.
 #
-# gazelle:go_generate_proto true
+# gazelle:go_generate_proto false
 gazelle(
     name = "gazelle",
     gazelle = ":gazelle-protobuf",

@@ -12,7 +12,7 @@ sh_binary(
 go_library(
     name = "lib",
     srcs = ["lib.go"],
-    importpath = "monorepo/devx/go/scripts/lib",
+    importpath = "github.com/publiclabel/monorepo/devx/go/scripts/lib",
     visibility = ["//visibility:public"],
 )
 

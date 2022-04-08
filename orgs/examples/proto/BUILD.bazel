@@ -1,27 +1,12 @@
+load("@build_stack_rules_proto//rules:proto_compile_assets.bzl", "proto_compile_assets")
 load("@build_stack_rules_proto//rules/go:proto_go_library.bzl", "proto_go_library")
 load("@build_stack_rules_proto//rules:proto_compile.bzl", "proto_compile")
 load("@build_stack_rules_proto//rules:proto_compiled_sources.bzl", "proto_compiled_sources")
 load("//devx/protobuf:exports.bzl", "proto_library")
-load("//devx/go:exports.bzl", "go_library", "go_proto_library")
 
 proto_library(
     name = "example_proto",
     srcs = ["example.proto"],
-    visibility = ["//visibility:public"],
-)
-
-go_proto_library(
-    name = "example_go_proto",
-    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
-    importpath = "monorepo/orgs/examples/proto",
-    proto = ":example_proto",
-    visibility = ["//visibility:public"],
-)
-
-go_library(
-    name = "proto",
-    embed = [":example_go_proto"],
-    importpath = "monorepo/orgs/examples/proto",
     visibility = ["//visibility:public"],
 )
 
@@ -36,7 +21,7 @@ proto_compile(
 proto_compiled_sources(
     name = "example_go_compiled_sources",
     srcs = ["example.pb.go"],
-    mappings = {"example.pb.go": "github.com/publiclabel/monorepo/orgs/examples/proto/example.pb.go"},
+    output_mappings = {"example.pb.go": "github.com/publiclabel/monorepo/orgs/examples/proto/example.pb.go"},
     plugins = ["@build_stack_rules_proto//plugin/golang/protobuf:protoc-gen-go"],
     proto = "example_proto",
 )
@@ -49,5 +34,12 @@ proto_go_library(
     deps = [
         "@org_golang_google_protobuf//reflect/protoreflect",
         "@org_golang_google_protobuf//runtime/protoimpl",
+    ],
+)
+
+proto_compile_assets(
+    name = "assets",
+    deps = [
+      ":example_go_compile"
     ],
 )
