@@ -1,22 +1,14 @@
 load("//devx/go:exports.bzl", "go_library")
 
-# load("//devx/go:exports.bzl", "go_library")
-#
-# go_library(
-#     name = "rpc",
-#     srcs = ["main.go"],
-#     importpath = "github.com/publiclabel/monorepo/orgs/examples/go_server/internal/rpc",
-#     visibility = ["//orgs/examples/go_server:__subpackages__"],
-#     deps = [
-#         "@com_github_sirupsen_logrus//:logrus",
-#         "@org_golang_google_grpc//:grpc",
-#         "@org_golang_google_grpc//reflection",
-#     ],
-# )
-
 go_library(
     name = "rpc",
     srcs = ["main.go"],
     importpath = "github.com/publiclabel/monorepo/orgs/examples/go_server/internal/rpc",
     visibility = ["//orgs/examples/go_server:__subpackages__"],
+    deps = [
+        "//orgs/examples/proto",
+        "@com_github_sirupsen_logrus//:logrus",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//reflection",
+    ],
 )
