@@ -35,6 +35,7 @@
               pkgs.terraform
               pkgs.terragrunt
               pkgs.kubectx
+              pkgs.grpcurl
             ];
           };
         }

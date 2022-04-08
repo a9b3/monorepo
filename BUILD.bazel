@@ -1,7 +1,32 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix monorepo
+#
+# -----------------------------------------------------------------------------
+# Excludes
+# -----------------------------------------------------------------------------
+#
+# gazelle:exclude bazel-out
 # gazelle:exclude devx/go/scripts/lib
+#
+# -----------------------------------------------------------------------------
+# Map Kinds
+# -----------------------------------------------------------------------------
+#
+# gazelle:map_kind go_binary go_binary //devx/go:exports.bzl
+# gazelle:map_kind go_library go_library //devx/go:exports.bzl
+# gazelle:map_kind go_proto_library go_proto_library //devx/go:exports.bzl
+# gazelle:map_kind go_test go_test //devx/go:exports.bzl
+#
+# gazelle:map_kind proto_library proto_library //devx/protobuf:exports.bzl
+#
+# -----------------------------------------------------------------------------
+# Resolves
+# -----------------------------------------------------------------------------
+# Gazelle generates go_proto_library + go_library rules both with the same
+# importpath causing a matches multiple rules error.
+#
+# gazelle:resolve go monorepo/orgs/examples/proto //orgs/examples/proto
 gazelle(name = "gazelle")
 
 gazelle(
