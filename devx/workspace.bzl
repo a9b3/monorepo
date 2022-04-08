@@ -50,3 +50,27 @@ def setup_http_archives():
             "https://github.com/protocolbuffers/protobuf/archive/v3.14.0.tar.gz",
         ],
     )
+
+    http_archive(
+        name = "rules_proto",
+        sha256 = "66bfdf8782796239d3875d37e7de19b1d94301e8972b3cbd2446b332429b4df1",
+        strip_prefix = "rules_proto-4.0.0",
+        urls = [
+            "https://mirror.bazel.build/github.com/bazelbuild/rules_proto/archive/refs/tags/4.0.0.tar.gz",
+            "https://github.com/bazelbuild/rules_proto/archive/refs/tags/4.0.0.tar.gz",
+        ],
+    )
+
+    # Branch: master
+    # Commit: 7c95feba87ae269d09690fcebb18c77d8b8bcf6a
+    # Date: 2021-11-16 02:17:58 +0000 UTC
+    # URL: https://github.com/stackb/rules_proto/commit/7c95feba87ae269d09690fcebb18c77d8b8bcf6a
+    #
+    # V2 (#193)
+    # Size: 885598 (886 kB)
+    http_archive(
+        name = "build_stack_rules_proto",
+        sha256 = "1190c296a9f931343f70e58e5f6f9ee2331709be4e17001bb570e41237a6c497",
+        strip_prefix = "rules_proto-7c95feba87ae269d09690fcebb18c77d8b8bcf6a",
+        urls = ["https://github.com/stackb/rules_proto/archive/7c95feba87ae269d09690fcebb18c77d8b8bcf6a.tar.gz"],
+    )

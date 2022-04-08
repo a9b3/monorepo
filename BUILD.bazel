@@ -1,6 +1,24 @@
-load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
 
 # gazelle:prefix monorepo
+#
+# -----------------------------------------------------------------------------
+# Proto Rule
+# -----------------------------------------------------------------------------
+#
+# gazelle:proto_plugin protoc-gen-go implementation golang:protobuf:protoc-gen-go
+#
+# gazelle:proto_rule proto_compile implementation stackb:rules_proto:proto_compile
+# gazelle:proto_rule proto_compiled_sources implementation stackb:rules_proto:proto_compiled_sources
+# gazelle:proto_rule proto_go_library implementation stackb:rules_proto:proto_go_library
+# gazelle:proto_rule proto_go_library deps @org_golang_google_protobuf//reflect/protoreflect
+# gazelle:proto_rule proto_go_library deps @org_golang_google_protobuf//runtime/protoimpl
+# gazelle:proto_rule proto_go_library visibility //visibility:public
+#
+# gazelle:proto_language go plugin protoc-gen-go
+# gazelle:proto_language go rule proto_compile
+# gazelle:proto_language go rule proto_compiled_sources
+# gazelle:proto_language go rule proto_go_library
 #
 # -----------------------------------------------------------------------------
 # Excludes
@@ -26,8 +44,19 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 # Gazelle generates go_proto_library + go_library rules both with the same
 # importpath causing a matches multiple rules error.
 #
-# gazelle:resolve go monorepo/orgs/examples/proto //orgs/examples/proto
-gazelle(name = "gazelle")
+# gazelle:go_generate_proto true
+gazelle(
+    name = "gazelle",
+    gazelle = ":gazelle-protobuf",
+)
+
+gazelle_binary(
+    name = "gazelle-protobuf",
+    languages = DEFAULT_LANGUAGES + [
+        # must be after the proto extension (order matters)
+        "@build_stack_rules_proto//language/protobuf",
+    ],
+)
 
 gazelle(
     name = "gazelle-update-repos",

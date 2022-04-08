@@ -35,17 +35,37 @@ load("//devx:workspace.bzl", "setup_http_archives")
 setup_http_archives()
 
 # ----------------------------------------------------------------
+# protobuf
+# ----------------------------------------------------------------
+
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+protobuf_deps()
+
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+rules_proto_dependencies()
+rules_proto_toolchains()
+
+register_toolchains("@build_stack_rules_proto//toolchain:standard")
+
+# ----------------------------------------------------------------
 # golang
 # ----------------------------------------------------------------
 
-load("//devx/go:workspace.bzl", "setup_go_workspace")
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+go_rules_dependencies()
+go_register_toolchains(version = "1.18")
 
-setup_go_workspace()
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+gazelle_dependencies()
 
 load("//:deps.bzl", "go_dependencies")
-
 # gazelle:repository_macro deps.bzl%go_dependencies
 go_dependencies()
+
+load("@build_stack_rules_proto//:go_deps.bzl", "gazelle_protobuf_extension_go_deps")
+# brings in @com_github_emicklei_proto used by build_stack_rules_proto to parse
+# proto files.
+gazelle_protobuf_extension_go_deps()
 
 # ----------------------------------------------------------------
 # js
@@ -53,13 +73,6 @@ go_dependencies()
 
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
 build_bazel_rules_nodejs_dependencies()
+
 load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
 node_repositories()
-
-# ----------------------------------------------------------------
-# protobuf
-# ----------------------------------------------------------------
-
-load("//devx/protobuf:workspace.bzl", "setup_protobuf_workspace")
-
-setup_protobuf_workspace()
