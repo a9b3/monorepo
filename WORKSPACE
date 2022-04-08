@@ -66,9 +66,6 @@ load("@build_stack_rules_proto//:go_deps.bzl", "gazelle_protobuf_extension_go_de
 # brings in @com_github_emicklei_proto used by build_stack_rules_proto to parse
 # proto files.
 gazelle_protobuf_extension_go_deps()
-# brings in core deps cmd grpc plugin go
-load("@build_stack_rules_proto//deps:core_deps.bzl", "core_deps")
-core_deps()
 
 # ----------------------------------------------------------------
 # js
