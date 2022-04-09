@@ -1,0 +1,4 @@
+- [] golang microservices grpc
+- [] golang best practice structure batteries included (logger, config settings etc.)
+- [] typescript api gateway graphql
+- [] typescript react web client
