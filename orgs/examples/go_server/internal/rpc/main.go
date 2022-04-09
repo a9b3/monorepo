@@ -7,6 +7,8 @@ import (
 	"os"
 
 	pb "github.com/publiclabel/monorepo/orgs/examples/proto"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -23,6 +25,8 @@ func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.
 
 func Start() {
 	fmt.Println("hello")
+	fmt.Println(cobra.AddTemplateFuncs)
+	fmt.Println(viper.BindEnv)
 
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
