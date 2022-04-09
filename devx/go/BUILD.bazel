@@ -1,0 +1,4 @@
+alias(
+  name = "cobra-cli",
+  actual = "@com_github_spf13_cobra_cli//:cobra-cli"
+)
