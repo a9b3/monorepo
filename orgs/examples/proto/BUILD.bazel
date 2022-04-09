@@ -1,7 +1,15 @@
-load("@build_stack_rules_proto//rules:proto_compile_assets.bzl", "proto_compile_assets")
 load("@build_stack_rules_proto//rules:proto_compile.bzl", "proto_compile")
 load("//devx/protobuf:exports.bzl", "proto_library")
 load("//devx/go:exports.bzl", "go_library")
+load("@build_stack_rules_proto//rules:proto_compile_assets.bzl", "proto_compile_assets")
+
+# manually updated
+proto_compile_assets(
+    name = "assets",
+    deps = [
+        ":example_go_compile",
+    ],
+)
 
 proto_library(
     name = "example_proto",
@@ -11,10 +19,16 @@ proto_library(
 
 go_library(
     name = "proto",
-    srcs = ["example.pb.go"],
+    srcs = [
+        "example.pb.go",
+        "example_grpc.pb.go",
+    ],
     importpath = "github.com/publiclabel/monorepo/orgs/examples/proto",
     visibility = ["//visibility:public"],
     deps = [
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
         "@org_golang_google_protobuf//reflect/protoreflect",
         "@org_golang_google_protobuf//runtime/protoimpl",
     ],
@@ -35,12 +49,4 @@ proto_compile(
         "@build_stack_rules_proto//plugin/grpc/grpc-go:protoc-gen-go-grpc",
     ],
     proto = "example_proto",
-)
-
-# manually updated
-proto_compile_assets(
-    name = "assets",
-    deps = [
-        ":example_go_compile",
-    ],
 )

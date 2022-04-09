@@ -55,17 +55,24 @@ load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_depe
 go_rules_dependencies()
 go_register_toolchains(version = "1.18")
 
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
-gazelle_dependencies()
+load("@build_stack_rules_proto//:go_deps.bzl", "gazelle_protobuf_extension_go_deps")
+# brings in @com_github_emicklei_proto used by build_stack_rules_proto to parse
+# proto files.
+gazelle_protobuf_extension_go_deps()
+load("@build_stack_rules_proto//deps:go_core_deps.bzl", "go_core_deps")
+go_core_deps()
 
 load("//:deps.bzl", "go_dependencies")
 # gazelle:repository_macro deps.bzl%go_dependencies
 go_dependencies()
 
-load("@build_stack_rules_proto//:go_deps.bzl", "gazelle_protobuf_extension_go_deps")
-# brings in @com_github_emicklei_proto used by build_stack_rules_proto to parse
-# proto files.
-gazelle_protobuf_extension_go_deps()
+# IMPORTANT
+# Order matters, this has to be after grpc repositories are loaded or else
+# gazelle will use an old version and cause issues such as
+#   undefined: grpc.SupportPackageIsVersion7
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+gazelle_dependencies()
+
 
 # ----------------------------------------------------------------
 # js

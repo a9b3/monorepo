@@ -18,7 +18,6 @@ type server struct {
 }
 
 func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.GetPersonsResponse, error) {
-	fmt.Println("hello")
 	return &pb.GetPersonsResponse{}, nil
 }
 
