@@ -3,6 +3,7 @@ load(
     "http_archive",
 )
 
+# Put all http_archive rules here. To try to keep WORKSPACE a bit cleaner.
 def setup_http_archives():
     """All external workspaces need to be loaded before their usage via
     http_archive.
@@ -11,6 +12,7 @@ def setup_http_archives():
     # ------------------------------------------------------------------------
     # Golang
     # ------------------------------------------------------------------------
+
     http_archive(
         name = "io_bazel_rules_go",
         sha256 = "f2dcd210c7095febe54b804bb1cd3a58fe8435a909db2ec04e31542631cf715c",
@@ -32,6 +34,7 @@ def setup_http_archives():
     # ------------------------------------------------------------------------
     # js
     # ------------------------------------------------------------------------
+
     http_archive(
         name = "build_bazel_rules_nodejs",
         sha256 = "2b2004784358655f334925e7eadc7ba80f701144363df949b3293e1ae7a2fb7b",
@@ -41,6 +44,7 @@ def setup_http_archives():
     # ------------------------------------------------------------------------
     # protobuf
     # ------------------------------------------------------------------------
+
     http_archive(
         name = "com_google_protobuf",
         sha256 = "d0f5f605d0d656007ce6c8b5a82df3037e1d8fe8b121ed42e536f569dec16113",
