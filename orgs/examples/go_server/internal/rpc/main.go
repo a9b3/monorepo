@@ -6,7 +6,7 @@ import (
 
 	pb "github.com/publiclabel/monorepo/orgs/examples/proto"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/publiclabel/monorepo/libs/go/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -19,16 +19,16 @@ func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.
 	return &pb.GetPersonsResponse{}, nil
 }
 
-func Start(port string) {
-	log.SetFormatter(&log.TextFormatter{
-		FullTimestamp: true,
-	})
+// Start will start the grpc server.
+func Start(port string, loglevel string, debug bool) {
+	log.SetGlobalLevel(loglevel)
+	if debug {
+		log.EnablePrettyLogging()
+	}
 
 	l, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"Error": err.Error(),
-		}).Fatal("Failed to listen")
+		log.Fatal(err.Error())
 	}
 
 	grpcServer := grpc.NewServer()
@@ -36,10 +36,8 @@ func Start(port string) {
 	pb.RegisterPersonsServer(grpcServer, &server{})
 	reflection.Register(grpcServer)
 
-	log.Info("gRPC server started at ", port)
+	log.Info("gRPC server started at " + port)
 	if err := grpcServer.Serve(l); err != nil {
-		log.WithFields(log.Fields{
-			"Error": err.Error(),
-		}).Fatal("Failed to serve")
+		log.Error(err.Error())
 	}
 }
