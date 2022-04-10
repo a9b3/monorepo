@@ -1,0 +1,15 @@
+load("//devx/go:exports.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_server_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/publiclabel/monorepo/orgs/examples/go_server",
+    visibility = ["//visibility:private"],
+    deps = ["//orgs/examples/go_server/cmd:cmd_lib"],
+)
+
+go_binary(
+    name = "go_server",
+    embed = [":go_server_lib"],
+    visibility = ["//visibility:public"],
+)

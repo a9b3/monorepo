@@ -2,13 +2,9 @@ package rpc
 
 import (
 	"context"
-	"fmt"
 	"net"
-	"os"
 
 	pb "github.com/publiclabel/monorepo/orgs/examples/proto"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -23,29 +19,10 @@ func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.
 	return &pb.GetPersonsResponse{}, nil
 }
 
-func Start() {
-	fmt.Println("hello")
-	fmt.Println(cobra.AddTemplateFuncs)
-	fmt.Println(viper.BindEnv)
-
+func Start(port string) {
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
 	})
-
-	var port string
-	var ok bool
-	port, ok = os.LookupEnv("PORT")
-
-	if ok {
-		log.WithFields(log.Fields{
-			"PORT": port,
-		}).Info("PORT env var defined")
-	} else {
-		port = "50051"
-		log.WithFields(log.Fields{
-			"PORT": port,
-		}).Info("PORT env var not defined, going with default")
-	}
 
 	l, err := net.Listen("tcp", ":"+port)
 	if err != nil {

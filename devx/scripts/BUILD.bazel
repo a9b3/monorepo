@@ -1,0 +1,4 @@
+sh_binary(
+  name = "print_bazel_env",
+  srcs = ["print_bazel_env.sh"],
+)
