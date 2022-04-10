@@ -21,10 +21,7 @@ func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.
 
 // Start will start the grpc server.
 func Start(port string, loglevel string, debug bool) {
-	log.SetGlobalLevel(loglevel)
-	if debug {
-		log.EnablePrettyLogging()
-	}
+	log.Configure(loglevel, "go-server", debug)
 
 	l, err := net.Listen("tcp", ":"+port)
 	if err != nil {
