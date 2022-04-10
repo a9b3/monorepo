@@ -28,15 +28,8 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
-	port := viper.GetString("PORT")
+	viper.AutomaticEnv()
+	viper.SetDefault("PORT", "50051")
 
 	rootCmd.PersistentFlags().String("port", viper.GetString("PORT"), "port to listen to")
-}
-
-func initConfig() {
-	viper.AutomaticEnv()
-
-	viper.SetDefault("PORT", "50052")
 }
