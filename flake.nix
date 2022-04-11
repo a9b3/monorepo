@@ -18,6 +18,20 @@
               echo "---------------------------------------------"
               echo "Welcome to the monorepo"
               echo $0
+
+              # ----------------------------
+              # If minikube is not running start it.
+              # Uses container-runtime docker so minikube can pull from local docker
+              # images.
+              # The k8s manifest must also have ImagePullPolicy: Never
+              # ----------------------------
+              minikubeStarted=$(minikube status | rg Running)
+              if [[ -z "$minikubeStarted" ]]; then
+                echo "Minikube is not running starting now..."
+                echo ""
+                minikube start --driver=docker --container-runtime=docker --addons ingress
+              fi
+
               echo ""
               echo "---------------------------------------------"
             '';
@@ -36,6 +50,11 @@
               pkgs.terragrunt
               pkgs.kubectx
               pkgs.grpcurl
+
+              # skaffold
+              pkgs.skaffold
+              pkgs.kubectl
+              pkgs.minikube
             ];
           };
         }

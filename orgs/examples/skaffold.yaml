@@ -1,0 +1,16 @@
+apiVersion: skaffold/v2beta17
+# This file exists to let bazel know this directory is a package.
+kind: Config
+build:
+  artifacts:
+    - image: go-server
+      bazel:
+        target: //orgs/examples/go_server:go_image.tar
+deploy:
+  # If you want to add a service to the development cluster you need to add the
+  # k8s manifest location here.
+  # Make sure the k8s manifest is only used for local development, by convention
+  # create a kustomize directory named "local".
+  kustomize:
+    paths:
+      - ./go_server/k8s/local

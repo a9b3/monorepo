@@ -1,0 +1,5 @@
+namespace: go-server
+bases:
+  - ../base
+patchesStrategicMerge:
+  - ./patch.yaml
