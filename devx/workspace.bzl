@@ -71,3 +71,14 @@ def setup_http_archives():
         strip_prefix = "rules_proto-0160632ba19048c87c84a46f788cf89738f223cf",
         urls = ["https://github.com/stackb/rules_proto/archive/0160632ba19048c87c84a46f788cf89738f223cf.tar.gz"],
     )
+
+    # ------------------------------------------------------------------------
+    # docker
+    # ------------------------------------------------------------------------
+
+    http_archive(
+        name = "io_bazel_rules_docker",
+        sha256 = "85ffff62a4c22a74dbd98d05da6cf40f497344b3dbf1e1ab0a37ab2a1a6ca014",
+        strip_prefix = "rules_docker-0.23.0",
+        urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.23.0/rules_docker-v0.23.0.tar.gz"],
+    )
