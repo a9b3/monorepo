@@ -32,6 +32,18 @@
                 minikube start --driver=docker --container-runtime=docker --addons ingress
               fi
 
+              # ----------------------------
+              # Set npm root so you can use npm global
+              # ----------------------------
+              echo "Added npm root -g to PATH"
+              npm config set prefix "$HOME/.npm-packages"
+              export PATH="$(npm root -g)/../../bin:$PATH"
+              if [ ! -f "$(which ibazel)" ]; then
+                echo "Installing ibazel..."
+                echo ""
+                npm install -g @bazel/ibazel
+              fi
+
               echo ""
               echo "---------------------------------------------"
             '';
@@ -55,6 +67,9 @@
               pkgs.skaffold
               pkgs.kubectl
               pkgs.minikube
+
+              # node
+              pkgs.buildPackages.nodejs-16_x
             ];
           };
         }
