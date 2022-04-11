@@ -2,5 +2,7 @@
 namespace: go-server
 bases:
   - ../base
+resources:
+  - ./database.yaml
 patchesStrategicMerge:
   - ./patch.yaml

@@ -16,7 +16,12 @@ type server struct {
 }
 
 func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.GetPersonsResponse, error) {
-	return &pb.GetPersonsResponse{}, nil
+	persons := []*pb.Person{
+		&pb.Person{Name: "Sam"},
+	}
+	return &pb.GetPersonsResponse{
+		Persons: persons,
+	}, nil
 }
 
 // Start will start the grpc server.
