@@ -1,8 +1,10 @@
 - [] golang microservices grpc
 - [] golang best practice structure batteries included (logger, config settings etc.)
   - [] cobra - structure
-  - [] logrus - logger
+  - [] logger - logger
   - [] viper - config management
   - [] postgres - database
+  - [] bazel build go image
+  - [] local dev with skaffold
 - [] typescript api gateway graphql
 - [] typescript react web client
