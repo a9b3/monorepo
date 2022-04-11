@@ -112,3 +112,7 @@ container_repositories()
 load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
 
 container_deps()
+
+load("//devx/container:workspace.bzl", "setup_container_workspace")
+
+setup_container_workspace()

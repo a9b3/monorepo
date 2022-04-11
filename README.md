@@ -21,3 +21,5 @@ All system binaries are managed by nix via shell.nix
     ```
     direnv allow
     ```
+
+3.  [Install docker](https://docs.docker.com/desktop/mac/install/)
