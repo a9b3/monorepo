@@ -48,7 +48,42 @@
               echo "---------------------------------------------"
             '';
             buildInputs = let
-
+              # The version of skaffold in nixpkg is old. This creates a custom derivation
+              # to download the latest skaffold binary.
+              skaffold = let
+                systemKey = with pkgs; {
+                  "x86_64-darwin" = {
+                    "key" = "darwin-amd64";
+                    "sha256" = "872897d78a17812913cd6e930c5d1c94f7c862381db820815c4bffc637c28b88";
+                  };
+                  "x86_64-linux" = {
+                    "key" = "linux-amd64";
+                    "sha256" = "3c347c9478880f22ebf95807c13371844769c625cf3ea9c987cd85859067503c";
+                  };
+                  "aarch64-darwin" = {
+                    "key" = "darwin-arm64";
+                    "sha256" = "e47329560a557f0f01d7902eae01ab8d40210b40644758f957f071ab8df2ac44";
+                  };
+                }."${stdenv.system}";
+                key = systemKey.key;
+                sha256 = systemKey.sha256;
+                version = "v1.38.0";
+              in
+              with pkgs; stdenv.mkDerivation rec {
+                name = "skaffold";
+                # Need to provide a custom builder since the default assumes there's a
+                # makefile in the source
+                builder = pkgs.writeText "builder.sh" ''
+                  source $stdenv/setup
+                  mkdir -p $out/bin
+                  cp $src $out/bin/skaffold
+                  chmod +x $out/bin/skaffold
+                '';
+                src = fetchurl {
+                  url = "https://github.com/GoogleContainerTools/skaffold/releases/download/${version}/skaffold-${key}";
+                  sha256 = "${sha256}";
+                };
+              };
             in
             [
               # A wrapper around bazel that will invoke the version specified in
@@ -64,7 +99,7 @@
               pkgs.grpcurl
 
               # skaffold
-              pkgs.skaffold
+              skaffold
               pkgs.kubectl
               pkgs.minikube
 

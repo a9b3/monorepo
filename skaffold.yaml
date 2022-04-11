@@ -1,3 +1,8 @@
+# IMPORTANT:
+# skaffold.yaml has to be here until this issue is resolved. Skaffold assumes
+# that the bazel-out directory is in the same directory as skaffold.yaml
+# https://github.com/GoogleContainerTools/skaffold/issues/7281
+
 apiVersion: skaffold/v2beta17
 # This file exists to let bazel know this directory is a package.
 kind: Config
@@ -13,4 +18,4 @@ deploy:
   # create a kustomize directory named "local".
   kustomize:
     paths:
-      - ./go_server/k8s/local
+      - ./orgs/examples/go_server/k8s/local
