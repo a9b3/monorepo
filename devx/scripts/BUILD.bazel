@@ -2,3 +2,8 @@ sh_binary(
     name = "print_bazel_env",
     srcs = ["print_bazel_env.sh"],
 )
+
+sh_binary(
+  name = "zsh_completions",
+  srcs = ["zsh_completions.sh"],
+)
