@@ -5,3 +5,6 @@ list:
 	echo "Showing available clis"
 	echo ""
 	bazelisk query 'kind("alias", devx/...)'
+
+k8s-exec-shell:
+	kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
