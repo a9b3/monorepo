@@ -12,3 +12,38 @@ spec:
       #   - configMapRef:
       #       name: special-config
   restartPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+    - port: 80
+      name: nginx
+  type: NodePort
+  selector:
+    app: nginx
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: 80

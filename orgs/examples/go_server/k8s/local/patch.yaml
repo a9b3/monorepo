@@ -12,6 +12,26 @@ spec:
       labels:
         app: go-server
     spec:
+      initContainers:
+        - name: ready-db
+          image: postgres:14.2
+          env:
+            - name: PORT
+              value: "50051"
+            - name: LOGLEVEL
+              value: "info"
+            - name: DEBUG
+              value: "true"
+            - name: CONNSTRING
+              value: "postgres://user:password@postgres.go-server.svc:5432/database"
+          command: [
+              "sh",
+              "-c",
+              # "until pg_isready -h postgres.go-server.svc -p 5432;
+              # do echo waiting for database; sleep 2; done;",
+              "until pg_isready -h postgres.go-server.svc -p 5432;
+              do echo waiting for database; sleep 2; done;",
+            ]
       containers:
         - name: go-server
           # When deployed to minikube tell it to not pull from docker registry.
@@ -27,4 +47,4 @@ spec:
             - name: DEBUG
               value: "true"
             - name: CONNSTRING
-              value: "postgres://postgres_user:password@postgres-service.go-server.svc.cluster.local:5432/go_server"
+              value: "postgres://user:password@postgres.go-server.svc:5432/database"

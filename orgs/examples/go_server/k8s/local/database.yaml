@@ -8,17 +8,12 @@ metadata:
     app: postgres
 data:
   POSTGRES_DB: "database"
-  POSTGRES_USER: "postgres-user"
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: postgres-credentials
-  labels:
-    app: postgres
-type: Opaque
-data:
-  password: password
+  POSTGRES_USER: "user"
+  POSTGRES_PASSWORD: "password"
+  # If updating any of these variables it will not reinitialize postgres. You
+  # will need to exec into minikube container and rm the pv directory.
+  #
+  #     docker exec minikube rm -rf /mnt1/postgres-data
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -73,12 +68,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: postgres-configuration
-          env:
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-credentials
-                  key: password
           ports:
             - containerPort: 5432
               name: postgresdb
