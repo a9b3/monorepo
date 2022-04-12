@@ -4,14 +4,18 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-configuration
+  labels:
+    app: postgres
 data:
-  POSTGRES_DB: "django-db"
+  POSTGRES_DB: "database"
   POSTGRES_USER: "postgres-user"
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: postgres-credentials
+  labels:
+    app: postgres
 type: Opaque
 data:
   password: password
@@ -22,6 +26,7 @@ metadata:
   name: postgres-pv
   labels:
     type: local
+    app: postgres
 spec:
   storageClassName: manual
   capacity:
@@ -30,7 +35,6 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /mnt1/postgres-data
-# k8s/postgres.yaml
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -38,6 +42,7 @@ metadata:
   name: postgres-pvc
   labels:
     type: local
+    app: postgres
 spec:
   storageClassName: manual
   accessModes:
@@ -64,7 +69,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:12
+          image: postgres:14.2
           envFrom:
             - configMapRef:
                 name: postgres-configuration
@@ -97,6 +102,22 @@ spec:
             initialDelaySeconds: 15
             timeoutSeconds: 2
       volumes:
+        - name: postgres-data
+          emptyDir: {}
         - name: postgres-volume-mount
           persistentVolumeClaim:
             claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  ports:
+    - port: 5432
+      name: postgres
+  type: NodePort
+  selector:
+    app: postgres

@@ -17,9 +17,9 @@ var rootCmd = &cobra.Command{
 		port, _ := cmd.Flags().GetString("port")
 		loglevel, _ := cmd.Flags().GetString("loglevel")
 		debug, _ := cmd.Flags().GetBool("debug")
+		connstring, _ := cmd.Flags().GetString("connstring")
 
-		fmt.Println(debug)
-		rpc.Start(port, loglevel, debug)
+		rpc.Start(port, loglevel, debug, connstring)
 	},
 }
 
@@ -35,8 +35,10 @@ func init() {
 	viper.SetDefault("PORT", "50051")
 	viper.SetDefault("LOGLEVEL", "info")
 	viper.SetDefault("DEBUG", false)
+	viper.SetDefault("CONNSTRING", "")
 
 	rootCmd.PersistentFlags().String("port", viper.GetString("PORT"), "port to listen to can also set env var PORT")
 	rootCmd.PersistentFlags().String("loglevel", viper.GetString("LOGLEVEL"), "log level")
 	rootCmd.PersistentFlags().Bool("debug", viper.GetBool("DEBUG"), "whether to run server in debug mode or not")
+	rootCmd.PersistentFlags().String("connstring", viper.GetString("CONNSTRING"), "postgres connection string ex. postgres://username:password@localhost:5432/database_name")
 }

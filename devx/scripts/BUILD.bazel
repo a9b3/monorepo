@@ -4,6 +4,6 @@ sh_binary(
 )
 
 sh_binary(
-  name = "zsh_completions",
-  srcs = ["zsh_completions.sh"],
+    name = "zsh_completions",
+    srcs = ["zsh_completions.sh"],
 )

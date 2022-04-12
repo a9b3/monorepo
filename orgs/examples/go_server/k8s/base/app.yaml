@@ -58,3 +58,12 @@ spec:
           imagePullPolicy: "Always"
           ports:
             - containerPort: 50051
+          env:
+            - name: PORT
+              value: "50051"
+            - name: LOGLEVEL
+              value: "info"
+            - name: DEBUG
+              value: "true"
+            - name: CONNSTRING
+              value: "postgres://postgres-user:password@postgres.go-server.svc.cluster.local:5432/database"

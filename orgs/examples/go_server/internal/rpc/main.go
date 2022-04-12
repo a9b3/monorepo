@@ -17,7 +17,7 @@ type server struct {
 
 func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.GetPersonsResponse, error) {
 	persons := []*pb.Person{
-		&pb.Person{Name: "Sam"},
+		{Name: "Sam"},
 	}
 	return &pb.GetPersonsResponse{
 		Persons: persons,
@@ -25,8 +25,10 @@ func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.
 }
 
 // Start will start the grpc server.
-func Start(port string, loglevel string, debug bool) {
+func Start(port string, loglevel string, debug bool, connstring string) {
 	log.Configure(loglevel, "go-server", debug)
+
+	Connect(connstring)
 
 	l, err := net.Listen("tcp", ":"+port)
 	if err != nil {
