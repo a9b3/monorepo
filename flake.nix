@@ -29,7 +29,7 @@
               if [[ -z "$minikubeStarted" ]]; then
                 echo "Minikube is not running starting now..."
                 echo ""
-                minikube start --driver=docker --container-runtime=docker --addons ingress
+                minikube start --driver=docker --container-runtime=docker --addons ingress --cni calico
               fi
 
               # ----------------------------
