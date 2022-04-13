@@ -43,6 +43,7 @@ protobuf_deps()
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 
 rules_proto_dependencies()
+
 rules_proto_toolchains()
 
 register_toolchains("@build_stack_rules_proto//toolchain:standard")
@@ -54,6 +55,7 @@ register_toolchains("@build_stack_rules_proto//toolchain:standard")
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
+
 go_register_toolchains(version = "1.18")
 
 load("@build_stack_rules_proto//:go_deps.bzl", "gazelle_protobuf_extension_go_deps")
@@ -107,6 +109,7 @@ load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",
     container_repositories = "repositories",
 )
+
 container_repositories()
 
 load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")

@@ -82,3 +82,17 @@ def setup_http_archives():
         strip_prefix = "rules_docker-0.23.0",
         urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.23.0/rules_docker-v0.23.0.tar.gz"],
     )
+
+    # ------------------------------------------------------------------------
+    # bazel buildtools
+    # ------------------------------------------------------------------------
+    # Order matters has to be after go, gazelle, and protobuf
+
+    http_archive(
+        name = "com_github_bazelbuild_buildtools",
+        sha256 = "ae34c344514e08c23e90da0e2d6cb700fcd28e80c02e23e4d5715dddcb42f7b3",
+        strip_prefix = "buildtools-4.2.2",
+        urls = [
+            "https://github.com/bazelbuild/buildtools/archive/refs/tags/4.2.2.tar.gz",
+        ],
+    )
