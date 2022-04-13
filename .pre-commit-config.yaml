@@ -1,0 +1,11 @@
+repos:
+  # Define our own hooks using repo "local". To use third party hooks you can
+  # create a separate repo entry with it's github url.
+  - repo: local
+    hooks:
+      - id: gazelle
+        name: gazelle
+        entry: "bazel run //:gazelle"
+        language: system
+        always_run: true
+        pass_filenames: false

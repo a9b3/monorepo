@@ -44,6 +44,12 @@
                 npm install -g @bazel/ibazel
               fi
 
+              # ----------------------------
+              # This will install configuration from .pre-commit-config.yaml to
+              # git hooks
+              # ----------------------------
+              pre-commit install
+
               echo ""
               echo "---------------------------------------------"
             '';
@@ -97,6 +103,9 @@
               pkgs.terragrunt
               pkgs.kubectx
               pkgs.grpcurl
+
+              # source management
+              pkgs.pre-commit
 
               # skaffold
               skaffold
