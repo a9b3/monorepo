@@ -1,2 +1,3 @@
 #!/bin/sh
+# This is used in .envrc to alias bazelisk to bazel
 bazelisk "$@"
