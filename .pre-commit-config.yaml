@@ -9,3 +9,10 @@ repos:
         language: system
         always_run: true
         pass_filenames: false
+      - id: buildifier
+        name: buildifier
+        entry: "bazel run //:buildifier"
+        language: system
+        types: ["bazel"]
+        always_run: true
+        pass_filenames: false
