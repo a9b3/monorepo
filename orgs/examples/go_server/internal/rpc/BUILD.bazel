@@ -5,13 +5,14 @@ go_library(
     srcs = [
         "database.go",
         "main.go",
+        "person.go",
     ],
     importpath = "github.com/publiclabel/monorepo/orgs/examples/go_server/internal/rpc",
     visibility = ["//orgs/examples/go_server:__subpackages__"],
     deps = [
         "//libs/go/log",
         "//orgs/examples/proto",
-        "@com_github_jackc_pgx_v4//:go_default_library",
+        "@com_github_jackc_pgx_v4//:pgx",
         "@org_golang_google_grpc//:go_default_library",
         "@org_golang_google_grpc//reflection",
     ],

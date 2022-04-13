@@ -1,43 +1,27 @@
 package rpc
 
 import (
-	"context"
 	"net"
-
-	pb "github.com/publiclabel/monorepo/orgs/examples/proto"
 
 	log "github.com/publiclabel/monorepo/libs/go/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
-type server struct {
-	pb.UnimplementedPersonsServer
-}
-
-func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.GetPersonsResponse, error) {
-	persons := []*pb.Person{
-		{Name: "Sam"},
-	}
-	return &pb.GetPersonsResponse{
-		Persons: persons,
-	}, nil
-}
-
 // Start will start the grpc server.
 func Start(port string, loglevel string, debug bool, connstring string) {
+	// Start Up App Configurations
 	log.Configure(loglevel, "go-server", debug)
-
-	Connect(connstring)
+	conn := Connect(connstring)
 
 	l, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
+	// GRPC Servers
 	grpcServer := grpc.NewServer()
-
-	pb.RegisterPersonsServer(grpcServer, &server{})
+	RegisterPersonsServer(grpcServer, conn)
 	reflection.Register(grpcServer)
 
 	log.Info("gRPC server started at " + port)

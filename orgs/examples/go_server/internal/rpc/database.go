@@ -9,7 +9,7 @@ import (
 )
 
 // connStr := "postgres://username:password@localhost:5432/database_name"
-func Connect(connStr string) {
+func Connect(connStr string) *pgx.Conn {
 	conf, err := pgx.ParseConfig(connStr)
 	if err != nil {
 		log.Error("Unable to parse connStr: " + err.Error())
@@ -22,4 +22,6 @@ func Connect(connStr string) {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+
+	return conn
 }
