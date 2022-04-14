@@ -19,6 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PersonsClient interface {
 	GetPersons(ctx context.Context, in *GetPersonsRequest, opts ...grpc.CallOption) (*GetPersonsResponse, error)
+	GetPersonByID(ctx context.Context, in *GetPersonByIDRequest, opts ...grpc.CallOption) (*Person, error)
+	CreatePerson(ctx context.Context, in *CreatePersonRequest, opts ...grpc.CallOption) (*Person, error)
 }
 
 type personsClient struct {
@@ -38,11 +40,31 @@ func (c *personsClient) GetPersons(ctx context.Context, in *GetPersonsRequest, o
 	return out, nil
 }
 
+func (c *personsClient) GetPersonByID(ctx context.Context, in *GetPersonByIDRequest, opts ...grpc.CallOption) (*Person, error) {
+	out := new(Person)
+	err := c.cc.Invoke(ctx, "/example.Persons/GetPersonByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *personsClient) CreatePerson(ctx context.Context, in *CreatePersonRequest, opts ...grpc.CallOption) (*Person, error) {
+	out := new(Person)
+	err := c.cc.Invoke(ctx, "/example.Persons/CreatePerson", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PersonsServer is the server API for Persons service.
 // All implementations must embed UnimplementedPersonsServer
 // for forward compatibility
 type PersonsServer interface {
 	GetPersons(context.Context, *GetPersonsRequest) (*GetPersonsResponse, error)
+	GetPersonByID(context.Context, *GetPersonByIDRequest) (*Person, error)
+	CreatePerson(context.Context, *CreatePersonRequest) (*Person, error)
 	mustEmbedUnimplementedPersonsServer()
 }
 
@@ -52,6 +74,12 @@ type UnimplementedPersonsServer struct {
 
 func (UnimplementedPersonsServer) GetPersons(context.Context, *GetPersonsRequest) (*GetPersonsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPersons not implemented")
+}
+func (UnimplementedPersonsServer) GetPersonByID(context.Context, *GetPersonByIDRequest) (*Person, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPersonByID not implemented")
+}
+func (UnimplementedPersonsServer) CreatePerson(context.Context, *CreatePersonRequest) (*Person, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePerson not implemented")
 }
 func (UnimplementedPersonsServer) mustEmbedUnimplementedPersonsServer() {}
 
@@ -84,6 +112,42 @@ func _Persons_GetPersons_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Persons_GetPersonByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPersonByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PersonsServer).GetPersonByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/example.Persons/GetPersonByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PersonsServer).GetPersonByID(ctx, req.(*GetPersonByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Persons_CreatePerson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePersonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PersonsServer).CreatePerson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/example.Persons/CreatePerson",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PersonsServer).CreatePerson(ctx, req.(*CreatePersonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Persons_ServiceDesc is the grpc.ServiceDesc for Persons service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +158,14 @@ var Persons_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPersons",
 			Handler:    _Persons_GetPersons_Handler,
+		},
+		{
+			MethodName: "GetPersonByID",
+			Handler:    _Persons_GetPersonByID_Handler,
+		},
+		{
+			MethodName: "CreatePerson",
+			Handler:    _Persons_CreatePerson_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

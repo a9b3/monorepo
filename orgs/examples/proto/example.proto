@@ -4,16 +4,41 @@ package example;
 
 option go_package = "github.com/publiclabel/monorepo/orgs/examples/proto;example";
 
-service Persons {
-  rpc GetPersons(GetPersonsRequest) returns (GetPersonsResponse) {};
+// ----------------------------------------------------------------------------
+// Data Messages
+// ----------------------------------------------------------------------------
+
+message Person {
+  string id = 1;
+  string name = 2;
 }
+
+// ----------------------------------------------------------------------------
+// Service Messages
+// ----------------------------------------------------------------------------
 
 message GetPersonsRequest {}
 
 message GetPersonsResponse {
   repeated Person persons = 1;
+  string next = 2;
+  string prev = 3;
 }
 
-message Person {
+message CreatePersonRequest {
   string name = 1;
+}
+
+message GetPersonByIDRequest {
+  string id = 1;
+}
+
+// ----------------------------------------------------------------------------
+// Service
+// ----------------------------------------------------------------------------
+
+service Persons {
+  rpc GetPersons(GetPersonsRequest) returns (GetPersonsResponse) {};
+  rpc GetPersonByID(GetPersonByIDRequest) returns (Person) {};
+  rpc CreatePerson(CreatePersonRequest) returns (Person) {};
 }

@@ -12,11 +12,11 @@ var (
 	conn *pgx.Conn
 )
 
-type server struct {
+type personServer struct {
 	pb.UnimplementedPersonsServer
 }
 
-func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.GetPersonsResponse, error) {
+func (s *personServer) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.GetPersonsResponse, error) {
 	persons := []*pb.Person{
 		{Name: "Sam"},
 	}
@@ -25,7 +25,14 @@ func (s *server) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.
 	}, nil
 }
 
+func (s *personServer) CreatePerson(ctx context.Context, in *pb.CreatePersonRequest) (*pb.Person, error) {
+	person := pb.Person{
+		Name: in.Name,
+	}
+	return person
+}
+
 func RegisterPersonsServer(grpcServer *grpc.Server, _conn *pgx.Conn) {
 	conn = _conn
-	pb.RegisterPersonsServer(grpcServer, &server{})
+	pb.RegisterPersonsServer(grpcServer, &personServer{})
 }

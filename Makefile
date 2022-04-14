@@ -8,3 +8,6 @@ list:
 
 k8s-exec-shell:
 	kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
+
+update-proto-source:
+	bazel run //orgs/examples/proto:assets
