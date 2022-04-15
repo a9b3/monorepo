@@ -103,6 +103,7 @@
               pkgs.terragrunt
               pkgs.kubectx
               pkgs.grpcurl
+              pkgs.go-migrate
 
               # source management
               pkgs.pre-commit

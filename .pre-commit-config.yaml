@@ -1,18 +1,19 @@
 repos:
   # Define our own hooks using repo "local". To use third party hooks you can
   # create a separate repo entry with it's github url.
+  #
+  # Valid types are found here https://github.com/pre-commit/identify/blob/main/identify/extensions.py
   - repo: local
     hooks:
       - id: gazelle
         name: gazelle
         entry: "./devx/scripts/gazelle-update.sh"
         language: system
-        always_run: true
+        types: ["go", "proto"]
         pass_filenames: false
       - id: buildifier
         name: buildifier
         entry: "bazel run //:buildifier"
         language: system
         types: ["bazel"]
-        always_run: true
         pass_filenames: false
