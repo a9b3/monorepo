@@ -15,5 +15,5 @@ go_library(
     srcs = ["tools.go"],
     importpath = "github.com/publiclabel/monorepo/devx/go",
     visibility = ["//visibility:private"],
-    deps = ["@com_github_golang_migrate_migrate_v4//:go_default_library"],
+    deps = ["@com_github_golang_migrate_migrate_v4//:migrate"],
 )
