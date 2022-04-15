@@ -29,7 +29,7 @@ func (s *personServer) CreatePerson(ctx context.Context, in *pb.CreatePersonRequ
 	person := pb.Person{
 		Name: in.Name,
 	}
-	return person
+	return &person, nil
 }
 
 func RegisterPersonsServer(grpcServer *grpc.Server, _conn *pgx.Conn) {
