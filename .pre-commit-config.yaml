@@ -17,3 +17,9 @@ repos:
         language: system
         types: ["bazel"]
         pass_filenames: false
+      - id: golang
+        name: golang
+        entry: "./devx/go/lint/hook.sh"
+        language: system
+        types: ["go"]
+        pass_filenames: true
