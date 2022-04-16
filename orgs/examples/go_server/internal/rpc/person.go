@@ -18,7 +18,7 @@ type personServer struct {
 
 func (s *personServer) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.GetPersonsResponse, error) {
 	persons := []*pb.Person{
-		{Name: "Sam"},
+		{Username: "Sam"},
 	}
 	return &pb.GetPersonsResponse{
 		Persons: persons,
@@ -27,7 +27,7 @@ func (s *personServer) GetPersons(ctx context.Context, in *pb.GetPersonsRequest)
 
 func (s *personServer) CreatePerson(ctx context.Context, in *pb.CreatePersonRequest) (*pb.Person, error) {
 	person := pb.Person{
-		Name: in.Name,
+		Username: in.Username,
 	}
 	return &person, nil
 }

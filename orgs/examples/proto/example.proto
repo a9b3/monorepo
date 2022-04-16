@@ -10,7 +10,7 @@ option go_package = "github.com/publiclabel/monorepo/orgs/examples/proto;example
 
 message Person {
   string id = 1;
-  string name = 2;
+  string username = 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -26,7 +26,7 @@ message GetPersonsResponse {
 }
 
 message CreatePersonRequest {
-  string name = 1;
+  string username = 1;
 }
 
 message GetPersonByIDRequest {

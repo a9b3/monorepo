@@ -26,7 +26,10 @@ filegroup(
 pkg_tar(
     name = "migrations-tar",
     srcs = [":migrations"],
-    package_dir = "/migrations",
+    # this is where the filegroup contents will be placed into
+    package_dir = "/etc",
+    # this is required or else the filestructure will be flattened
+    # https://github.com/bazelbuild/rules_docker/issues/317
     strip_prefix = ".",
 )
 

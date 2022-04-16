@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 
 	migrate "github.com/golang-migrate/migrate/v4"
@@ -17,9 +16,6 @@ var migrateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		connString, _ := cmd.Flags().GetString("connstring")
 		migrationDir, _ := cmd.Flags().GetString("migration-dir")
-
-		fmt.Println("connString", connString)
-		fmt.Println("migrationDir", migrationDir)
 
 		m, err := migrate.New(
 			"file://"+migrationDir,
