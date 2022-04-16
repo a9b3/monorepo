@@ -105,9 +105,12 @@
               pkgs.kubectx
               pkgs.grpcurl
 
+              # linters
+              pkgs.sqlfluff
+              pkgs.yamllint
+
               # go tools
               pkgs.go-migrate
-              pkgs.sqlfluff
 
               # source management
               pkgs.pre-commit
