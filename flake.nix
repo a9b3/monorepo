@@ -96,14 +96,18 @@
               # the .bazelversion file in your project directory.
               # https://github.com/bazelbuild/bazelisk
               pkgs.bazelisk
-              # gpg cli
+
+              # cli
               pkgs.gnupg
               pkgs.awscli2
               pkgs.terraform
               pkgs.terragrunt
               pkgs.kubectx
               pkgs.grpcurl
+
+              # go tools
               pkgs.go-migrate
+              pkgs.sqlfluff
 
               # source management
               pkgs.pre-commit

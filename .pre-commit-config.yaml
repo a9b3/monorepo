@@ -23,3 +23,9 @@ repos:
         language: system
         types: ["go"]
         pass_filenames: true
+      - id: sql
+        name: sql
+        entry: "./devx/scripts/lint/sql-hook.sh"
+        language: system
+        types: ["sql"]
+        pass_filenames: true
