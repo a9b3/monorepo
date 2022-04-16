@@ -1,8 +1,10 @@
+---
 repos:
   # Define our own hooks using repo "local". To use third party hooks you can
   # create a separate repo entry with it's github url.
   #
-  # Valid types are found here https://github.com/pre-commit/identify/blob/main/identify/extensions.py
+  # Valid types are found here
+  # https://github.com/pre-commit/identify/blob/main/identify/extensions.py
   - repo: local
     hooks:
       - id: gazelle
@@ -28,4 +30,10 @@ repos:
         entry: "./devx/scripts/lint/sql-hook.sh"
         language: system
         types: ["sql"]
+        pass_filenames: true
+      - id: yaml
+        name: yaml
+        entry: "./devx/scripts/lint/yaml-hook.sh"
+        language: system
+        types: ["yaml"]
         pass_filenames: true
