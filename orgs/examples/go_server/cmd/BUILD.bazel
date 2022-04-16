@@ -2,11 +2,17 @@ load("//devx/go:exports.bzl", "go_library")
 
 go_library(
     name = "cmd_lib",
-    srcs = ["root.go"],
+    srcs = [
+        "migrate.go",
+        "root.go",
+    ],
     importpath = "github.com/publiclabel/monorepo/orgs/examples/go_server/cmd",
     visibility = ["//orgs/examples/go_server:__subpackages__"],
     deps = [
         "//orgs/examples/go_server/internal/rpc",
+        "@com_github_golang_migrate_migrate_v4//:migrate",
+        "@com_github_golang_migrate_migrate_v4//database/pgx",
+        "@com_github_golang_migrate_migrate_v4//source/file",
         "@com_github_spf13_cobra//:cobra",
         "@com_github_spf13_viper//:viper",
     ],

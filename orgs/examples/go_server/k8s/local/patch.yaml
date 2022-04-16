@@ -24,14 +24,20 @@ spec:
               value: "true"
             - name: CONNSTRING
               value: "postgres://user:password@postgres.go-server.svc:5432/database"
-          command: [
+          command:
+            [
               "sh",
               "-c",
-              # "until pg_isready -h postgres.go-server.svc -p 5432;
-              # do echo waiting for database; sleep 2; done;",
-              "until pg_isready -h postgres.go-server.svc -p 5432;
-              do echo waiting for database; sleep 2; done;",
+              "until pg_isready -h postgres.go-server.svc -p 5432; do echo waiting for database; sleep 2; done;",
             ]
+        - name: run-migration
+          image: go-server
+          env:
+            - name: CONNSTRING
+              value: "pgx://user:password@postgres.go-server.svc:5432/database"
+            - name: MIGRATION_DIR
+              value: "/migrations"
+          args: ["migrate"]
       containers:
         - name: go-server
           # When deployed to minikube tell it to not pull from docker registry.

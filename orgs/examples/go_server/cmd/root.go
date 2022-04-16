@@ -36,9 +36,17 @@ func init() {
 	viper.SetDefault("LOGLEVEL", "info")
 	viper.SetDefault("DEBUG", false)
 	viper.SetDefault("CONNSTRING", "")
+	viper.SetDefault("MIGRATION_DIR", "")
 
 	rootCmd.PersistentFlags().String("port", viper.GetString("PORT"), "port to listen to can also set env var PORT")
 	rootCmd.PersistentFlags().String("loglevel", viper.GetString("LOGLEVEL"), "log level")
 	rootCmd.PersistentFlags().Bool("debug", viper.GetBool("DEBUG"), "whether to run server in debug mode or not")
 	rootCmd.PersistentFlags().String("connstring", viper.GetString("CONNSTRING"), "postgres connection string ex. postgres://username:password@localhost:5432/database_name")
+
+	migrateCmd.PersistentFlags().String("migration-dir", viper.GetString("MIGRATION_DIR"), "file directory containing sql migrations")
+
+	// -------------------------------------------------------------------------
+	// Subcommands
+	// -------------------------------------------------------------------------
+	rootCmd.AddCommand(migrateCmd)
 }

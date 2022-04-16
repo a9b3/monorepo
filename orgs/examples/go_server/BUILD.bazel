@@ -1,5 +1,6 @@
 load("//devx/go:exports.bzl", "go_binary", "go_library")
-load("//devx/container:exports.bzl", "go_image")
+load("//devx/container:exports.bzl", "GO_DEFAULT_BASE", "container_image", "go_image")
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 
 go_library(
     name = "go_server_lib",
@@ -15,8 +16,29 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+filegroup(
+    name = "migrations",
+    srcs = glob([
+        "migrations/**",
+    ]),
+)
+
+pkg_tar(
+    name = "migrations-tar",
+    srcs = [":migrations"],
+    package_dir = "/migrations",
+    strip_prefix = ".",
+)
+
+container_image(
+    name = "go_image_with_migrations",
+    base = GO_DEFAULT_BASE,
+    tars = [":migrations-tar"],
+)
+
 go_image(
     name = "go_image",
+    base = ":go_image_with_migrations",
     embed = [":go_server_lib"],
     visibility = ["//visibility:public"],
 )
