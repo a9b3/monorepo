@@ -10,7 +10,7 @@ psql -U user
 DROP TABLE schema_migrations;
 
  */
-CREATE TABLE IF NOT EXISTS persons(
-    id UUID PRIMARY KEY UNIQUE NOT NULL,
-    username VARCHAR (50) NOT NULL
+create table if not exists persons(
+    id uuid primary key unique not null,
+    username varchar (50) not null
 );
