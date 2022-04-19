@@ -2,3 +2,5 @@
 set -eu
 
 yamllint "$@"
+
+exit $?
