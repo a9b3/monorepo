@@ -48,7 +48,7 @@
               # This will install configuration from .pre-commit-config.yaml to
               # git hooks
               # ----------------------------
-              pre-commit install
+              pre-commit install -f --hook-type pre-commit
 
               echo ""
               echo "---------------------------------------------"
