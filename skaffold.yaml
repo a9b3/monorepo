@@ -2,7 +2,7 @@
 # skaffold.yaml has to be here until this issue is resolved. Skaffold assumes
 # that the bazel-out directory is in the same directory as skaffold.yaml
 # https://github.com/GoogleContainerTools/skaffold/issues/7281
-
+---
 apiVersion: skaffold/v2beta17
 # This file exists to let bazel know this directory is a package.
 kind: Config
