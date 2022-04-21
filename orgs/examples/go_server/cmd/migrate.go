@@ -29,3 +29,27 @@ var migrateCmd = &cobra.Command{
 		m.Up()
 	},
 }
+
+var migrateDropCmd = &cobra.Command{
+	Use:   "drop",
+	Short: "Drop the database",
+	Long:  "Only used for development",
+	Run: func(cmd *cobra.Command, args []string) {
+		connString, _ := cmd.Flags().GetString("connstring")
+		migrationDir, _ := cmd.Flags().GetString("migration-dir")
+
+		m, err := migrate.New(
+			"file://"+migrationDir,
+			connString,
+		)
+
+		if err != nil {
+			log.Panic(err)
+		}
+
+		err = m.Drop()
+		if err != nil {
+			log.Panic(err)
+		}
+	},
+}

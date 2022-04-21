@@ -1,26 +1,13 @@
 load("//devx/go:exports.bzl", "go_library")
 
 go_library(
-    name = "log",
-    srcs = ["log.go"],
-    importpath = "github.com/publiclabel/monorepo/libs/go/log",
-    visibility = ["//visibility:public"],
-    deps = [
-        "@com_github_rs_zerolog//:zerolog",
-        "@com_github_rs_zerolog//log",
-    ],
-)
-
-go_library(
     name = "logger",
-    srcs = [
-        "log.go",
-        "logger.go",
-    ],
+    srcs = ["logger.go"],
     importpath = "github.com/publiclabel/monorepo/libs/go/logger",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_rs_zerolog//:zerolog",
         "@com_github_rs_zerolog//log",
+        "@com_github_rs_zerolog//pkgerrors",
     ],
 )

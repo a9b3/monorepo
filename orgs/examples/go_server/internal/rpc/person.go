@@ -2,18 +2,18 @@ package rpc
 
 import (
 	"context"
-	"log"
 
+	"github.com/publiclabel/monorepo/libs/go/logger"
 	"github.com/publiclabel/monorepo/orgs/examples/go_server/internal/sqlc/person"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	pb "github.com/publiclabel/monorepo/orgs/examples/proto"
 	"google.golang.org/grpc"
 )
 
 var (
-	conn *pgx.Conn
+	pool *pgxpool.Pool
 )
 
 type personServer struct {
@@ -21,11 +21,16 @@ type personServer struct {
 }
 
 func (s *personServer) GetPersons(ctx context.Context, in *pb.GetPersonsRequest) (*pb.GetPersonsResponse, error) {
-	queries := person.New(conn)
+	err := pool.Ping(ctx)
+	if err != nil {
+		logger.Panic(err, "")
+	}
+
+	queries := person.New(pool)
 
 	persons, err := queries.GetPersons(ctx)
 	if err != nil {
-		log.Panic(err)
+		logger.Panic(err, "")
 	}
 
 	var retPersons []*pb.Person
@@ -43,14 +48,14 @@ func (s *personServer) GetPersons(ctx context.Context, in *pb.GetPersonsRequest)
 }
 
 func (s *personServer) CreatePerson(ctx context.Context, in *pb.CreatePersonRequest) (*pb.Person, error) {
-	queries := person.New(conn)
+	queries := person.New(pool)
 
 	createdPerson, err := queries.CreatePerson(ctx, person.CreatePersonParams{
 		ID:       uuid.New(),
 		Username: in.Username,
 	})
 	if err != nil {
-		log.Panic(err)
+		logger.Panic(err, "")
 	}
 
 	person := pb.Person{
@@ -61,7 +66,7 @@ func (s *personServer) CreatePerson(ctx context.Context, in *pb.CreatePersonRequ
 	return &person, nil
 }
 
-func RegisterPersonsServer(grpcServer *grpc.Server, _conn *pgx.Conn) {
-	conn = _conn
+func RegisterPersonsServer(grpcServer *grpc.Server, _pool *pgxpool.Pool) {
+	pool = _pool
 	pb.RegisterPersonsServer(grpcServer, &personServer{})
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/rs/zerolog"
 	log "github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 )
 
 type Fields = map[string]interface{}
@@ -17,6 +18,7 @@ var (
 
 func Configure(level string, namespace string, debug bool) {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
 	l, err := zerolog.ParseLevel(level)
 	if err != nil {
@@ -31,16 +33,16 @@ func Configure(level string, namespace string, debug bool) {
 	}
 }
 
-func PanicWithFields(msg string, fields Fields) {
-	logger.Panic().Fields(fields).Msg(msg)
+func PanicWithFields(err error, msg string, fields Fields) {
+	logger.Panic().Err(err).Fields(fields).Msg(msg)
 }
 
-func FatalWithFields(msg string, fields Fields) {
-	logger.Fatal().Fields(fields).Msg(msg)
+func FatalWithFields(err error, msg string, fields Fields) {
+	logger.Fatal().Err(err).Fields(fields).Msg(msg)
 }
 
-func ErrorWithFields(msg string, fields Fields) {
-	logger.Error().Fields(fields).Msg(msg)
+func ErrorWithFields(err error, msg string, fields Fields) {
+	logger.Error().Err(err).Fields(fields).Msg(msg)
 }
 
 func WarnWithFields(msg string, fields Fields) {
@@ -59,16 +61,16 @@ func TraceWithFields(msg string, fields Fields) {
 	logger.Trace().Fields(fields).Msg(msg)
 }
 
-func Panic(msg string) {
-	logger.Panic().Msg(msg)
+func Panic(err error, msg string) {
+	logger.Panic().Stack().Err(err).Msg(msg)
 }
 
-func Fatal(msg string) {
-	logger.Fatal().Msg(msg)
+func Fatal(err error, msg string) {
+	logger.Fatal().Stack().Err(err).Msg(msg)
 }
 
-func Error(msg string) {
-	logger.Error().Msg(msg)
+func Error(err error, msg string) {
+	logger.Error().Stack().Err(err).Msg(msg)
 }
 
 func Warn(msg string) {

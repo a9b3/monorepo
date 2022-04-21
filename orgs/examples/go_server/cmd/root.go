@@ -48,5 +48,6 @@ func init() {
 	// -------------------------------------------------------------------------
 	// Subcommands
 	// -------------------------------------------------------------------------
+	migrateCmd.AddCommand(migrateDropCmd)
 	rootCmd.AddCommand(migrateCmd)
 }
