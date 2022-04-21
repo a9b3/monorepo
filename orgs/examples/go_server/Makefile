@@ -21,3 +21,7 @@ grpcurl-example:
 
 create-migration:
 	migrate create -ext sql -dir ./internal/sqlc/migrations -seq init
+
+sqlc-generate:
+	sqlc generate --file ./internal/sqlc/sqlc.yaml
+
