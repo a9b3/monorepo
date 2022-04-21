@@ -3,7 +3,7 @@ package rpc
 import (
 	"net"
 
-	log "github.com/publiclabel/monorepo/libs/go/log"
+	"github.com/publiclabel/monorepo/libs/go/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -11,12 +11,12 @@ import (
 // Start will start the grpc server.
 func Start(port string, loglevel string, debug bool, connstring string) {
 	// Start Up App Configurations
-	log.Configure(loglevel, "go-server", debug)
+	logger.Configure(loglevel, "go-server", debug)
 	conn := Connect(connstring)
 
 	l, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		log.Fatal(err.Error())
+		logger.Fatal(err.Error())
 	}
 
 	// GRPC Servers
@@ -24,8 +24,8 @@ func Start(port string, loglevel string, debug bool, connstring string) {
 	RegisterPersonsServer(grpcServer, conn)
 	reflection.Register(grpcServer)
 
-	log.Info("gRPC server started at " + port)
+	logger.Info("gRPC server started at " + port)
 	if err := grpcServer.Serve(l); err != nil {
-		log.Error(err.Error())
+		logger.Error(err.Error())
 	}
 }

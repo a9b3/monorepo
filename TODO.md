@@ -1,6 +1,6 @@
 - [] golang microservices grpc
 - [] golang best practice structure batteries included (logger, config settings etc.)
-  - [] cobra - structure
+  - [x] cobra - structure
   - [] logger - logger
   - [] viper - config management
   - [] postgres - database

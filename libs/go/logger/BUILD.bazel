@@ -10,3 +10,17 @@ go_library(
         "@com_github_rs_zerolog//log",
     ],
 )
+
+go_library(
+    name = "logger",
+    srcs = [
+        "log.go",
+        "logger.go",
+    ],
+    importpath = "github.com/publiclabel/monorepo/libs/go/logger",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_rs_zerolog//:zerolog",
+        "@com_github_rs_zerolog//log",
+    ],
+)
