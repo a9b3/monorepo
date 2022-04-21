@@ -18,3 +18,6 @@ run-migrate-down:
 
 grpcurl-example:
 	grpcurl -plaintext 127.0.0.1:60582 example.Persons/GetPersons
+
+create-migration:
+	migrate create -ext sql -dir ./internal/sqlc/migrations -seq init

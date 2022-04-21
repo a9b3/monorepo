@@ -1,8 +1,8 @@
 version: 1
 packages:
-  - path: "person"
-    name: "person"
+  - path: "models"
+    name: "models"
     engine: "postgresql"
-    schema: "../../migrations"
-    queries: "query.sql"
+    schema: "./migrations"
+    queries: "./queries"
     sql_package: "pgx/v4"

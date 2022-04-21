@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/publiclabel/monorepo/libs/go/logger"
-	"github.com/publiclabel/monorepo/orgs/examples/go_server/internal/sqlc/person"
+	"github.com/publiclabel/monorepo/orgs/examples/go_server/internal/sqlc/models"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -26,7 +26,7 @@ func (s *personServer) GetPersons(ctx context.Context, in *pb.GetPersonsRequest)
 		logger.Panic(err, "")
 	}
 
-	queries := person.New(pool)
+	queries := models.New(pool)
 
 	persons, err := queries.GetPersons(ctx)
 	if err != nil {
@@ -48,9 +48,9 @@ func (s *personServer) GetPersons(ctx context.Context, in *pb.GetPersonsRequest)
 }
 
 func (s *personServer) CreatePerson(ctx context.Context, in *pb.CreatePersonRequest) (*pb.Person, error) {
-	queries := person.New(pool)
+	queries := models.New(pool)
 
-	createdPerson, err := queries.CreatePerson(ctx, person.CreatePersonParams{
+	createdPerson, err := queries.CreatePerson(ctx, models.CreatePersonParams{
 		ID:       uuid.New(),
 		Username: in.Username,
 	})

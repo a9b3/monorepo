@@ -3,7 +3,7 @@
 //   sqlc v1.13.0
 // source: query.sql
 
-package person
+package models
 
 import (
 	"context"

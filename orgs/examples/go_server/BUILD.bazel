@@ -19,7 +19,7 @@ go_binary(
 filegroup(
     name = "migrations",
     srcs = glob([
-        "migrations/**",
+        "internal/sqlc/migrations/**",
     ]),
 )
 

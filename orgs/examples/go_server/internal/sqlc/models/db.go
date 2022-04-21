@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.13.0
 
-package person
+package models
 
 import (
 	"context"

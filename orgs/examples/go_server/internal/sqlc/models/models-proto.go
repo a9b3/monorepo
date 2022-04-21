@@ -1,4 +1,4 @@
-package person
+package models
 
 import (
 	pb "github.com/publiclabel/monorepo/orgs/examples/proto"

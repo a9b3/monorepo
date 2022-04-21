@@ -36,7 +36,7 @@ spec:
             - name: CONNSTRING
               value: "pgx://user:password@postgres.go-server.svc:5432/database"
             - name: MIGRATION_DIR
-              value: "/etc/migrations"
+              value: "/etc/internal/sqlc/migrations"
           args: ["migrate"]
       containers:
         - name: go-server
