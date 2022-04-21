@@ -1,0 +1,2 @@
+# keep in sync with .pre-commit-config.yaml id sql exclude values
+**/sqlc/**/*

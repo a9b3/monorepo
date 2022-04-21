@@ -11,7 +11,9 @@ go_library(
     visibility = ["//orgs/examples/go_server:__subpackages__"],
     deps = [
         "//libs/go/log",
+        "//orgs/examples/go_server/internal/sqlc/person",
         "//orgs/examples/proto",
+        "@com_github_google_uuid//:uuid",
         "@com_github_jackc_pgx_v4//:pgx",
         "@org_golang_google_grpc//:go_default_library",
         "@org_golang_google_grpc//reflection",

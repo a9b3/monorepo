@@ -19,17 +19,27 @@ repos:
         language: system
         types: ["bazel"]
         pass_filenames: false
+      - id: sqlfluff
+        name: sqlfluff
+        entry: "./devx/scripts/lint/sqlfluff-hook.sh"
+        language: system
+        types: ["sql"]
+        # Until there's an easy way to configure sqlfluff to support sqlc files
+        # we will have to exclude sqlc files from being linted.
+        # https://github.com/sqlfluff/sqlfluff/issues/2108
+        exclude: ".*sqlc.*.sql$"
+        pass_filenames: true
+      - id: sqlc
+        name: sqlc
+        entry: "./devx/scripts/lint/sqlc-hook.sh"
+        language: system
+        types: ["sql"]
+        pass_filenames: true
       - id: golang
         name: golang
         entry: "./devx/go/lint/hook.sh"
         language: system
         types: ["go"]
-        pass_filenames: true
-      - id: sql
-        name: sql
-        entry: "./devx/scripts/lint/sql-hook.sh"
-        language: system
-        types: ["sql"]
         pass_filenames: true
       - id: yaml
         name: yaml
