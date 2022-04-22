@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// Start will start the grpc server.
-func Start(port string, loglevel string, debug bool, connstring string) {
+// StartServer will start the grpc server.
+func StartServer(port string, loglevel string, debug bool, connstring string) {
 	// Start Up App Configurations
 	logger.Configure(loglevel, "go-server", debug)
 	pool := Connect(connstring)

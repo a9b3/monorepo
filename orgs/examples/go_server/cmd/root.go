@@ -19,7 +19,7 @@ var rootCmd = &cobra.Command{
 		debug, _ := cmd.Flags().GetBool("debug")
 		connstring, _ := cmd.Flags().GetString("connstring")
 
-		rpc.Start(port, loglevel, debug, connstring)
+		rpc.StartServer(port, loglevel, debug, connstring)
 	},
 }
 
