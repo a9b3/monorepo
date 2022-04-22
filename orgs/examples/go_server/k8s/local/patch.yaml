@@ -12,32 +12,6 @@ spec:
       labels:
         app: go-server
     spec:
-      initContainers:
-        - name: ready-db
-          image: postgres:14.2
-          env:
-            - name: PORT
-              value: "50051"
-            - name: LOGLEVEL
-              value: "info"
-            - name: DEBUG
-              value: "true"
-            - name: CONNSTRING
-              value: "postgres://user:password@postgres.go-server.svc:5432/database"
-          command:
-            [
-              "sh",
-              "-c",
-              "until pg_isready -h postgres.go-server.svc -p 5432; do echo waiting for database; sleep 2; done;",
-            ]
-        - name: run-migration
-          image: go-server
-          env:
-            - name: CONNSTRING
-              value: "pgx://user:password@postgres.go-server.svc:5432/database"
-            - name: MIGRATION_DIR
-              value: "/etc/internal/sqlc/migrations"
-          args: ["migrate"]
       containers:
         - name: go-server
           # When deployed to minikube tell it to not pull from docker registry.
@@ -53,4 +27,5 @@ spec:
             - name: DEBUG
               value: "true"
             - name: CONNSTRING
+              # This value is specified in ./database.yaml
               value: "postgres://user:password@postgres.go-server.svc:5432/database"

@@ -1,2 +1,3 @@
+# Tell kustomize which files to include.
 resources:
   - ./app.yaml
