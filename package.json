@@ -1,0 +1,9 @@
+{
+  "name": "monorepo",
+  "version": "0.0.0",
+  "description": "Workspace level package.json",
+  "devDependencies": {
+    "@bazel/typescript": "^5.4.0",
+    "typescript": "^4.6.3"
+  }
+}

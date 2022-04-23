@@ -1,0 +1,16 @@
+load("//devx/js:exports.bzl", "nodejs_binary", "ts_project")
+
+ts_project(
+    name = "project",
+    srcs = [
+        "bin.ts",
+        "index.ts",
+    ],
+    out_dir = "out",
+)
+
+nodejs_binary(
+    name = "bin",
+    data = [":project"],
+    entry_point = "out/bin.js",
+)
