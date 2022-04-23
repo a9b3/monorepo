@@ -9,11 +9,3 @@ alias(
     name = "go",
     actual = "@go_sdk//:bin/go",
 )
-
-go_library(
-    name = "go_lib",
-    srcs = ["tools.go"],
-    importpath = "github.com/publiclabel/monorepo/devx/go",
-    visibility = ["//visibility:private"],
-    deps = ["@com_github_golang_migrate_migrate_v4//:migrate"],
-)
