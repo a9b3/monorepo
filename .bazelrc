@@ -1,2 +1,10 @@
 # Cache outputs to local disk
 build --disk_cache=~/.cache/bazel-disk-cache
+
+# Required by rules swc
+# https://docs.aspect.build/aspect-build/rules_swc/v0.4.0/readme
+# also specified here
+# https://github.com/bazelbuild/rules_nodejs/tree/stable/examples/jest
+build --enable_runfiles
+run --enable_runfiles
+test --enable_runfiles
