@@ -9,47 +9,53 @@ repos:
     hooks:
       - id: gazelle
         name: gazelle
-        entry: "./devx/scripts/gazelle-update.sh"
+        entry: './devx/scripts/gazelle-update.sh'
         language: system
-        types: ["go", "proto"]
+        types: ['go', 'proto']
         pass_filenames: false
       - id: buildifier
         name: buildifier
-        entry: "bazel run //:buildifier"
+        entry: 'bazel run //:buildifier'
         language: system
-        types: ["bazel"]
+        types: ['bazel']
         pass_filenames: false
       - id: sqlfluff
         name: sqlfluff
-        entry: "./devx/scripts/lint/sqlfluff-hook.sh"
+        entry: './devx/scripts/lint/sqlfluff-hook.sh'
         language: system
-        types: ["sql"]
+        types: ['sql']
         # Until there's an easy way to configure sqlfluff to support sqlc files
         # we will have to exclude sqlc files from being linted.
         # https://github.com/sqlfluff/sqlfluff/issues/2108
-        exclude: ".*sqlc.*.sql$"
+        exclude: '.*sqlc.*.sql$'
         pass_filenames: true
       - id: sqlc
         name: sqlc
-        entry: "./devx/scripts/lint/sqlc-hook.sh"
+        entry: './devx/scripts/lint/sqlc-hook.sh'
         language: system
-        types: ["sql"]
+        types: ['sql']
         pass_filenames: true
       - id: golang
         name: golang
-        entry: "./devx/go/lint/hook.sh"
+        entry: './devx/go/lint/hook.sh'
         language: system
-        types: ["go"]
+        types: ['go']
         pass_filenames: true
       - id: yaml
         name: yaml
-        entry: "./devx/scripts/lint/yaml-hook.sh"
+        entry: './devx/scripts/lint/yaml-hook.sh'
         language: system
-        types: ["yaml"]
+        types: ['yaml']
         pass_filenames: true
       - id: eslint
         name: eslint
-        entry: "./devx/scripts/lint/eslint-hook.sh"
+        entry: './devx/scripts/lint/eslint-hook.sh'
         language: system
-        types: ["ts"]
+        types: ['ts']
+        pass_filenames: true
+      - id: prettier
+        name: prettier
+        entry: './devx/scripts/lint/prettier-hook.sh'
+        language: system
+        types: ['ts', 'json', 'javascript']
         pass_filenames: true

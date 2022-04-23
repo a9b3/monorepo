@@ -1,3 +1,3 @@
-import hello from './index';
+import hello from './index'
 
-console.log(hello());
+console.log(hello())

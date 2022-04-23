@@ -13,4 +13,4 @@ update-proto-source:
 	bazel run //orgs/examples/proto:assets
 
 lint:
-	pre-commit run eslint --all-files
+	pre-commit run --all-files
