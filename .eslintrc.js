@@ -22,4 +22,12 @@ module.exports = {
   rules: {
     'import/extensions': 'off',
   },
+  overrides: [
+    {
+      files: ['**/*.test.ts', '**/*.test.tsx'],
+      env: {
+        jest: true,
+      },
+    },
+  ],
 }

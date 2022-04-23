@@ -9,6 +9,24 @@ load(
     "@build_bazel_rules_nodejs//:index.bzl",
     _nodejs_binary = "nodejs_binary",
 )
+load(
+    "@npm//jest-cli:index.bzl",
+    _jest_test = "jest_test",
+)
+
+def _jest_test_override(data = [], args = [
+    "--no-cache",
+    "--no-watchman",
+    "--ci",
+    "--colors",
+    "--config",
+    "jest.config.ts",
+], **kwargs):
+    _jest_test(
+        args = args,
+        data = data + ["//:jest.config.ts", "//:package.json", "@npm//jest-config"],
+        **kwargs
+    )
 
 # Copied using swc from this example
 # https://github.com/aspect-build/bazel-examples/tree/main/ts_project_transpiler
@@ -27,3 +45,4 @@ def _ts_project_override(name, **kwargs):
 
 nodejs_binary = _nodejs_binary
 ts_project = _ts_project_override
+jest_test = _jest_test_override

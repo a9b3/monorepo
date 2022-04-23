@@ -1,4 +1,8 @@
-load("//devx/js:exports.bzl", "nodejs_binary", "ts_project")
+load("//devx/js:exports.bzl", "jest_test", "nodejs_binary", "ts_project")
+
+# -----------------------------------------------------------------------------
+# Lib
+# -----------------------------------------------------------------------------
 
 ts_project(
     name = "project",
@@ -13,4 +17,27 @@ nodejs_binary(
     name = "bin",
     data = [":project"],
     entry_point = "out/bin.js",
+)
+
+# -----------------------------------------------------------------------------
+# Test
+# -----------------------------------------------------------------------------
+
+ts_project(
+    name = "test_lib",
+    srcs = [
+        "index.test.ts",
+        "index.ts",
+    ],
+    out_dir = "test",
+    deps = [
+        "@npm//@types",
+    ],
+)
+
+jest_test(
+    name = "test",
+    data = [
+        ":test_lib",
+    ],
 )

@@ -8,3 +8,5 @@ build --disk_cache=~/.cache/bazel-disk-cache
 build --enable_runfiles
 run --enable_runfiles
 test --enable_runfiles
+
+test --test_output=all
