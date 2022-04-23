@@ -47,3 +47,9 @@ repos:
         language: system
         types: ["yaml"]
         pass_filenames: true
+      - id: eslint
+        name: eslint
+        entry: "./devx/scripts/lint/eslint-hook.sh"
+        language: system
+        types: ["ts"]
+        pass_filenames: true

@@ -11,3 +11,6 @@ k8s-exec-shell:
 
 update-proto-source:
 	bazel run //orgs/examples/proto:assets
+
+lint:
+	pre-commit run eslint --all-files
