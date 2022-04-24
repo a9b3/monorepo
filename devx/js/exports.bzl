@@ -39,7 +39,8 @@ def _ts_project_override(name, **kwargs):
             args = ["--env-name=test"],
             swcrc = "//:.swcrc",
         ),
-        tsconfig = "//:tsconfig.json",
+        extends = "//:tsconfig.json",
+        tsconfig = {},
         **kwargs
     )
 
