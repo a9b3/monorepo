@@ -41,6 +41,7 @@ def _ts_project_override(name, **kwargs):
         ),
         extends = "//:tsconfig.json",
         tsconfig = {},
+        declaration = True,
         **kwargs
     )
 

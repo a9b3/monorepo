@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "baseUrl": "./",
+    "rootDir": ".",
+    "baseUrl": ".",
     "paths": {
-      "monorepo/*": ["./*"]
+      "orgs/*": ["orgs/*"],
+      "libs/*": ["libs/*"]
     }
-  }
+  },
+  "include": ["orgs", "libs"]
 }
