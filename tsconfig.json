@@ -7,8 +7,7 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "orgs/*": ["orgs/*"],
-      "libs/*": ["libs/*"]
+      "@monorepo/*": ["./*"]
     }
   },
   "include": ["orgs", "libs"]

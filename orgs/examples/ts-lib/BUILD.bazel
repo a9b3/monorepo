@@ -1,4 +1,4 @@
-load("//devx/js:exports.bzl", "jest_test", "nodejs_binary", "ts_project")
+load("//devx/js:exports.bzl", "jest_test", "js_library", "nodejs_binary", "ts_project")
 
 # -----------------------------------------------------------------------------
 # Lib
@@ -10,13 +10,19 @@ ts_project(
         "bin.ts",
         "index.ts",
     ],
-    out_dir = "out",
+)
+
+js_library(
+    name = "lib",
+    package_name = "@monorepo/orgs/examples/ts-lib",
+    visibility = ["//visibility:public"],
+    deps = [":project"],
 )
 
 nodejs_binary(
     name = "bin",
-    data = [":project"],
-    entry_point = "out/bin.js",
+    data = [":lib"],
+    entry_point = "bin.js",
 )
 
 # -----------------------------------------------------------------------------
@@ -27,10 +33,9 @@ ts_project(
     name = "test_lib",
     srcs = [
         "index.test.ts",
-        "index.ts",
     ],
-    out_dir = "test",
     deps = [
+        ":lib",
         "@npm//@types",
     ],
 )

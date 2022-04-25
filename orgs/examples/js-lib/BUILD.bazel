@@ -1,0 +1,10 @@
+load("//devx/js:exports.bzl", "jest_test", "js_library", "nodejs_binary", "ts_project")
+
+js_library(
+    name = "lib",
+    package_name = "@monorepo/orgs/examples/js-lib",
+    srcs = [
+        "index.mjs",
+    ],
+    visibility = ["//visibility:public"],
+)

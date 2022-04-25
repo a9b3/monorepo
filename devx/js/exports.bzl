@@ -7,6 +7,7 @@ load(
 )
 load(
     "@build_bazel_rules_nodejs//:index.bzl",
+    _js_library = "js_library",
     _nodejs_binary = "nodejs_binary",
 )
 load(
@@ -45,6 +46,21 @@ def _ts_project_override(name, **kwargs):
         **kwargs
     )
 
-nodejs_binary = _nodejs_binary
+def _nodejs_binary_override(name, data = [], **kwargs):
+    _nodejs_binary(
+        name = name,
+        data = ["//:package.json"] + data,
+        **kwargs
+    )
+
+def _js_library_override(name, srcs = [], **kwargs):
+    _js_library(
+        name = name,
+        srcs = srcs,
+        **kwargs
+    )
+
+nodejs_binary = _nodejs_binary_override
 ts_project = _ts_project_override
 jest_test = _jest_test_override
+js_library = _js_library_override
