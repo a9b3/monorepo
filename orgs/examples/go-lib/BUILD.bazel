@@ -1,15 +1,15 @@
 load("//devx/go:exports.bzl", "go_library", "go_test")
 
 go_library(
-    name = "go_lib",
+    name = "go-lib",
     srcs = ["main.go"],
-    importpath = "github.com/publiclabel/monorepo/orgs/examples/go_lib",
+    importpath = "github.com/publiclabel/monorepo/orgs/examples/go-lib",
     visibility = ["//visibility:public"],
     deps = ["@com_github_code_hex_neo_cowsay_v2//:Neo-cowsay"],
 )
 
 go_test(
-    name = "go_lib_test",
+    name = "go-lib_test",
     srcs = ["main_test.go"],
-    embed = [":go_lib"],
+    embed = [":go-lib"],
 )
