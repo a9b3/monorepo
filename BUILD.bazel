@@ -20,7 +20,8 @@ load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary
 # gazelle:proto_language go plugin protoc-gen-go-grpc
 # gazelle:proto_language go rule proto_compile
 
-# (note: go_library is already generated so this isn't needed)
+# https://github.com/bazelbuild/rules_go/blob/eb03b81312c3d459fb1ffdb18da9aa122e649905/proto/core.rst#option-2-use-pre-generated-pb-go-files
+#
 # gazelle:go_generate_proto false
 
 # -----------------------------------------------------------------------------

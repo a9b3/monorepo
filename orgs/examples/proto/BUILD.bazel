@@ -3,7 +3,11 @@ load("//devx/protobuf:exports.bzl", "proto_library")
 load("//devx/go:exports.bzl", "go_library")
 load("@build_stack_rules_proto//rules:proto_compile_assets.bzl", "proto_compile_assets")
 
-# manually updated
+# Run the following to get all proto_compile targets inside this directory which
+# can be supplied to assets as the deps.
+#
+# $ bazel query 'kind("proto_compile", //orgs/examples/proto/... except //orgs/examples/proto:assets)'
+#
 proto_compile_assets(
     name = "assets",
     deps = [
@@ -16,23 +20,6 @@ proto_library(
     srcs = ["example.proto"],
     visibility = ["//visibility:public"],
     deps = ["@com_google_protobuf//:timestamp_proto"],
-)
-
-proto_compile(
-    name = "example_go_compile",
-    output_mappings = [
-        "example.pb.go=github.com/publiclabel/monorepo/orgs/examples/proto/example.pb.go",
-        "example_grpc.pb.go=github.com/publiclabel/monorepo/orgs/examples/proto/example_grpc.pb.go",
-    ],
-    outputs = [
-        "example.pb.go",
-        "example_grpc.pb.go",
-    ],
-    plugins = [
-        "@build_stack_rules_proto//plugin/golang/protobuf:protoc-gen-go",
-        "@build_stack_rules_proto//plugin/grpc/grpc-go:protoc-gen-go-grpc",
-    ],
-    proto = "example_proto",
 )
 
 go_library(
@@ -51,4 +38,21 @@ go_library(
         "@org_golang_google_protobuf//runtime/protoimpl",
         "@org_golang_google_protobuf//types/known/timestamppb",
     ],
+)
+
+proto_compile(
+    name = "example_go_compile",
+    output_mappings = [
+        "example.pb.go=github.com/publiclabel/monorepo/orgs/examples/proto/example.pb.go",
+        "example_grpc.pb.go=github.com/publiclabel/monorepo/orgs/examples/proto/example_grpc.pb.go",
+    ],
+    outputs = [
+        "example.pb.go",
+        "example_grpc.pb.go",
+    ],
+    plugins = [
+        "@build_stack_rules_proto//plugin/golang/protobuf:protoc-gen-go",
+        "@build_stack_rules_proto//plugin/grpc/grpc-go:protoc-gen-go-grpc",
+    ],
+    proto = "example_proto",
 )
