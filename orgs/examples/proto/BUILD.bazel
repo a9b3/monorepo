@@ -1,6 +1,6 @@
 load("@build_stack_rules_proto//rules:proto_compile.bzl", "proto_compile")
-load("//devx/protobuf:exports.bzl", "proto_library")
-load("//devx/go:exports.bzl", "go_library")
+load("//bazel/protobuf:exports.bzl", "proto_library")
+load("//bazel/go:exports.bzl", "go_library")
 load("@build_stack_rules_proto//rules:proto_compile_assets.bzl", "proto_compile_assets")
 
 # Run the following to get all proto_compile targets inside this directory which

@@ -9,7 +9,7 @@ repos:
     hooks:
       - id: gazelle
         name: gazelle
-        entry: './devx/scripts/gazelle-update.sh'
+        entry: './devx/pre-commit/gazelle-update.sh'
         language: system
         types: ['go', 'proto']
         pass_filenames: false
@@ -21,7 +21,7 @@ repos:
         pass_filenames: false
       - id: sqlfluff
         name: sqlfluff
-        entry: './devx/scripts/lint/sqlfluff-hook.sh'
+        entry: './devx/pre-commit/sqlfluff-hook.sh'
         language: system
         types: ['sql']
         # Until there's an easy way to configure sqlfluff to support sqlc files
@@ -31,31 +31,31 @@ repos:
         pass_filenames: true
       - id: sqlc
         name: sqlc
-        entry: './devx/scripts/lint/sqlc-hook.sh'
+        entry: './devx/pre-commit/sqlc-hook.sh'
         language: system
         types: ['sql']
         pass_filenames: true
       - id: golang
         name: golang
-        entry: './devx/go/lint/hook.sh'
+        entry: './devx/pre-commit/golang-hook.sh'
         language: system
         types: ['go']
         pass_filenames: true
       - id: yaml
         name: yaml
-        entry: './devx/scripts/lint/yaml-hook.sh'
+        entry: './devx/pre-commit/yaml-hook.sh'
         language: system
         types: ['yaml']
         pass_filenames: true
       - id: eslint
         name: eslint
-        entry: './devx/scripts/lint/eslint-hook.sh'
+        entry: './devx/pre-commit/eslint-hook.sh'
         language: system
         types: ['ts']
         pass_filenames: true
       - id: prettier
         name: prettier
-        entry: './devx/scripts/lint/prettier-hook.sh'
+        entry: './devx/pre-commit/prettier-hook.sh'
         language: system
         types: ['ts', 'json', 'javascript']
         pass_filenames: true

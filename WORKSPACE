@@ -28,7 +28,7 @@ bazel_skylib_workspace()
 # http_archive
 # ----------------------------------------------------------------
 
-load("//devx:workspace.bzl", "setup_http_archives")
+load("//bazel:workspace.bzl", "setup_http_archives")
 
 setup_http_archives()
 
@@ -93,7 +93,7 @@ gazelle_dependencies()
 # js
 # ----------------------------------------------------------------
 
-# load("//devx/js:workspace.bzl", "setup_js_workspace")
+# load("//bazel/js:workspace.bzl", "setup_js_workspace")
 #
 # setup_js_workspace()
 #
@@ -170,6 +170,6 @@ load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
 
 container_deps()
 
-load("//devx/container:workspace.bzl", "setup_container_workspace")
+load("//bazel/container:workspace.bzl", "setup_container_workspace")
 
 setup_container_workspace()

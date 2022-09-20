@@ -1,4 +1,4 @@
-load("//devx/js:exports.bzl", "jest_test", "js_library", "nodejs_binary", "ts_project")
+load("//bazel/js:exports.bzl", "jest_test", "js_library", "nodejs_binary", "ts_project")
 
 # -----------------------------------------------------------------------------
 # Lib

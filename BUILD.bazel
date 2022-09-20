@@ -29,18 +29,18 @@ load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary
 # -----------------------------------------------------------------------------
 #
 # gazelle:exclude bazel-out
-# gazelle:exclude devx/go/scripts/lib
+# gazelle:exclude bazel/go/scripts/lib
 #
 # -----------------------------------------------------------------------------
 # Map Kinds
 # -----------------------------------------------------------------------------
 #
-# gazelle:map_kind go_binary go_binary //devx/go:exports.bzl
-# gazelle:map_kind go_library go_library //devx/go:exports.bzl
-# gazelle:map_kind go_proto_library go_proto_library //devx/go:exports.bzl
-# gazelle:map_kind go_test go_test //devx/go:exports.bzl
+# gazelle:map_kind go_binary go_binary //bazel/go:exports.bzl
+# gazelle:map_kind go_library go_library //bazel/go:exports.bzl
+# gazelle:map_kind go_proto_library go_proto_library //bazel/go:exports.bzl
+# gazelle:map_kind go_test go_test //bazel/go:exports.bzl
 #
-# gazelle:map_kind proto_library proto_library //devx/protobuf:exports.bzl
+# gazelle:map_kind proto_library proto_library //bazel/protobuf:exports.bzl
 #
 # -----------------------------------------------------------------------------
 # Resolves

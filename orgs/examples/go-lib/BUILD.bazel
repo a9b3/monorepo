@@ -1,4 +1,4 @@
-load("//devx/go:exports.bzl", "go_library", "go_test")
+load("//bazel/go:exports.bzl", "go_library", "go_test")
 
 go_library(
     name = "go-lib",
