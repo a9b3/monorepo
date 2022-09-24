@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Workspace level package.json",
   "devDependencies": {
-    "@bazel/typescript": "^5.4.0",
+    "@bazel/typescript": "^5.5.4",
     "@types/jest": "^27.4.1",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
