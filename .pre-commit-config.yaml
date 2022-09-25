@@ -51,11 +51,17 @@ repos:
         name: eslint
         entry: './devx/pre-commit/eslint-hook.sh'
         language: system
-        types: ['ts']
+        types: ['ts', 'svelte']
         pass_filenames: true
       - id: prettier
         name: prettier
         entry: './devx/pre-commit/prettier-hook.sh'
         language: system
-        types: ['ts', 'json', 'javascript']
+        types: ['ts', 'json', 'javascript', 'svelte']
+        pass_filenames: true
+      - id: tsc
+        name: tsc
+        entry: './devx/pre-commit/tsc-hook.sh'
+        language: system
+        types: ['ts', 'json', 'javascript', 'svelte']
         pass_filenames: true

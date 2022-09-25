@@ -1,15 +1,15 @@
 #!/bin/bash
 set -eu
 
-npx eslint --ext .js,.ts,.svelte --fix "$@"
+npx tsc --noEmit --incremental
+exitCode="$?"
 
-if ! git diff --exit-code
-then
+if [ "$exitCode" != "0" ]; then
   echo ""
   echo "######################################################################"
   echo "[ACTION REQUIRED]"
   echo ""
-  echo "Run \`npx eslint --ext .js,.ts,.svelte --fix\` for the above changes and commit changes"
+  echo "Run \`npx tsc --noEmit --incremental\` for the above changes and commit changes"
   echo "######################################################################"
   echo ""
   exit 1
