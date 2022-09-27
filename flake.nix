@@ -5,6 +5,7 @@
   # https://nixos.wiki/wiki/Flakes#Basic_project_usage
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
   };
 
   # arguments are defined by inputs above
@@ -111,6 +112,11 @@
               # the .bazelversion file in your project directory.
               # https://github.com/bazelbuild/bazelisk
               pkgs.bazelisk
+
+              # --------------------------------------------------------------
+              # Languages
+              # --------------------------------------------------------------
+              pkgs.go_1_18
 
               # cli
               pkgs.gnupg
