@@ -1,0 +1,14 @@
+alias(
+    name = "node",
+    actual = "@nodejs_host//:node_bin",
+)
+
+alias(
+    name = "npx",
+    actual = "@nodejs_host//:npx_bin",
+)
+
+alias(
+    name = "npm",
+    actual = "@nodejs_host//:npm_bin",
+)
