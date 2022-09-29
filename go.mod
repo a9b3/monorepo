@@ -6,8 +6,10 @@ require (
 	github.com/Code-Hex/Neo-cowsay/v2 v2.0.4
 	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/google/uuid v1.3.0
+	github.com/iancoleman/strcase v0.2.0
 	github.com/jackc/pgconn v1.11.0
 	github.com/jackc/pgx/v4 v4.15.0
+	github.com/otiai10/copy v1.7.0
 	github.com/rs/zerolog v1.26.1
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.10.1
