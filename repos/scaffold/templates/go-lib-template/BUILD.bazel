@@ -1,0 +1,15 @@
+load("//bazel/go:exports.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go-lib-template",
+    srcs = ["main.go"],
+    importpath = "github.com/publiclabel/monorepo/repos/scaffold/templates/go-lib-template",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_code_hex_neo_cowsay_v2//:Neo-cowsay"],
+)
+
+go_test(
+    name = "go-lib-template_test",
+    srcs = ["main_test.go"],
+    embed = [":go-lib-template"],
+)

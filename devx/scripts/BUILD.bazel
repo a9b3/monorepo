@@ -1,6 +1,9 @@
 sh_binary(
     name = "print_bazel_env",
     srcs = ["print_bazel_env.sh"],
+    data = [
+        "//repos/scaffold",
+    ],
 )
 
 sh_binary(
@@ -12,3 +15,5 @@ sh_binary(
     name = "touch",
     srcs = ["touch.sh"],
 )
+
+exports_files(["sh_binary_cwd.sh"])

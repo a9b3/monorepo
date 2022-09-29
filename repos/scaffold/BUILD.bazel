@@ -1,0 +1,28 @@
+load("//bazel/go:exports.bzl", "go_binary", "go_library")
+load("//devx/scripts:sh_binary_cwd.bzl", "sh_binary_cwd")
+
+go_library(
+    name = "scaffold_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/publiclabel/monorepo/repos/scaffold",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_iancoleman_strcase//:strcase",
+        "@com_github_otiai10_copy//:copy",
+        "@com_github_urfave_cli_v2//:cli",
+    ],
+)
+
+go_binary(
+    name = "scaffold",
+    embed = [":scaffold_lib"],
+    visibility = ["//visibility:public"],
+)
+
+sh_binary_cwd(
+    name = "bin",
+    binary_target = ":scaffold",
+    data = [
+        ":templates",
+    ],
+)

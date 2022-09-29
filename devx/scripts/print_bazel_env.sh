@@ -1,3 +1,5 @@
 #!/bin/bash
 set -eu
-printenv
+
+repos/scaffold/scaffold_/scaffold "$@"
+# printenv
