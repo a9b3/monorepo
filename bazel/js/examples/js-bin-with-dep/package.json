@@ -1,0 +1,8 @@
+{
+  "name": "@bazel/js/examples/js-bin-with-dep",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "chalk": "^5.0.1"
+  }
+}

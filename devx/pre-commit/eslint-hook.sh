@@ -9,7 +9,7 @@ then
   echo "######################################################################"
   echo "[ACTION REQUIRED]"
   echo ""
-  echo "Run \`npx eslint --ext .js,.ts,.svelte --fix\` for the above changes and commit changes"
+  echo "Run \`npx eslint --ext .js,.ts,.svelte --fix\` to see issues"
   echo "######################################################################"
   echo ""
   exit 1

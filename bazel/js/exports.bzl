@@ -1,18 +1,18 @@
 # Note, Bazel 6 starlark has lambda so this is no longer needed after upgrade
 load("@bazel_skylib//lib:partial.bzl", "partial")
-load("@aspect_rules_swc//swc:swc.bzl", "swc_transpiler")
+load("@aspect_rules_swc//swc:defs.bzl", "swc_transpiler")
 load(
-    "@npm//@bazel/typescript:index.bzl",
+    "@aspect_rules_ts//ts:defs.bzl",
     _ts_project = "ts_project",
 )
 load(
-    "@build_bazel_rules_nodejs//:index.bzl",
+    "@aspect_rules_js//js:defs.bzl",
     _js_library = "js_library",
-    _nodejs_binary = "nodejs_binary",
+    _nodejs_binary = "js_binary",
 )
 load(
-    "@npm//jest-cli:index.bzl",
-    _jest_test = "jest_test",
+    "@npm//:jest-cli/package_json.bzl",
+    _jest_test = "bin",
 )
 
 def _jest_test_override(data = [], args = [
@@ -23,7 +23,7 @@ def _jest_test_override(data = [], args = [
     "--config",
     "jest.config.ts",
 ], **kwargs):
-    _jest_test(
+    _jest_test.jest_test(
         args = args,
         data = data + ["//:jest.config.ts", "//:package.json", "@npm//jest-config"],
         **kwargs
@@ -46,21 +46,8 @@ def _ts_project_override(name, **kwargs):
         **kwargs
     )
 
-def _nodejs_binary_override(name, data = [], **kwargs):
-    _nodejs_binary(
-        name = name,
-        data = ["//:package.json"] + data,
-        **kwargs
-    )
-
-def _js_library_override(name, srcs = [], **kwargs):
-    _js_library(
-        name = name,
-        srcs = srcs,
-        **kwargs
-    )
-
-nodejs_binary = _nodejs_binary_override
+nodejs_binary = _nodejs_binary
 ts_project = _ts_project_override
 jest_test = _jest_test_override
-js_library = _js_library_override
+js_library = _js_library
+js_binary = _nodejs_binary

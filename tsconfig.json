@@ -1,14 +1,27 @@
 {
+  "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
+    "allowJs": true,
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
     "rootDir": ".",
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@monorepo/*": ["./*"]
-    }
+      "@monorepo/*": ["./*"],
+      "*": [
+        "./node_modules/*",
+        "./bazel/js/backend/node_modules/*",
+        "./bazel/js/backend/node_modules/@types/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "typescript-svelte-plugin"
+      }
+    ]
   },
-  "include": ["orgs", "libs"]
+  "include": ["orgs", "libs", "./bazel/js/backend/node_modules"]
 }

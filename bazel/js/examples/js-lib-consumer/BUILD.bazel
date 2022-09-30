@@ -1,0 +1,14 @@
+load("//bazel/js:exports.bzl", "js_binary")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(name = "node_modules")
+
+js_binary(
+  name = "js-lib-consumer",
+  data = [
+    "index.js",
+    "package.json",
+    ":node_modules/@monorepo/examples-js-lib"
+  ],
+  entry_point = "index.js"
+)

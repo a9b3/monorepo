@@ -131,17 +131,15 @@ func main() {
 		Usage: "Create starter project directories.",
 		Commands: []*cli.Command{
 			{
-				Name:     "react",
+				Name:     "svelte-template",
 				Category: "template",
-				Usage:    "React starter template.",
 				Action: func(cCtx *cli.Context) error {
-					return TemplateActionHandler(cCtx, "react")
+					return TemplateActionHandler(cCtx, "svelte-template")
 				},
 			},
 			{
 				Name:     "go-lib-template",
 				Category: "template",
-				Usage:    "Go library.",
 				Action: func(cCtx *cli.Context) error {
 					return TemplateActionHandler(cCtx, "go-lib-template")
 				},

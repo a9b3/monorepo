@@ -29,6 +29,10 @@ load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary
 # -----------------------------------------------------------------------------
 #
 # gazelle:exclude bazel-out
+# gazelle:exclude bazel-bin
+# gazelle:exclude bazel-monorepo-2
+# gazelle:exclude bazel-testlogs
+# gazelle:exclude external
 # gazelle:exclude bazel/go/scripts/lib
 #
 # -----------------------------------------------------------------------------
@@ -83,3 +87,31 @@ exports_files([
     "jest.config.ts",
     "package.json",
 ])
+
+xcode_version(
+    name = "11",
+    aliases = [
+        "11.0",
+        "11",
+    ],
+    version = "11.0",
+)
+
+# Error: Invoking xcodebuild failed, developer dir: /Applications/Xcode.app/Contents/Developer ,return code 1, stderr: xcodebuild: error: SDK "" cannot be located. , stdout:
+xcode_config(
+    name = "host_xcodes",
+    default = ":11",
+    versions = [":11"],
+)
+
+available_xcodes(
+    name = "host_available_xcodes",
+    default = ":11",
+    versions = [":11"],
+)
+
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(
+  name = "node_modules",
+)

@@ -1,0 +1,7 @@
+{
+  "name": "@monorepo/examples-js-lib-consumer",
+  "dependencies": {
+    "@monorepo/examples-js-lib": "workspace:*"
+  },
+  "type": "module"
+}

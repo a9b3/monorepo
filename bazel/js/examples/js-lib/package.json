@@ -1,0 +1,6 @@
+{
+  "name": "@monorepo/examples-js-lib",
+  "private": true,
+  "main": "index.js",
+  "type": "module"
+}

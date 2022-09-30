@@ -1,15 +1,12 @@
 workspace(
     name = "monorepo",
-    managed_directories = {
-        "@npm": ["node_modules"],
-    },
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# ----------------------------------------------------------------
+###############################################################################
 # Bazel
-# ----------------------------------------------------------------
+###############################################################################
 
 http_archive(
     name = "bazel_skylib",
@@ -24,17 +21,17 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
 
-# ----------------------------------------------------------------
+###############################################################################
 # http_archive
-# ----------------------------------------------------------------
+###############################################################################
 
 load("//bazel:workspace.bzl", "setup_http_archives")
 
 setup_http_archives()
 
-# ----------------------------------------------------------------
+###############################################################################
 # protobuf
-# ----------------------------------------------------------------
+###############################################################################
 
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 
@@ -48,9 +45,9 @@ rules_proto_toolchains()
 
 register_toolchains("@build_stack_rules_proto//toolchain:standard")
 
-# ----------------------------------------------------------------
+###############################################################################
 # golang
-# ----------------------------------------------------------------
+###############################################################################
 
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 
@@ -89,30 +86,20 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 gazelle_dependencies()
 
-# ----------------------------------------------------------------
+###############################################################################
 # js
-# ----------------------------------------------------------------
+###############################################################################
 
-# load("//bazel/js:workspace.bzl", "setup_js_workspace")
-#
-# setup_js_workspace()
-#
-load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
-
-build_bazel_rules_nodejs_dependencies()
-
-load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
-
-node_repositories()
+##################################
+# rules_swc
+##################################
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-# Copied from https://github.com/aspect-build/rules_swc/releases
 http_archive(
     name = "aspect_rules_swc",
-    sha256 = "206a89aae3a04831123b43962a3864e8ab1652b703c4af58d84b04174360137d",
-    strip_prefix = "rules_swc-0.4.0",
-    url = "https://github.com/aspect-build/rules_swc/archive/refs/tags/v0.4.0.tar.gz",
+    sha256 = "313307136cb6369f3c9d2992209c1e354b3e2c9989877ee67c688917320fba1f",
+    strip_prefix = "rules_swc-0.17.1",
+    url = "https://github.com/aspect-build/rules_swc/archive/refs/tags/v0.17.1.tar.gz",
 )
 
 # Fetches the rules_swc dependencies.
@@ -128,36 +115,75 @@ rules_swc_dependencies()
 # https://github.com/swc-project/swc/releases.
 # If you'd rather compile it from source, you can use rules_rust, fetch the project,
 # then register the toolchain yourself. (Note, this is not yet documented)
-load("@aspect_rules_swc//swc:repositories.bzl", "swc_register_toolchains")
+load("@aspect_rules_swc//swc:repositories.bzl", "LATEST_VERSION", "swc_register_toolchains")
 
 swc_register_toolchains(
     name = "swc",
-    swc_version = "v1.2.141",
+    swc_version = LATEST_VERSION,
 )
 
-# Fetches a NodeJS interpreter, needed to run the swc CLI.
-# You can skip this if you already register a nodejs toolchain.
-load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
+##################################
+# rules_ts
+##################################
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "aspect_rules_ts",
+    sha256 = "3eb3171c26eb5d0951d51ae594695397218fb829e3798eea5557814723a1b3da",
+    strip_prefix = "rules_ts-1.0.0-rc3",
+    url = "https://github.com/aspect-build/rules_ts/archive/refs/tags/v1.0.0-rc3.tar.gz",
+)
+
+# Fetches the rules_ts dependencies.
+# If you want to have a different version of some dependency,
+# you should fetch it *before* calling this.
+# Alternatively, you can skip calling this function, so long as you've
+# already fetched all the dependencies.
+load("@aspect_rules_ts//ts:repositories.bzl", "LATEST_VERSION", "rules_ts_dependencies")
+
+rules_ts_dependencies(ts_version = LATEST_VERSION)
+
+# ##################################
+# # rules_js
+# ##################################
+#
+# load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+#
+# http_archive(
+#     name = "aspect_rules_js",
+#     sha256 = "0707a425093704fab05fb91c3a4b62cf22dca18ea334d8a72f156d4c18e8db90",
+#     strip_prefix = "rules_js-1.3.1",
+#     url = "https://github.com/aspect-build/rules_js/archive/refs/tags/v1.3.1.tar.gz",
+# )
+
+load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
+
+# https://github.com/aspect-build/rules_js/blob/86b7aaa3d4bcafaf30bbaf04fba2b7c1d770c078/js/repositories.bzl#L1
+# This should bring in rules_nodejs
+rules_js_dependencies()
+
+load("@rules_nodejs//nodejs:repositories.bzl", "DEFAULT_NODE_VERSION", "nodejs_register_toolchains")
 
 nodejs_register_toolchains(
-    name = "node16",
-    node_version = "16.9.0",
+    name = "nodejs",
+    node_version = DEFAULT_NODE_VERSION,
 )
 
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_install")
+load("@aspect_rules_js//npm:npm_import.bzl", "npm_translate_lock")
 
-npm_install(
+npm_translate_lock(
     name = "npm",
-    package_json = "//:package.json",
-    package_lock_json = "//:package-lock.json",
-    # Have bazel symlink the managed node_modules directory to the local
-    # workspace.
-    symlink_node_modules = True,
+    pnpm_lock = "//:pnpm-lock.yaml",
+    verify_node_modules_ignored = "//:.bazelignore",
 )
 
-# ----------------------------------------------------------------
+load("@npm//:repositories.bzl", "npm_repositories")
+
+npm_repositories()
+
+###############################################################################
 # docker
-# ----------------------------------------------------------------
+###############################################################################
 
 load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",

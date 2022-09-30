@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "module": "ESNext",
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "checkJs": true,
+    "paths": {
+      "@monorepo/*": ["./*"],
+      "*": [
+        "./node_modules/*",
+        "./bazel/js/backend/node_modules/*",
+        "./bazel/js/backend/node_modules/@types/*"
+      ]
+    }
+  },
+  "include": ["orgs", "libs", "./bazel/js/backend/node_modules"]
+}

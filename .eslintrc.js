@@ -12,15 +12,21 @@ module.exports = {
     },
     ecmaVersion: 'latest',
     sourceType: 'module',
+    project: './tsconfig.json',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['react', 'svelte3', '@typescript-eslint'],
   settings: {
     'import/resolver': {
       typescript: {},
     },
+    'svelte3/typescript': true, // load TypeScript as peer dependency
   },
   rules: {
     'import/extensions': 'off',
+    'import/prefer-default-export': 'off',
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
+    'no-unused-vars': ['error', { varsIgnorePattern: '[iI]gnored' }],
   },
   overrides: [
     {
@@ -28,6 +34,10 @@ module.exports = {
       env: {
         jest: true,
       },
+    },
+    {
+      files: ['*.svelte'],
+      processor: 'svelte3/svelte3',
     },
   ],
 }

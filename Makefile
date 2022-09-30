@@ -14,3 +14,15 @@ update-proto-source:
 
 lint:
 	pre-commit run --all-files
+
+# To add a new go dep.
+#
+# 	go get "<dep>" && make update-go-deps
+#
+update-go-deps:
+	go mod tidy
+	go mod verify
+	bazel run //:gazelle-update-repos
+
+update-js-deps:
+	npx pnpm import

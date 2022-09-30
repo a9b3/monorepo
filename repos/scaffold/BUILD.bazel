@@ -1,5 +1,5 @@
 load("//bazel/go:exports.bzl", "go_binary", "go_library")
-load("//devx/scripts:sh_binary_cwd.bzl", "sh_binary_cwd")
+load("//devx/scripts:exports.bzl", "sh_binary_cwd")
 
 go_library(
     name = "scaffold_lib",
