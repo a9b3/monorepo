@@ -73,17 +73,6 @@
               # https://github.com/bazelbuild/bazelisk
               pkgs.bazelisk
 
-              # --------------------------------------------------------------
-              # Languages
-              # --------------------------------------------------------------
-              # Go
-              # experimenting with using bazel's toolchain go binary under
-              # //go_sdk/go
-              # pkgs.go_1_18
-
-              # node
-              # pkgs.nodejs-16_x
-
               # cli
               pkgs.gnupg
               pkgs.awscli2

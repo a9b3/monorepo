@@ -41,7 +41,7 @@
     "javascriptreact",
     "svelte"
   ],
-  "eslint.validate": ["svelte"],
+  "eslint.validate": ["svelte", "typescript"],
   "svelte.plugin.typescript.diagnostics.enable": true,
   "svelte.ask-to-enable-ts-plugin": false,
   "svelte.language-server.ls-path": "node_modules/svelte-language-server/bin/server.js",

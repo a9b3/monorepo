@@ -1,0 +1,46 @@
+<script lang="ts">
+  import { objectStyle } from 'src/utils/objectToStyleStr'
+  export let title = ''
+  export let disabled = false
+  export let align = 'center'
+  export let compact = false
+
+  const overrideStyle = compact
+    ? objectStyle({
+        height: '15px',
+        padding: '4px 8px',
+      })
+    : ''
+</script>
+
+<div class="main {align ? align : ''}" class:disabled style={overrideStyle}>
+  {title}
+  <slot />
+</div>
+
+<style>
+  .main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--colors__bg3);
+    padding: 2px 12px;
+    border-radius: 35px;
+    height: 20px;
+    color: var(--colors__fg);
+  }
+  .main:hover {
+    background-color: var(--colors__bg3Hover);
+  }
+
+  .main.disabled {
+    color: var(--colors__fg2);
+  }
+  .main.disabled:hover {
+    background-color: var(--colors__bg3);
+  }
+
+  .main.left {
+    justify-content: flex-start;
+  }
+</style>
