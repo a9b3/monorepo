@@ -36,6 +36,7 @@ module.exports = {
     'lines-between-class-members': 'off',
     'no-param-reassign': 'off',
     'no-underscore-dangle': 'off',
+    'arrow-body-style': 'off',
     // 'no-unused-vars': ['error', { varsIgnorePattern: '[iI]gnored' }],
   },
   overrides: [

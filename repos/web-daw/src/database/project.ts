@@ -1,12 +1,15 @@
 import PouchDB from 'pouchdb'
-import type { DbInterface } from './DbInterface'
+import type { DBInterface } from './DBInterface'
 
 interface TimeSignature {
   top: number
   bottom: number
 }
 
-export interface ProjectT {
+/**
+ * Schema of the project document in the database.
+ */
+export interface ProjectDoc {
   _id?: string
   _rev?: string
   id?: string
@@ -19,8 +22,11 @@ export interface ProjectT {
   playlistIds: string[]
 }
 
-export class ProjectDb implements DbInterface<ProjectT> {
-  #database: PouchDB.Database<ProjectT>
+/**
+ * The main interface for the project database.
+ */
+export class ProjectDB implements DBInterface<ProjectDoc> {
+  #database: PouchDB.Database<ProjectDoc>
 
   constructor(...conf: ConstructorParameters<typeof PouchDB>) {
     if (!conf) {
@@ -29,7 +35,7 @@ export class ProjectDb implements DbInterface<ProjectT> {
     this.#database = new PouchDB(...conf)
   }
 
-  async create(project: ProjectT) {
+  async create(project: ProjectDoc) {
     const id = crypto.randomUUID()
     await this.#database.put({
       ...project,
@@ -40,15 +46,14 @@ export class ProjectDb implements DbInterface<ProjectT> {
     return this.getById(id)
   }
 
-  async update(id: string, project: ProjectT) {
+  async update(id: string, project: ProjectDoc) {
     const response = await this.#database.get(id)
     await this.#database.put({ ...response, ...project })
     return this.#database.get(id)
   }
 
   async getById(id: string) {
-    const response = await this.#database.get(id)
-    return response
+    return this.#database.get(id)
   }
 
   /**
@@ -61,7 +66,7 @@ export class ProjectDb implements DbInterface<ProjectT> {
       limit,
     })
     return {
-      results: res.rows.map((row: any) => row.doc),
+      results: res.rows.map(row => row.doc),
       next:
         res.rows.length === limit + 1
           ? res.rows[res.rows.length - 1].id
@@ -76,4 +81,4 @@ export class ProjectDb implements DbInterface<ProjectT> {
   }
 }
 
-export default new ProjectDb('project')
+export default new ProjectDB('project')

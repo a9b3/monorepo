@@ -1,8 +1,12 @@
 import PouchDB from 'pouchdb'
 import debounce from 'lodash/debounce'
 import type { Project } from 'src/daw/Project'
+import type { DBInterface } from './DBInterface'
 
-export interface EditorT {
+/**
+ * Schema of the editor document in the database.
+ */
+export interface EditorDoc {
   id?: string
   openedProjects: Project[]
   selectedProjectId: string | undefined
@@ -10,8 +14,11 @@ export interface EditorT {
   user?: string
 }
 
-export class EditorDb {
-  #database: PouchDB.Database<EditorT>
+/**
+ * The main interface for the editor database.
+ */
+export class EditorDB implements DBInterface<EditorDoc> {
+  #database: PouchDB.Database<EditorDoc>
 
   constructor(...conf: ConstructorParameters<typeof PouchDB>) {
     if (!conf) {
@@ -24,7 +31,7 @@ export class EditorDb {
     })
   }
 
-  async create(editor: EditorT) {
+  async create(editor: EditorDoc) {
     const id = crypto.randomUUID()
     await this.#database.put({
       ...editor,
@@ -35,7 +42,11 @@ export class EditorDb {
     return this.getById(id)
   }
 
-  update = debounce(async (id: string, editor: EditorT) => {
+  /**
+   * This is called frequenty upon user interacting with the editor so we can
+   * debounce this for better perf.
+   */
+  update = debounce(async (id: string, editor: EditorDoc) => {
     const response = await this.getById(id)
     await this.#database.put({
       ...response,
@@ -54,7 +65,7 @@ export class EditorDb {
    * Lazy create the editor settings for the given user.
    * TODO remove this later.
    */
-  async getByUserId(id: string): Promise<EditorT> {
+  async getByUserId(id: string): Promise<EditorDoc> {
     const { docs } = await this.#database.find({
       selector: {
         user: id,
@@ -73,4 +84,4 @@ export class EditorDb {
   }
 }
 
-export default new EditorDb('editor')
+export default new EditorDB('editor')

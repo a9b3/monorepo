@@ -1,7 +1,7 @@
-export const flattenObj = ob => {
+export const flattenObj = (ob: object) => {
   // The object which contains the
   // final result
-  let result = {}
+  const result = {}
 
   // loop through the object "ob"
   for (const i in ob) {

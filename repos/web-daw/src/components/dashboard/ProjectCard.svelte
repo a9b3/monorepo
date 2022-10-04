@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ProjectT } from 'src/database/project'
+  import type { ProjectDoc } from 'src/database/project'
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import { deleteProject } from 'src/store/project'
   import { navigate } from 'svelte-routing'
@@ -12,7 +12,7 @@
   import { randomLinearGradient } from 'src/utils/randomLinearGradient'
   import { randomEmoji } from 'src/utils/randomEmoji'
   import { objectStyle } from 'src/utils/objectToStyleStr'
-  export let project: ProjectT
+  export let project: ProjectDoc
 
   let randomGradient = `background: ${randomLinearGradient()};`
   let contextMenuRef: ContextMenu

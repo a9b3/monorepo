@@ -109,7 +109,7 @@
   .track {
     display: flex;
     height: 100%;
-    margin-right: var(--spacing__paddingM);
+    margin-right: var(--spacing__marginM);
   }
 
   .sends {

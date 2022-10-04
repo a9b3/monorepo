@@ -1,13 +1,13 @@
 import { writable, derived } from 'svelte/store'
-import type { ProjectT } from 'src/database/project'
+import type { ProjectDoc } from 'src/database/project'
 import projectDb from 'src/database/project'
 import editorStore from './editor'
 
-const projectStore = writable<{ projects: { [key: string]: ProjectT } }>({
+const projectStore = writable<{ projects: { [key: string]: ProjectDoc } }>({
   projects: {},
 })
 
-export async function createProject(project: ProjectT) {
+export async function createProject(project: ProjectDoc) {
   const res = await projectDb.create(project)
   projectStore.update(prev => {
     prev.projects[res.id] = res
@@ -19,7 +19,7 @@ export async function fetchProjects() {
   const { results } = await projectDb.get()
   projectStore.set({
     projects: results.reduce(
-      (m: { [key: string]: ProjectT }, res: ProjectT) => {
+      (m: { [key: string]: ProjectDoc }, res: ProjectDoc) => {
         m[res.id] = res
         return m
       },

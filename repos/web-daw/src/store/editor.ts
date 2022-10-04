@@ -1,10 +1,10 @@
 import { writable } from 'svelte/store'
-import type { ProjectT } from 'src/database/project'
-import type { EditorT } from 'src/database/editor'
+import type { ProjectDoc } from 'src/database/project'
+import type { EditorDoc } from 'src/database/editor'
 import editorDb from 'src/database/editor'
 import { Project } from 'src/daw/Project'
 
-const editorStore = writable<EditorT>({
+const editorStore = writable<EditorDoc>({
   id: '',
   openedProjects: [],
   selectedProjectId: undefined,
@@ -75,7 +75,7 @@ export function removeOpenedProject(id: string) {
 }
 
 export function setSelectedProject(id?: string) {
-  editorStore.update((prev: EditorT) => {
+  editorStore.update((prev: EditorDoc) => {
     prev.selectedProjectId = id
 
     // TODO sync database strat
@@ -86,7 +86,7 @@ export function setSelectedProject(id?: string) {
 }
 
 export function setInFocusElement(id?: string) {
-  editorStore.update((prev: EditorT) => {
+  editorStore.update((prev: EditorDoc) => {
     prev.inFocusElement = id
 
     // TODO sync database strat

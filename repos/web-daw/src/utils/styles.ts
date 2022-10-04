@@ -29,10 +29,18 @@ const SPACING = {
   button: {
     padding: '10px',
   },
+  margin: '12px',
+  marginSm: '2px',
+  marginM: '5px',
+  marginL: '20px',
 }
 
 const TRACK = {
   width: '120px',
+}
+
+const MISC = {
+  borderRadius: '4px',
 }
 
 export const styles = {
@@ -40,13 +48,19 @@ export const styles = {
   font: FONT,
   spacing: SPACING,
   track: TRACK,
+  misc: MISC,
 }
 
+/**
+ * Convert the above to a css string that can be loaded into html.
+ */
 export function convertToCss(styleObj: any) {
   const flattened = flattenObj(styleObj)
   const rendered = Object.entries(flattened)
     .map(([key, val]) => {
-      return `--${key}: ${typeof val === 'string' ? val : val()};`
+      const renderedVal =
+        typeof val === 'string' ? val : typeof val === 'function' && val()
+      return `--${key}: ${renderedVal};`
     })
     .join('\n')
 
