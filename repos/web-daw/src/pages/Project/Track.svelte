@@ -1,7 +1,6 @@
 <script lang="ts">
   import Text from 'src/components/Text.svelte'
   import Pill from 'src/components/Pill.svelte'
-  import Clip from 'src/components/Clip.svelte'
   import Layout from 'src/components/Layout.svelte'
   import Icon from 'src/components/Icon.svelte'
   import Meter from 'src/components/Meter.svelte'
@@ -10,6 +9,9 @@
   import Player from 'src/components/players/Player.svelte'
   import { objectStyle } from 'src/utils/objectToStyleStr'
   import { randomLinearGradient } from 'src/utils/randomLinearGradient'
+
+  import Clip from './Clip.svelte'
+
   export let project: any
   export let color = 'var(--colors__accent)'
   // export let color = randomLinearGradient()

@@ -1,3 +1,8 @@
+<!--
+  @component
+
+  The top level tab bar for navigating opened projects.
+-->
 <script lang="ts">
   import Icon from 'src/components/Icon.svelte'
   import { randomEmoji } from 'src/utils/randomEmoji'

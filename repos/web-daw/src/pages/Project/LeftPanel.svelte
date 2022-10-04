@@ -1,8 +1,9 @@
 <script lang="ts">
   import Searchbar from 'src/components/Searchbar.svelte'
   import Layout from 'src/components/Layout.svelte'
-  import Finder from 'src/components/Finder.svelte'
   import DirectoryTree from 'src/components/DirectoryTree.svelte'
+
+  import Finder from './Finder.svelte'
 </script>
 
 <div class="main">

@@ -1,3 +1,8 @@
+<!--
+  @component
+
+  Selectable row.
+-->
 <script lang="ts">
   export let selected = false
 </script>

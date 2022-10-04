@@ -1,3 +1,8 @@
+<!--
+  @component
+
+  Load theme css variables into the app.
+-->
 <script lang="ts">
   import { styles, convertToCss } from 'src/utils/styles'
 

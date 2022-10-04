@@ -1,12 +1,14 @@
 <script lang="ts">
-  import TopToolbar from 'src/components/TopToolbar.svelte'
-  import LeftPanel from 'src/components/LeftPanel.svelte'
-  import Track from 'src/components/Track.svelte'
-  import Master from 'src/components/Master.svelte'
-  import Send from 'src/components/Send.svelte'
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import editorStore from 'src/store/editor'
   import { fetchProject } from 'src/store/project'
+
+  import LeftPanel from './LeftPanel.svelte'
+  import TopToolbar from './TopToolbar.svelte'
+  import Track from './Track.svelte'
+  import Master from './Master.svelte'
+  import Send from './Send.svelte'
+
   export let params: { id: string }
 
   let isFetching = true

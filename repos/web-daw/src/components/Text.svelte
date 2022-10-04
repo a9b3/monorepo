@@ -1,3 +1,8 @@
+<!--
+  @component
+
+  General text component.
+-->
 <script lang="ts">
   import { objectToStyleStr } from 'src/utils/objectToStyleStr'
   export let type = 'label'

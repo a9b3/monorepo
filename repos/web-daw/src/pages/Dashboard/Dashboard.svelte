@@ -8,7 +8,7 @@
     createProject,
     fetchProjects,
   } from 'src/store/project'
-  import ProjectCard from 'src/components/dashboard/ProjectCard.svelte'
+  import ProjectCard from './ProjectCard.svelte'
 
   onMount(() => fetchProjects())
 
