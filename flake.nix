@@ -80,6 +80,8 @@
               pkgs.terragrunt
               pkgs.kubectx
               pkgs.grpcurl
+              pkgs.fd
+              pkgs.sd
 
               # linters
               pkgs.sqlfluff

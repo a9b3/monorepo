@@ -1,7 +1,0 @@
-#!/bin/sh
-
-replace() {
-  grep -ilr '$1' * | xargs -I@ sed -i '' 's/$1/$2/g' @
-}
-
-replace "$@"
