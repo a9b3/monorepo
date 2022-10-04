@@ -7,7 +7,7 @@
   import Icon from 'src/components/Icon.svelte'
   import { randomEmoji } from 'src/utils/randomEmoji'
   import { Link, navigate } from 'svelte-routing'
-  import localStore, {
+  import editorStore, {
     setSelectedProject,
     removeOpenedProject,
   } from 'src/store/editor'
@@ -20,11 +20,11 @@
       setSelectedProject()
     }}
   >
-    <div class="tab" class:selected={!$localStore.selectedProjectId}>
+    <div class="tab" class:selected={!$editorStore.selectedProjectId}>
       <Icon type="dashboardFill" />
     </div>
   </Link>
-  {#each $localStore.openedProjects as project}
+  {#each $editorStore.openedProjects as project}
     <Link
       to={`/project/${project.id}`}
       on:click={() => {
@@ -33,7 +33,7 @@
     >
       <div
         class="tab project"
-        class:selected={$localStore.selectedProjectId === project.id}
+        class:selected={$editorStore.selectedProjectId === project.id}
       >
         {randomEmoji()}
         <div style={`width: 15px;`} />

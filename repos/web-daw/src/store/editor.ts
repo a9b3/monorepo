@@ -1,5 +1,4 @@
 import { writable } from 'svelte/store'
-import type { ProjectDoc } from 'src/database/project'
 import type { EditorDoc } from 'src/database/editor'
 import editorDb from 'src/database/editor'
 import { Project } from 'src/daw/Project'

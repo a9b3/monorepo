@@ -23,5 +23,5 @@
       }
     ]
   },
-  "include": ["orgs", "libs", "./bazel/js/backend/node_modules"]
+  "include": ["orgs", "libs", "./bazel/js/backend/node_modules", "repos"]
 }

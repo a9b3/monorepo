@@ -2,6 +2,8 @@
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import editorStore from 'src/store/editor'
   import { fetchProject } from 'src/store/project'
+  import { navigate } from 'svelte-routing'
+  import { setSelectedProject } from 'src/store/editor'
 
   import LeftPanel from './LeftPanel.svelte'
   import TopToolbar from './TopToolbar.svelte'
@@ -16,15 +18,18 @@
   $: {
     ;(async () => {
       isFetching = true
-      await fetchProject(params.id)
+      try {
+        await fetchProject(params.id)
+      } catch (err) {
+        setSelectedProject('')
+        navigate('/', { replace: true })
+      }
       isFetching = false
     })()
   }
   $: project = $editorStore.openedProjects.find(proj => {
     return proj.id === id
   })
-
-  console.log(`project`, project)
 
   let contextMenuRef: ContextMenu
 </script>
