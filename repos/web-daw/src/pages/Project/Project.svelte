@@ -7,9 +7,9 @@
 
   import LeftPanel from './LeftPanel.svelte'
   import TopToolbar from './TopToolbar.svelte'
-  import Track from './Track.svelte'
-  import Master from './Master.svelte'
-  // import Send from './Send.svelte'
+  import Track from './track/Track.svelte'
+  import Master from './track/Master.svelte'
+  // import Send from './track/Send.svelte'
 
   export let params: { id: string }
 
