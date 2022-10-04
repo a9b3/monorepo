@@ -2,6 +2,7 @@
   import Pill from 'src/components/Pill.svelte'
   import Layout from 'src/components/Layout.svelte'
   import Icon from 'src/components/Icon.svelte'
+  import { audioContext } from 'src/daw/audioContext'
   export let project
 </script>
 
@@ -19,7 +20,17 @@
   </Layout>
   <Layout class="center">
     <Pill title="1. 1. 1" disabled />
-    <Pill><Icon type="arrowRightFill" /></Pill>
+    <Pill
+      on:click={() => {
+        audioContext.resume()
+        if ($project.controller.isPlaying) {
+          $project.controller.stop()
+        } else {
+          $project.controller.play()
+        }
+
+      }}><Icon type="arrowRightFill" /></Pill
+    >
   </Layout>
   <div class="right">
     <Pill title="MIDI" />

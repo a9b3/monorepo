@@ -12,10 +12,11 @@ const COLORS = {
   fg3: '#565656',
   accent: '#3F78F7',
   selected: '#2E4B75',
+  red: '#FD1201',
 }
 
 const FONT = {
-  family: `'Inter', sans-serif`,
+  family: `'Roboto', sans-serif`,
   size: '12px',
   weight: '400',
   color: COLORS.fg,

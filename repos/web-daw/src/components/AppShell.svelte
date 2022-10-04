@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { Router, Link, Route } from 'svelte-routing'
+  import { Router, Route } from 'svelte-routing'
   import Project from 'src/pages/Project.svelte'
   import Dashboard from 'src/pages/Dashboard.svelte'
   import Theme from 'src/components/Theme.svelte'
   import TabBar from 'src/components/TabBar.svelte'
+  import userStore from 'src/store/user'
+  import { fetchEditor } from 'src/store/editor'
 
   export let url = ''
+
+  fetchEditor($userStore.id)
 </script>
 
 <div class="shell">

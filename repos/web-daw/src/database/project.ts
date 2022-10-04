@@ -1,4 +1,5 @@
-import PouchDB from 'pouchdb/dist/pouchdb.js'
+// import PouchDB from 'pouchdb/dist/pouchdb.js'
+import PouchDB from 'pouchdb'
 import type { DbInterface } from './DbInterface'
 
 interface TimeSignature {
@@ -40,6 +41,7 @@ export class ProjectDb implements DbInterface<ProjectT> {
   }
 
   async create(project: ProjectT) {
+    console.log(`create`)
     const id = crypto.randomUUID()
     const now = Date.now()
     await this.getDb().put({
@@ -57,13 +59,18 @@ export class ProjectDb implements DbInterface<ProjectT> {
   }
 
   async update(id: string, project: ProjectT) {
+    console.log(`before`)
     const response = await this.getDb().get(id)
+    console.log(`after`, response)
     await this.getDb().put({ ...response, ...project })
-    return await this.getDb().get(id)
+    console.log(`after 2`, id)
+    return this.getDb().get(id)
   }
 
   async getById(id: string) {
+    console.log(`by id`)
     const response = await this.getDb().get(id)
+    console.log(`by id`, response)
     return response
   }
 

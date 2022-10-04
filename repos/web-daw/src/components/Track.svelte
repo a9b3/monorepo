@@ -4,25 +4,41 @@
   import Clip from 'src/components/Clip.svelte'
   import Layout from 'src/components/Layout.svelte'
   import Icon from 'src/components/Icon.svelte'
+  import Meter from 'src/components/Meter.svelte'
   import ContextMenu from 'src/components/ContextMenu.svelte'
-  import { removeClipTrack } from 'src/state/project'
-  import editorState, { setSelected } from 'src/state/editorState'
-  export let track
-  export let idx
+  import editorStore, { setInFocusElement } from 'src/store/editor'
+  import Player from 'src/components/players/Player.svelte'
+  import { objectStyle } from 'src/utils/objectToStyleStr'
+  import { randomLinearGradient } from 'src/utils/randomLinearGradient'
+  export let project: any
+  export let color = 'var(--colors__accent)'
+  // export let color = randomLinearGradient()
+  export let track: any
+  export let idx: number
   export let title = 'Midi'
   export let clips = Array(8).fill({})
 
-  let contextMenuRef
+  let mainElRef: HTMLElement
+  let contextMenuRef: ContextMenu
 </script>
 
 <div
+  bind:this={mainElRef}
   class="main"
-  class:selected={track.id === $editorState.selected}
+  class:selected={track.id === $editorStore.inFocusElement}
+  style={objectStyle({
+    '--color': color,
+    position: 'relative',
+  })}
   on:contextmenu|preventDefault={evt => {
-    setSelected(track.id)
+    setInFocusElement(track.id)
     contextMenuRef.handleRightClick(evt)
   }}
-  on:click={() => setSelected(track.id)}
+  on:click={evt => {
+    if (evt.target === mainElRef) {
+      setInFocusElement(track.id)
+    }
+  }}
 >
   <ContextMenu
     bind:this={contextMenuRef}
@@ -30,8 +46,8 @@
       {
         label: 'Delete Track',
         onClick: () => {
-          removeClipTrack(idx)
-          setSelected('')
+          project.removeTrack(track.id)
+          setInFocusElement()
         },
         type: 'item',
       },
@@ -39,18 +55,29 @@
   />
   <div class="title">
     {idx + 1}
-    {title}
+    {track.label}
   </div>
-  {#each clips as clip}
-    <Clip />
+  {#each clips as clip, idx}
+    <Clip
+      clip={track.clipTrack.clips[idx] || {}}
+      {idx}
+      clipTrack={track.clipTrack}
+    />
   {/each}
 
   <Layout class="bottom" type="col" padding="var(--spacing__padding)">
+    <div
+      style={objectStyle({
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        paddingRight: '20px',
+      })}
+    >
+      <Player />
+    </div>
     <Layout class="section" type="col">
-      <Text type="label">
-        <Icon type="searchLine" />
-        MIDI From</Text
-      >
+      <Text type="label">MIDI From</Text>
       <Pill title="All ins" align="left" compact />
       <Pill title="All Channels" align="left" compact />
     </Layout>
@@ -67,11 +94,33 @@
       <Pill title="No Output" align="left" compact />
       <Pill align="left" compact />
     </Layout>
+
+    <div
+      style={objectStyle({
+        height: '100px',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+      })}
+    >
+      <Meter
+        value={0}
+        secondaryValue={0}
+        style={objectStyle({ width: '5px' })}
+      />
+      <div style={objectStyle({ width: '5px' })} />
+      <Meter
+        value={0}
+        secondaryValue={0}
+        style={objectStyle({ width: '5px' })}
+      />
+    </div>
   </Layout>
 </div>
 
 <style>
   .main {
+    --color: var(--colors__accent);
     height: '100%';
     background: var(--colors__bg2);
     width: var(--track__width);
@@ -87,7 +136,7 @@
 
   .title {
     padding: var(--spacing__paddingM) calc(var(--spacing__paddingSm) * 2);
-    background: var(--colors__accent);
+    background: var(--color);
   }
 
   .main > :global(.bottom) {

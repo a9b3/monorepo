@@ -3,19 +3,19 @@
   import Icon from 'src/components/Icon.svelte'
   import DirectoryTree from 'src/components/DirectoryTree.svelte'
   import { objectStyle } from 'src/utils/objectToStyleStr'
-  import editorState, { setSelected } from 'src/state/editorState'
+  import editorStore, { setInFocusElement } from 'src/store/editor'
 
   export let depth = 0
-  export let directory = {}
+  export let directory: any
 
   let isOpened = false
 </script>
 
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
   <SelectableRow
-    selected={$editorState.selected === directory.id}
+    selected={$editorStore.inFocusElement === directory.id}
     on:click={() => {
-      setSelected(directory.id)
+      setInFocusElement(directory.id)
       isOpened = !isOpened
     }}
     style={objectStyle({

@@ -5,7 +5,7 @@
   import localStore, {
     setSelectedProject,
     removeOpenedProject,
-  } from 'src/store/local'
+  } from 'src/store/editor'
 </script>
 
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>

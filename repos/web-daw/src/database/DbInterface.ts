@@ -1,5 +1,6 @@
 // @ts-expect-error Using for type only
-import PouchDB from 'pouchdb/dist/pouchdb.js'
+// import PouchDB from 'pouchdb/dist/pouchdb.js'
+import PouchDB from 'pouchdb'
 
 interface ListResponse<T> {
   results: T[]

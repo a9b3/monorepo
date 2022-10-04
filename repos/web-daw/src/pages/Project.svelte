@@ -1,56 +1,74 @@
 <script lang="ts">
-  import { afterUpdate } from 'svelte'
   import TopToolbar from 'src/components/TopToolbar.svelte'
   import LeftPanel from 'src/components/LeftPanel.svelte'
   import Track from 'src/components/Track.svelte'
+  import Master from 'src/components/Master.svelte'
+  import Send from 'src/components/Send.svelte'
   import ContextMenu from 'src/components/ContextMenu.svelte'
-  import root, { addClipTrack } from 'src/state/project'
-  import projectStore, { fetchProject } from 'src/store/project'
-  export let params
+  import editorStore from 'src/store/editor'
+  import { fetchProject } from 'src/store/project'
+  export let params: { id: string }
 
+  let isFetching = true
   $: id = params.id
   $: {
     ;(async () => {
+      isFetching = true
       await fetchProject(params.id)
-      console.log(`is this recursing`, Math.random() * 5)
+      isFetching = false
     })()
-    console.log(`is this recursing`, Math.random() * 5)
   }
-  $: project = $projectStore.projects[id]
+  $: project = $editorStore.openedProjects.find(proj => {
+    return proj.id === id
+  })
 
-  let contextMenuRef
+  console.log(`project`, project)
+
+  let contextMenuRef: ContextMenu
 </script>
 
 <div class="app-shell">
-  <div class="top-toolbar">
-    <TopToolbar {project} />
-  </div>
-  <div class="left-panel">
-    <LeftPanel />
-  </div>
-  <div
-    class="main-content"
-    on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
-  >
-    <ContextMenu
-      bind:this={contextMenuRef}
-      menu={[
-        {
-          label: 'Add Track',
-          onClick: () => {
-            addClipTrack()
+  {#if $project}
+    <div class="top">
+      <TopToolbar {project} />
+    </div>
+    <div class="left">
+      <LeftPanel />
+    </div>
+    <div
+      class="main"
+      on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
+    >
+      <ContextMenu
+        bind:this={contextMenuRef}
+        menu={[
+          {
+            label: 'Add Track',
+            onClick: () => {
+              $project.addTrack({ label: 'Untitled' })
+            },
+            type: 'item',
           },
-          type: 'item',
-        },
-      ]}
-    />
-    {#each $root.clipTracks as track, idx}
+        ]}
+      />
+      {#each $project.trackOrder as trackId, idx}
+        <div class="track">
+          <Track track={$project.tracks[trackId]} {idx} project={$project} />
+        </div>
+      {/each}
+    </div>
+    <div class="sends">
       <div class="track">
-        <Track {track} {idx} />
+        <Send trackId={$project.mixer.master.id} />
       </div>
-    {/each}
-  </div>
-  <div class="bottom-panel" />
+    </div>
+    <div class="master">
+      <div class="track">
+        <Master trackId={$project.mixer.master.id} />
+      </div>
+    </div>
+    <div class="bottom-panel" />
+  {/if}
 </div>
 
 <style>
@@ -64,27 +82,27 @@
     overflow: hidden;
     display: grid;
     grid-template:
-      'top top' 40px
-      'left main' 1fr
-      / auto 1fr;
+      'top top top top' 40px
+      'left main sends master' 1fr
+      / auto 1fr auto auto;
     background: var(--colors__bg3);
   }
 
-  .top-toolbar {
+  .top {
     grid-area: top;
     border-bottom: 1px solid var(--colors__bg3);
   }
 
-  .left-panel {
+  .left {
     grid-area: left;
   }
 
-  .main-content {
+  .main {
     grid-area: main;
     display: flex;
     flex-direction: row;
     height: 100%;
-    padding: var(--spacing__padding);
+    padding: var(--spacing__paddingSm);
     overflow: auto;
   }
 
@@ -92,5 +110,15 @@
     display: flex;
     height: 100%;
     margin-right: var(--spacing__paddingM);
+  }
+
+  .sends {
+    grid-area: sends;
+    padding: var(--spacing__paddingSm) 0;
+  }
+
+  .master {
+    grid-area: master;
+    padding: var(--spacing__paddingSm) 0;
   }
 </style>

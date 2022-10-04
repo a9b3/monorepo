@@ -12,7 +12,6 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.2",
     "@tsconfig/svelte": "^3.0.0",
-    "svelte": "^3.49.0",
     "svelte-check": "^2.8.1",
     "svelte-preprocess": "^4.10.7",
     "tslib": "^2.4.0",
@@ -20,10 +19,17 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.186",
     "@types/pouchdb": "^6.4.0",
+    "@types/pouchdb-find": "^6.3.7",
     "events": "^3.3.0",
+    "lodash": "^4.17.21",
     "pouchdb": "^7.3.0",
     "pouchdb-browser": "^7.3.0",
-    "svelte-routing": "^1.6.0"
+    "pouchdb-find": "^7.3.0",
+    "svelte": "^3.50.1",
+    "svelte-routing": "^1.6.0",
+    "vite-plugin-pwa": "^0.13.1"
   }
 }
+

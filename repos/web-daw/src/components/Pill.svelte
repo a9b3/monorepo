@@ -13,7 +13,12 @@
     : ''
 </script>
 
-<div class="main {align ? align : ''}" class:disabled style={overrideStyle}>
+<div
+  class="main {align ? align : ''}"
+  class:disabled
+  style={overrideStyle}
+  on:click
+>
   {title}
   <slot />
 </div>

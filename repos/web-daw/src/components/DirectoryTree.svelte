@@ -4,7 +4,7 @@
   import Icon from 'src/components/Icon.svelte'
   import SelectableRow from 'src/components/SelectableRow.svelte'
   import Directory from 'src/components/Directory.svelte'
-  import editorState, { setSelected } from 'src/state/editorState'
+  import editorStore, { setInFocusElement } from 'src/store/editor'
 
   export let depth = 0
   export let files = [
@@ -78,8 +78,8 @@
     {/if}
     {#if item.type === 'file'}
       <SelectableRow
-        selected={$editorState.selected === item.id}
-        on:click={() => setSelected(item.id)}
+        selected={$editorStore.inFocusElement === item.id}
+        on:click={() => setInFocusElement(item.id)}
         style={objectStyle({
           padding: 'var(--spacing__paddingM)',
           paddingLeft: `calc(var(--spacing__padding) * ${depth})`,

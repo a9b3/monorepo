@@ -1,6 +1,7 @@
 import { writable, derived } from 'svelte/store'
 import type { ProjectT } from 'src/database/project'
 import projectDb from 'src/database/project'
+import editorStore from './editor'
 
 const projectStore = writable<{ projects: { [key: string]: ProjectT } }>({
   projects: {},
@@ -50,6 +51,14 @@ export const filteredProjects = derived([projectStore], ([$projectStore]) =>
   Object.values($projectStore.projects).sort((a, b) =>
     a.createdAt < b.createdAt ? 1 : -1
   )
+)
+
+export const currentlySelectedProject = derived(
+  [projectStore, editorStore],
+  ([$projectStore, $editorStore]) => {
+    const id = $editorStore.selectedProjectId
+    return $projectStore.projects[id]
+  }
 )
 
 export default projectStore

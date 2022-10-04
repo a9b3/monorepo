@@ -7,9 +7,11 @@
     addOpenedProject,
     removeOpenedProject,
     setSelectedProject,
-  } from 'src/store/local'
+    setInFocusElement,
+  } from 'src/store/editor'
   import { randomLinearGradient } from 'src/utils/randomLinearGradient'
   import { randomEmoji } from 'src/utils/randomEmoji'
+  import { objectStyle } from 'src/utils/objectToStyleStr'
   export let project: ProjectT
 
   let randomGradient = `background: ${randomLinearGradient()};`
@@ -20,7 +22,7 @@
   class="project"
   class:selected={$localStore.inFocusElement === project.id}
   on:click={() => {
-    $localStore.inFocusElement = project.id
+    setInFocusElement(project.id)
   }}
   on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
   on:dblclick={() => {
@@ -44,7 +46,11 @@
   />
   <div class="cover" style={randomGradient} />
   <div class="info">
-    <div>
+    <div
+      style={objectStyle({
+        fontSize: '20px',
+      })}
+    >
       {randomEmoji()}
     </div>
     <div>

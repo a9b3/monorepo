@@ -59,8 +59,8 @@
               name: 'Untitled',
               bpm: Math.floor(Math.random() * 120),
               timeSignature: { top: Math.floor(Math.random() * 4), bottom: 1 },
-              clipSetIds: [],
-              playlistIds: [],
+              tracks: {},
+              trackOrder: [],
             })
           },
           type: 'item',
