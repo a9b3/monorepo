@@ -33,6 +33,9 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
+    'lines-between-class-members': 'off',
+    'no-param-reassign': 'off',
+    'no-underscore-dangle': 'off',
     // 'no-unused-vars': ['error', { varsIgnorePattern: '[iI]gnored' }],
   },
   overrides: [

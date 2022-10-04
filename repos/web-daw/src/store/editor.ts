@@ -13,6 +13,10 @@ const editorStore = writable<EditorT>({
 })
 
 function editorToJSON(editor) {
+  console.log(editor)
+  const parsed = JSON.stringify(editor, 2, ' ')
+  console.log(parsed)
+  console.log(JSON.parse(parsed))
   return {
     ...editor,
     openedProjects: editor.openedProjects.map(proj => proj.toJSON()),

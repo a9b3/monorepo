@@ -1,9 +1,9 @@
+import { SvelteStore } from 'src/utils/SvelteStore'
 import { Mixer } from './Mixer'
 import { Track } from './Track'
 import { Controller } from './Controller'
-import { SvelteStore } from 'src/utils/SvelteStore'
 
-export class Project extends SvelteStore<Project> {
+export class Project extends SvelteStore {
   // **************************
   // Persisted fields
   // **************************

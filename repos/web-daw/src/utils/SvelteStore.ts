@@ -4,14 +4,14 @@
  *
  * https://monad.fi/en/blog/svelte-custom-stores/
  */
-export class SvelteStore<T> {
+export class SvelteStore {
   _svelteStoreListeners = []
 
-  subscribe(listener: (state: T) => void) {
+  subscribe(listener: (state: this) => void) {
     this._svelteStoreListeners.push(listener)
     // Typescript throws an error here and svelte requires the initial set to be
     // called.
-    listener(this as any)
+    listener(this)
 
     return () => {
       const idx = this._svelteStoreListeners.indexOf(listener)
@@ -21,7 +21,7 @@ export class SvelteStore<T> {
     }
   }
 
-  set(state: T) {
+  set(state: this) {
     this._svelteStoreListeners.forEach(s => s(state))
   }
 }
