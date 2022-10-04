@@ -1,16 +1,23 @@
 <script lang="ts">
-  export let clipTrack: any
-  export let clip: any
+  import type { ClipTrack } from 'src/daw/ClipTrack'
+  import type { Clip } from 'src/daw/Clip'
+  export let clipTrack: ClipTrack
+  export let clip: Clip | undefined
   export let idx: number
   import editorStore, { setInFocusElement } from 'src/store/editor'
+
+  // Need to use this since non created clips won't have an unique id.
+  function getClipInFocusElementId() {
+    return `${clipTrack.id}.${idx}`
+  }
 </script>
 
 <div
   class="clip"
-  class:active={clip.id}
-  class:selected={$editorStore.inFocusElement === `${clipTrack.id}.${idx}`}
-  on:click={evt => {
-    setInFocusElement(`${clipTrack.id}.${idx}`)
+  class:active={clip?.id}
+  class:selected={$editorStore.inFocusElement === getClipInFocusElementId()}
+  on:click={() => {
+    setInFocusElement(getClipInFocusElementId())
   }}
   on:dblclick={() => {
     clipTrack.addClip(String(idx))
@@ -22,7 +29,7 @@
 <style>
   .clip {
     padding: var(--spacing__paddingM);
-    border-bottom: 1px solid var(--colors__bg);
+    border-bottom: 1px dashed var(--colors__bg);
   }
 
   .clip.selected {

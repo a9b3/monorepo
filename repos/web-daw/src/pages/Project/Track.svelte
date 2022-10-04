@@ -1,27 +1,26 @@
 <script lang="ts">
+  import type { Project } from 'src/daw/Project'
+  import type { Track } from 'src/daw/Track'
   import Text from 'src/components/Text.svelte'
   import Pill from 'src/components/Pill.svelte'
   import Layout from 'src/components/Layout.svelte'
-  import Icon from 'src/components/Icon.svelte'
   import Meter from 'src/components/Meter.svelte'
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import editorStore, { setInFocusElement } from 'src/store/editor'
   import Player from 'src/components/players/Player.svelte'
   import { objectStyle } from 'src/utils/objectToStyleStr'
-  import { randomLinearGradient } from 'src/utils/randomLinearGradient'
 
   import Clip from './Clip.svelte'
 
-  export let project: any
+  export let project: Project
   export let color = 'var(--colors__accent)'
-  // export let color = randomLinearGradient()
-  export let track: any
+  export let track: Track
   export let idx: number
-  export let title = 'Midi'
-  export let clips = Array(8).fill({})
 
   let mainElRef: HTMLElement
   let contextMenuRef: ContextMenu
+
+  let clips = Array(8).fill({})
 </script>
 
 <div
@@ -58,12 +57,8 @@
     {idx + 1}
     {track.label}
   </div>
-  {#each clips as clip, idx}
-    <Clip
-      clip={track.clipTrack.clips[idx] || {}}
-      {idx}
-      clipTrack={track.clipTrack}
-    />
+  {#each clips as _, idx}
+    <Clip clip={track.clipTrack.clips[idx]} {idx} clipTrack={track.clipTrack} />
   {/each}
 
   <Layout class="bottom" type="col" padding="var(--spacing__padding)">
