@@ -1,9 +1,14 @@
+<!--
+  @component
+
+  For editing text and display at once.
+-->
 <script lang="ts">
-  export let foo = ''
-  export let handleInput
+  export let value = ''
+  export let handleInput: (evt: Event) => void
 </script>
 
-<input class="main" bind:value={foo} on:input={handleInput} />
+<input class="main" bind:value on:input={handleInput} />
 
 <style>
   .main {

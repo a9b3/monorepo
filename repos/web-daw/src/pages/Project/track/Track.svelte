@@ -115,7 +115,7 @@
 <style>
   .main {
     --color: var(--colors__accent);
-    --misc__borderRadius: 0;
+    /* --misc__borderRadius: var(--misc__borderRadius); */
 
     height: '100%';
     background: var(--colors__bg2);
@@ -136,7 +136,6 @@
   }
 
   .main > :global(.bottom) {
-    font-size: 10px;
     margin-top: auto;
     padding: var(--spacing__paddingM);
     padding-bottom: var(--spacing__paddingM);

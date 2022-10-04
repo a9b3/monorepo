@@ -1,4 +1,5 @@
 import { SvelteStore } from 'src/utils/SvelteStore'
+import type { ProjectDoc } from 'src/database/project'
 import { Mixer } from './Mixer'
 import { Track } from './Track'
 import { Controller } from './Controller'
@@ -29,7 +30,9 @@ export class Project extends SvelteStore {
     timeSignature,
     tracks,
     trackOrder,
-  }) {
+    mixer,
+    controller,
+  }: ProjectDoc) {
     super()
 
     this.id = id
@@ -43,6 +46,8 @@ export class Project extends SvelteStore {
       return m
     }, {})
     this.trackOrder = trackOrder
+    // this.controller = new Controller(controller)
+    // this.mixer = new Mixer(mixer)
   }
 
   setName(name: string) {
@@ -52,6 +57,7 @@ export class Project extends SvelteStore {
   }
 
   addTrack({ label }: { label: string }) {
+    console.log(`here`)
     const id = crypto.randomUUID()
     const channel = this.mixer.addChannel()
     const track = new Track({ id, channelId: channel.id, label })

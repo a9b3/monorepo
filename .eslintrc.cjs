@@ -37,6 +37,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-underscore-dangle': 'off',
     'arrow-body-style': 'off',
+    'no-constructor-return': 'off',
     // 'no-unused-vars': ['error', { varsIgnorePattern: '[iI]gnored' }],
   },
   overrides: [

@@ -8,17 +8,21 @@ import { Channel } from './Channel'
  */
 export class Mixer {
   id = crypto.randomUUID()
-  audioContext: AudioContext = audioContext
   // Can have groups
   channels: { [id: string]: Channel } = {}
   sends: { [id: string]: Channel } = {}
   master: Channel = new Channel()
 
-  constructor(arg?: any) {
-    this.master.connect(audioContext.destination)
-    if (arg) {
-      this.fromJSON(arg)
+  constructor({ id, channels, sends, master }: any = {}) {
+    if (master) {
+      this.id = id
+      this.channels = Object.values(channels).reduce((m, val) => {
+        m[val.id] = val
+        return m
+      }, {} as { [id: string]: Channel })
     }
+
+    this.master.connect(audioContext.destination)
   }
 
   addChannel(arg?: any): Channel {
@@ -49,31 +53,5 @@ export class Mixer {
 
   cleanup() {
     this.master.disconnect()
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      channels: Object.values(this.channels).reduce((m, channel) => {
-        m[channel.id] = channel.toJSON()
-        return m
-      }, {}),
-      sends: Object.values(this.sends).reduce((m, channel) => {
-        m[channel.id] = channel.toJSON()
-        return m
-      }, {}),
-      master: this.master.toJSON(),
-    }
-  }
-
-  fromJSON({ id, channels, sends, master }) {
-    this.id = id
-    Object.values(channels).map(channel => {
-      this.addChannel(channel)
-    })
-    Object.values(sends).map(send => {
-      this.addSend(send)
-    })
-    this.master.fromJSON(master)
   }
 }

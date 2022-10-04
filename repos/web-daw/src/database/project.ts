@@ -1,4 +1,8 @@
 import PouchDB from 'pouchdb'
+import type { Track } from 'src/daw/Track'
+import type { Controller } from 'src/daw/Controller'
+import type { Mixer } from 'src/daw/Mixer'
+
 import type { DBInterface } from './DbInterface'
 
 interface TimeSignature {
@@ -18,8 +22,10 @@ export interface ProjectDoc {
   name: string
   bpm: number
   timeSignature: TimeSignature
-  clipSetIds: string[]
-  playlistIds: string[]
+  tracks: { [id: string]: Track }
+  trackOrder: string[]
+  controller: Controller
+  mixer: Mixer
 }
 
 /**

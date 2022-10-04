@@ -3,7 +3,7 @@
   import Project from 'src/pages/Project/Project.svelte'
   import Dashboard from 'src/pages/Dashboard/Dashboard.svelte'
   import Theme from 'src/components/Theme.svelte'
-  import TabBar from 'src/components/TabBar.svelte'
+  import TabBar from 'src/components/tabBar/TabBar.svelte'
   import userStore from 'src/store/user'
   import { fetchEditor } from 'src/store/editor'
 

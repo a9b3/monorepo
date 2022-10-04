@@ -1,3 +1,8 @@
+<!--
+  @component
+
+  An individual tab used by TabBar
+-->
 <script lang="ts">
   import Icon from 'src/components/Icon.svelte'
   import { randomEmoji } from 'src/utils/randomEmoji'
@@ -26,13 +31,12 @@
     <div style={`width: 15px;`} />
 
     <ClearEditableText
-      foo={$project.name}
+      value={$project.name}
       handleInput={evt => {
         $project.setName(evt.target.value)
       }}
     />
 
-    {$project.name}
     <div
       class="tabEnd"
       on:click|stopPropagation|preventDefault={() => {
