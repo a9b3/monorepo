@@ -52,6 +52,7 @@
       icon: 'musicFill',
     },
   ]
+
   let selected = ''
 </script>
 

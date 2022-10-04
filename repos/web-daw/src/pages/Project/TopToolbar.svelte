@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type { Project } from 'src/daw/Project'
   import Pill from 'src/components/Pill.svelte'
   import Layout from 'src/components/Layout.svelte'
   import Icon from 'src/components/Icon.svelte'
   import { audioContext } from 'src/daw/audioContext'
-  export let project
+
+  export let project: Project
 </script>
 
 <div class="main">
@@ -28,7 +30,6 @@
         } else {
           $project.controller.play()
         }
-
       }}><Icon type="arrowRightFill" /></Pill
     >
   </Layout>

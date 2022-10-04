@@ -10,9 +10,9 @@
   } from 'src/store/project'
   import ProjectCard from './ProjectCard.svelte'
 
-  onMount(() => fetchProjects())
-
   let contextMenuRef: ContextMenu
+
+  onMount(() => fetchProjects())
 </script>
 
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>

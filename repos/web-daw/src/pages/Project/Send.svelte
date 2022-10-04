@@ -2,12 +2,12 @@
   import Text from 'src/components/Text.svelte'
   import Pill from 'src/components/Pill.svelte'
   import Layout from 'src/components/Layout.svelte'
-  import Icon from 'src/components/Icon.svelte'
   import Meter from 'src/components/Meter.svelte'
   import editorStore, { setInFocusElement } from 'src/store/editor'
   import { objectStyle } from 'src/utils/objectToStyleStr'
+
   export let color = 'var(--colors__bg)'
-  export let trackId: any
+  export let trackId: string
   export let title = 'Send'
 
   let values = {
@@ -72,10 +72,11 @@
 <style>
   .main {
     --color: var(--colors__accent);
+
     height: '100%';
     background: var(--colors__bg2);
     width: var(--track__width);
-    border-radius: 4px;
+    border-radius: var(--misc__borderRadius);
     overflow: hidden;
     display: flex;
     flex-direction: column;

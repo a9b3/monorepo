@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { ClipTrack } from 'src/daw/ClipTrack'
   import type { Clip } from 'src/daw/Clip'
+  import editorStore, { setInFocusElement } from 'src/store/editor'
+
   export let clipTrack: ClipTrack
   export let clip: Clip | undefined
   export let idx: number
-  import editorStore, { setInFocusElement } from 'src/store/editor'
 
   // Need to use this since non created clips won't have an unique id.
   function getClipInFocusElementId() {

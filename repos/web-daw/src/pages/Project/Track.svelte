@@ -117,6 +117,7 @@
 <style>
   .main {
     --color: var(--colors__accent);
+
     height: '100%';
     background: var(--colors__bg2);
     width: var(--track__width);

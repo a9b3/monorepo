@@ -12,6 +12,7 @@
   import { randomLinearGradient } from 'src/utils/randomLinearGradient'
   import { randomEmoji } from 'src/utils/randomEmoji'
   import { objectStyle } from 'src/utils/objectToStyleStr'
+
   export let project: ProjectDoc
 
   let randomGradient = `background: ${randomLinearGradient()};`

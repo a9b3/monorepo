@@ -9,7 +9,7 @@
   import TopToolbar from './TopToolbar.svelte'
   import Track from './Track.svelte'
   import Master from './Master.svelte'
-  import Send from './Send.svelte'
+  // import Send from './Send.svelte'
 
   export let params: { id: string }
 
@@ -65,9 +65,10 @@
       {/each}
     </div>
     <div class="sends">
-      <div class="track">
-        <Send trackId={$project.mixer.master.id} />
-      </div>
+      <!-- TODO add sends -->
+      <!-- <div class="track"> -->
+      <!--   <Send trackId={send.id} /> -->
+      <!-- </div> -->
     </div>
     <div class="master">
       <div class="track">
