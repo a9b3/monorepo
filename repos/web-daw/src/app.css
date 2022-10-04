@@ -4,6 +4,8 @@ body {
 
 html {
   box-sizing: border-box;
+  touch-action: none;
+  overscroll-behavior-x: none;
 }
 *,
 *:before,
