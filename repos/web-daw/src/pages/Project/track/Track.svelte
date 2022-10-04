@@ -15,7 +15,6 @@
   export let project: Project
   export let color = 'var(--colors__accent)'
   export let track: Track
-  export let idx: number
 
   let mainElRef: HTMLElement
   let contextMenuRef: ContextMenu
@@ -54,7 +53,6 @@
     ]}
   />
   <div class="title">
-    {idx + 1}
     {track.label}
   </div>
   {#each clips as _, idx}
@@ -117,6 +115,7 @@
 <style>
   .main {
     --color: var(--colors__accent);
+    --misc__borderRadius: 0;
 
     height: '100%';
     background: var(--colors__bg2);

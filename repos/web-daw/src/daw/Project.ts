@@ -7,6 +7,8 @@ export class Project extends SvelteStore {
   id: string
   createdAt: number | undefined
   createdBy: string
+  lastModified: number | undefined
+  lastModifiedBy: string
   name = 'Untitled'
   bpm = 120
   timeSignature: { top: number; bottom: number } = {
@@ -41,6 +43,12 @@ export class Project extends SvelteStore {
       return m
     }, {})
     this.trackOrder = trackOrder
+  }
+
+  setName(name: string) {
+    this.name = name
+
+    this.set(this)
   }
 
   addTrack({ label }: { label: string }) {

@@ -5,12 +5,9 @@
 -->
 <script lang="ts">
   import Icon from 'src/components/Icon.svelte'
-  import { randomEmoji } from 'src/utils/randomEmoji'
-  import { Link, navigate } from 'svelte-routing'
-  import editorStore, {
-    setSelectedProject,
-    removeOpenedProject,
-  } from 'src/store/editor'
+  import { Link } from 'svelte-routing'
+  import Tab from 'src/components/tabBar/Tab.svelte'
+  import editorStore, { setSelectedProject } from 'src/store/editor'
 </script>
 
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
@@ -25,35 +22,7 @@
     </div>
   </Link>
   {#each $editorStore.openedProjects as project}
-    <Link
-      to={`/project/${project.id}`}
-      on:click={() => {
-        setSelectedProject(project.id)
-      }}
-    >
-      <div
-        class="tab project"
-        class:selected={$editorStore.selectedProjectId === project.id}
-      >
-        {randomEmoji()}
-        <div style={`width: 15px;`} />
-
-        {project.name}
-        <div
-          class="tabEnd"
-          on:click|stopPropagation|preventDefault={() => {
-            const nextId = removeOpenedProject(project.id)
-            if (nextId) {
-              navigate(`/project/${nextId}`, { replace: true })
-            } else {
-              navigate(`/`, { replace: true })
-            }
-          }}
-        >
-          <Icon type="closeLine" />
-        </div>
-      </div>
-    </Link>
+    <Tab {project} />
   {/each}
 </div>
 

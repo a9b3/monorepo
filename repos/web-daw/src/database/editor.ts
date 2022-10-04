@@ -45,6 +45,8 @@ export class EditorDB implements DBInterface<EditorDoc> {
   /**
    * This is called frequenty upon user interacting with the editor so we can
    * debounce this for better perf.
+   *
+   * Just pass the class instance and this will handle serializing it.
    */
   update = debounce(async (id: string, editor: EditorDoc) => {
     const response = await this.getById(id)

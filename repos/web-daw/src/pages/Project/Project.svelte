@@ -58,9 +58,9 @@
           },
         ]}
       />
-      {#each $project.trackOrder as trackId, idx}
+      {#each $project.trackOrder as trackId}
         <div class="track">
-          <Track track={$project.tracks[trackId]} {idx} project={$project} />
+          <Track track={$project.tracks[trackId]} project={$project} />
         </div>
       {/each}
     </div>
