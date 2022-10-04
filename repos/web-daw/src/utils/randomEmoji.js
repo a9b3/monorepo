@@ -1855,5 +1855,5 @@ export const EMOJIS = [
 ]
 
 export const randomEmoji = () => {
-  return emojis[~~(Math.random() * emojis.length)]
+  return EMOJIS[~~(Math.random() * EMOJIS.length)]
 }
