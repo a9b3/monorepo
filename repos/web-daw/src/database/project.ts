@@ -20,50 +20,34 @@ export interface ProjectT {
 }
 
 export class ProjectDb implements DbInterface<ProjectT> {
-  database: PouchDB.Database<ProjectT>
+  #database: PouchDB.Database<ProjectT>
 
   constructor(...conf: ConstructorParameters<typeof PouchDB>) {
-    if (conf) {
-      this.configureDb(...conf)
+    if (!conf) {
+      throw new Error(`Must initialize database`)
     }
-  }
-
-  configureDb(...conf: ConstructorParameters<typeof PouchDB>) {
-    this.database = new PouchDB(...conf)
-  }
-
-  getDb() {
-    if (!this.database) {
-      throw new Error(`'configureDb' must be called before trying to use it.`)
-    }
-    return this.database
+    this.#database = new PouchDB(...conf)
   }
 
   async create(project: ProjectT) {
     const id = crypto.randomUUID()
-    const now = Date.now()
-    await this.getDb().put({
+    await this.#database.put({
       ...project,
-      createdAt: now,
+      createdAt: Date.now(),
       id,
       _id: id,
     })
-
-    return {
-      ...project,
-      createdAt: now,
-      id,
-    }
+    return this.getById(id)
   }
 
   async update(id: string, project: ProjectT) {
-    const response = await this.getDb().get(id)
-    await this.getDb().put({ ...response, ...project })
-    return this.getDb().get(id)
+    const response = await this.#database.get(id)
+    await this.#database.put({ ...response, ...project })
+    return this.#database.get(id)
   }
 
   async getById(id: string) {
-    const response = await this.getDb().get(id)
+    const response = await this.#database.get(id)
     return response
   }
 
@@ -71,7 +55,7 @@ export class ProjectDb implements DbInterface<ProjectT> {
    * https://docs.couchdb.org/en/latest/ddocs/views/pagination.html
    */
   async get({ startkey, limit }: { limit?: number; startkey?: string } = {}) {
-    const res = await this.getDb().allDocs({
+    const res = await this.#database.allDocs({
       include_docs: true,
       startkey,
       limit,
@@ -87,7 +71,7 @@ export class ProjectDb implements DbInterface<ProjectT> {
 
   async remove(id: string) {
     const doc = await this.getById(id)
-    await this.getDb().remove(id, doc._rev)
+    await this.#database.remove(id, doc._rev)
     return true
   }
 }

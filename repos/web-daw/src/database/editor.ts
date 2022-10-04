@@ -1,76 +1,61 @@
-// import PouchDB from 'pouchdb/dist/pouchdb.js'
 import PouchDB from 'pouchdb'
 import debounce from 'lodash/debounce'
-import type { ProjectT } from './project'
+import type { Project } from 'src/daw/Project'
 
 export interface EditorT {
   id?: string
-  openedProjects: ProjectT[]
+  openedProjects: Project[]
   selectedProjectId: string | undefined
   inFocusElement: string | undefined
   user?: string
 }
 
 export class EditorDb {
-  database: PouchDB.Database<EditorT>
+  #database: PouchDB.Database<EditorT>
 
   constructor(...conf: ConstructorParameters<typeof PouchDB>) {
-    if (conf) {
-      this.configureDb(...conf)
+    if (!conf) {
+      throw new Error(`Must initialize database`)
     }
-  }
-
-  configureDb(...conf: ConstructorParameters<typeof PouchDB>) {
-    this.database = new PouchDB(...conf)
-
-    // TODO local storage
-    this.database.createIndex({
+    this.#database = new PouchDB(...conf)
+    // TODO local storage need to figure out where to put createIndex statements
+    this.#database.createIndex({
       index: { fields: ['user'] },
     })
   }
 
-  getDb() {
-    if (!this.database) {
-      throw new Error(`'configureDb' must be called before trying to use it.`)
-    }
-    return this.database
-  }
-
   async create(editor: EditorT) {
-    console.log(`create`)
     const id = crypto.randomUUID()
-    await this.getDb().put({
+    await this.#database.put({
       ...editor,
+      createdAt: Date.now(),
       id,
       _id: id,
     })
-    console.log(`aftercreate`)
-    return {
-      ...editor,
-      id,
-    }
+    return this.getById(id)
   }
 
   update = debounce(async (id: string, editor: EditorT) => {
-    const response = await this.getDb().get(id)
-    console.log(`this onek`, response, editor)
-    await this.getDb().put({
+    const response = await this.getById(id)
+    await this.#database.put({
       ...response,
-      ...editor,
+      ...JSON.parse(JSON.stringify(editor)),
       id: response.id,
       _rev: response._rev,
     })
-    console.log(`after`, response)
-    return this.getDb().get(id)
-  }, 1000)
+    return this.#database.get(id)
+  }, 500)
 
   async getById(id: string) {
-    const response = await this.getDb().get(id)
-    return response
+    return this.#database.get(id)
   }
 
+  /**
+   * Lazy create the editor settings for the given user.
+   * TODO remove this later.
+   */
   async getByUserId(id: string): Promise<EditorT> {
-    const { docs } = await this.getDb().find({
+    const { docs } = await this.#database.find({
       selector: {
         user: id,
       },

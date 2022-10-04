@@ -4,11 +4,8 @@ import { Track } from './Track'
 import { Controller } from './Controller'
 
 export class Project extends SvelteStore {
-  // **************************
-  // Persisted fields
-  // **************************
   id: string
-  createdAt?: number
+  createdAt: number | undefined
   createdBy: string
   name = 'Untitled'
   bpm = 120
@@ -21,11 +18,29 @@ export class Project extends SvelteStore {
   controller: Controller = new Controller()
   mixer: Mixer = new Mixer()
 
-  constructor(arg: any) {
+  constructor({
+    id,
+    createdAt,
+    createdBy,
+    name,
+    bpm,
+    timeSignature,
+    tracks,
+    trackOrder,
+  }) {
     super()
-    if (arg) {
-      this.fromJSON(arg)
-    }
+
+    this.id = id
+    this.createdAt = createdAt
+    this.createdBy = createdBy
+    this.name = name
+    this.bpm = bpm
+    this.timeSignature = timeSignature
+    this.tracks = Object.values(tracks).reduce((m, track) => {
+      m[track.id] = new Track(track)
+      return m
+    }, {})
+    this.trackOrder = trackOrder
   }
 
   addTrack({ label }: { label: string }) {
@@ -42,48 +57,9 @@ export class Project extends SvelteStore {
     const track = this.tracks[id]
     this.mixer.removeChannel(track.channelId)
     delete this.tracks[id]
-    this.trackOrder = this.trackOrder.filter(id => id !== id)
+    this.trackOrder = this.trackOrder.filter(trackId => id !== trackId)
 
     this.set(this)
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      createdAt: this.createdAt,
-      createdBy: this.createdBy,
-      name: this.name,
-      bpm: this.bpm,
-      timeSignature: this.timeSignature,
-      tracks: Object.values(this.tracks).reduce((m, track) => {
-        m[track.id] = track.toJSON()
-        return m
-      }, {}),
-      trackOrder: this.trackOrder,
-    }
-  }
-
-  fromJSON({
-    id,
-    createdAt,
-    createdBy,
-    name,
-    bpm,
-    timeSignature,
-    tracks,
-    trackOrder,
-  }) {
-    this.id = id
-    this.createdAt = createdAt
-    this.createdBy = createdBy
-    this.name = name
-    this.bpm = bpm
-    this.timeSignature = timeSignature
-    this.tracks = Object.values(tracks).reduce((m, track) => {
-      m[track.id] = new Track(track)
-      return m
-    }, {})
-    this.trackOrder = trackOrder
   }
 
   cleanup() {

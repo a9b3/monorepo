@@ -12,17 +12,6 @@ const editorStore = writable<EditorT>({
   user: undefined,
 })
 
-function editorToJSON(editor) {
-  console.log(editor)
-  const parsed = JSON.stringify(editor, 2, ' ')
-  console.log(parsed)
-  console.log(JSON.parse(parsed))
-  return {
-    ...editor,
-    openedProjects: editor.openedProjects.map(proj => proj.toJSON()),
-  }
-}
-
 export async function fetchEditor(id: string) {
   const editor = await editorDb.getByUserId(id)
   editorStore.set({
@@ -31,7 +20,7 @@ export async function fetchEditor(id: string) {
   })
 }
 
-export function addOpenedProject(project: ProjectT) {
+export function addOpenedProject(project: Project) {
   editorStore.update(prev => {
     if (prev.openedProjects.findIndex(proj => proj.id === project.id) > -1) {
       return prev
@@ -45,7 +34,7 @@ export function addOpenedProject(project: ProjectT) {
     }
 
     // TODO sync database strat
-    editorDb.update(prev.id, editorToJSON(nextState))
+    editorDb.update(prev.id, nextState)
 
     return nextState
   })
@@ -66,7 +55,7 @@ export function removeOpenedProject(id: string) {
         selectedProjectId: nextSelectedId,
       }
       // TODO sync database strat
-      editorDb.update(prev.id, editorToJSON(nextState))
+      editorDb.update(prev.id, nextState)
       return nextState
     }
 
@@ -79,7 +68,7 @@ export function removeOpenedProject(id: string) {
       selectedProjectId: nextSelectedId,
     }
     // TODO sync database strat
-    editorDb.update(prev.id, editorToJSON(nextState))
+    editorDb.update(prev.id, nextState)
     return nextState
   })
   return nextSelectedId
@@ -90,7 +79,7 @@ export function setSelectedProject(id?: string) {
     prev.selectedProjectId = id
 
     // TODO sync database strat
-    editorDb.update(prev.id, editorToJSON(prev))
+    editorDb.update(prev.id, prev)
 
     return prev
   })
@@ -101,7 +90,7 @@ export function setInFocusElement(id?: string) {
     prev.inFocusElement = id
 
     // TODO sync database strat
-    editorDb.update(prev.id, editorToJSON(prev))
+    editorDb.update(prev.id, prev)
 
     return prev
   })

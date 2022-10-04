@@ -28,7 +28,6 @@
   class:selected={track.id === $editorStore.inFocusElement}
   style={objectStyle({
     '--color': color,
-    position: 'relative',
   })}
   on:contextmenu|preventDefault={evt => {
     setInFocusElement(track.id)
@@ -71,7 +70,7 @@
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
-        paddingRight: '20px',
+        paddingRight: '30px',
       })}
     >
       <Player />
