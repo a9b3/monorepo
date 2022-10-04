@@ -74,7 +74,7 @@
     height: '100%';
     background: var(--colors__bg2);
     width: var(--track__width);
-    border-radius: 4px;
+    border-radius: var(--misc__borderRadius);
     overflow: hidden;
     display: flex;
     flex-direction: column;

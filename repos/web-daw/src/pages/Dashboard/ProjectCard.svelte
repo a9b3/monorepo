@@ -70,7 +70,7 @@
     margin: var(--spacing__padding);
     height: 200px;
     width: 300px;
-    border-radius: 4px;
+    border-radius: var(--misc__borderRadius);
     overflow: hidden;
     display: grid;
     grid-template-rows: 2fr 1fr;

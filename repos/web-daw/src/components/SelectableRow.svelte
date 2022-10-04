@@ -25,6 +25,6 @@
 
   .selected {
     background: var(--colors__selected);
-    border-radius: 4px;
+    border-radius: var(--misc__borderRadius);
   }
 </style>
