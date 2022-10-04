@@ -31,8 +31,8 @@
     }
     showMenu = false
   }
-  function onPageRightClick(e: MouseEvent) {
-    if (showMenu && e.target !== parentEl) {
+  function onMouseDown(e: MouseEvent) {
+    if (showMenu && e.which === 3 && e.target !== parentEl) {
       showMenu = false
     }
   }
@@ -58,9 +58,7 @@
   </div>
 {/if}
 
-<svelte:body
-  on:click={onPageClick}
-  on:contextmenu|preventDefault={onPageRightClick} />
+<svelte:body on:click={onPageClick} on:mousedown={onMouseDown} />
 
 <style>
   .main {

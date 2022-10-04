@@ -26,9 +26,12 @@ export class Clip {
 
   instrument
 
-  constructor(arg?: arg) {
-    if (arg) {
-      this.fromJSON(arg)
+  constructor({ id, label } = {}) {
+    if (label) {
+      this.label = label
+    }
+    if (id) {
+      this.id = id
     }
   }
 
@@ -72,10 +75,5 @@ export class Clip {
         ticksPerBeat,
       })
     }
-  }
-
-  toJSON() {}
-  fromJSON({ label }) {
-    this.label = label
   }
 }

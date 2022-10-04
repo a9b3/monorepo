@@ -47,13 +47,13 @@ export class Project extends SvelteStore {
     }, {})
     this.trackOrder = trackOrder
     // this.controller = new Controller(controller)
-    // this.mixer = new Mixer(mixer)
+    this.mixer = new Mixer(mixer)
   }
 
   setName(name: string) {
     this.name = name
 
-    this.set(this)
+    this.updareSvelte(this)
   }
 
   addTrack({ label }: { label: string }) {
@@ -64,16 +64,18 @@ export class Project extends SvelteStore {
     this.tracks[id] = track
     this.trackOrder.push(id)
 
-    this.set(this)
+    this.updareSvelte(this)
   }
 
   removeTrack(id: string) {
+    console.log(id)
     const track = this.tracks[id]
+    console.log(track)
     this.mixer.removeChannel(track.channelId)
     delete this.tracks[id]
     this.trackOrder = this.trackOrder.filter(trackId => id !== trackId)
 
-    this.set(this)
+    this.updareSvelte(this)
   }
 
   cleanup() {

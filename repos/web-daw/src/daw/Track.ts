@@ -4,6 +4,7 @@ import { Arrangement } from './Arrangement'
 export class Track {
   id: string
   label: string
+  color: string
   clipTrack = new ClipTrack()
   arrangement = new Arrangement()
   /**
@@ -11,27 +12,20 @@ export class Track {
    */
   channelId: string
 
-  constructor(arg?: any) {
-    if (arg) {
-      this.fromJSON(arg)
-    }
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      label: this.label,
-      clipTrack: this.clipTrack.toJSON(),
-      arrangement: this.arrangement.toJSON(),
-      channelId: this.channelId,
-    }
-  }
-
-  fromJSON({ id, label, clipTrack, arrangement, channelId }) {
+  constructor({ id, label, clipTrack, arrangement, channelId, color } = {}) {
     this.id = id ? id : crypto.randomUUID()
+    this.color = color
     this.label = label
-    this.clipTrack.fromJSON(clipTrack)
-    this.arrangement.fromJSON(arrangement)
+    this.clipTrack = new ClipTrack(clipTrack)
+    this.arrangement = new Arrangement(arrangement)
     this.channelId = channelId
+  }
+
+  setLabel(label: string) {
+    this.label = label
+  }
+
+  setColor(color: string) {
+    this.color = color
   }
 }

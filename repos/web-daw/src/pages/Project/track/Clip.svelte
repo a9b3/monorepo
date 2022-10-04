@@ -2,10 +2,20 @@
   import type { ClipTrack } from 'src/daw/ClipTrack'
   import type { Clip } from 'src/daw/Clip'
   import editorStore, { setInFocusElement } from 'src/store/editor'
+  import ContextMenu from 'src/components/ContextMenu.svelte'
+
+  let contextMenuRef: ContextMenu
 
   export let clipTrack: ClipTrack
-  export let clip: Clip | undefined
   export let idx: number
+
+  let clipId
+  let clip: Clip
+
+  $: {
+    clipId = $clipTrack?.clipsOrder[idx]
+    clip = $clipTrack?.clips[clipId]
+  }
 
   // Need to use this since non created clips won't have an unique id.
   function getClipInFocusElementId() {
@@ -23,7 +33,29 @@
   on:dblclick={() => {
     clipTrack.addClip(String(idx))
   }}
+  on:contextmenu|preventDefault|stopPropagation={e => {
+    if (clipId) {
+      contextMenuRef.handleRightClick(e)
+    }
+    setInFocusElement(getClipInFocusElementId())
+  }}
 >
+  {#if clipId}
+    <ContextMenu
+      bind:this={contextMenuRef}
+      menu={clipId
+        ? [
+            {
+              label: 'Delete Clip',
+              onClick: () => {
+                clipTrack.removeClip(String(idx))
+              },
+              type: 'item',
+            },
+          ]
+        : []}
+    />
+  {/if}
   <div class="square" />
 </div>
 

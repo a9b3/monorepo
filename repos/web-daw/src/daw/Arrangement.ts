@@ -1,4 +1,1 @@
-export class Arrangement {
-  toJSON() {}
-  fromJSON(arg?: any) {}
-}
+export class Arrangement {}

@@ -1,34 +1,43 @@
-import { Clip } from './Clip'
-import type { ClipArgs } from './Clip'
 import { SvelteStore } from 'src/utils/SvelteStore'
 
-export interface ClipTrackArgs {
-  clips?: { [key: string]: ClipArgs }
-}
+import { Clip } from './Clip'
+import type { ClipArgs } from './Clip'
 
-export class ClipTrack extends SvelteStore<ClipTrack> {
+export class ClipTrack extends SvelteStore {
   id = crypto.randomUUID()
-  clips: { [key: string]: ClipArgs } = {}
+  clips: { [key: string]: Clip } = {}
+  clipsOrder: {
+    [idx: string]: string
+  } = {}
 
-  constructor(arg?: ClipTrackArgs) {
+  constructor({ id, clips, clipsOrder } = {}) {
     super()
-    if (arg) {
-      this.fromJSON(arg)
+
+    if (id) {
+      this.id = id
+    }
+    if (clips) {
+      this.clips = Object.values(clips).reduce((m, val) => {
+        m[val.id] = val
+        return m
+      }, {})
+    }
+    if (clipsOrder) {
+      this.clipsOrder = clipsOrder
     }
   }
 
   addClip(idx: string, args?: ClipArgs) {
-    this.clips[idx] = new Clip(args)
+    const clip = new Clip(args)
+    this.clips[clip.id] = clip
+    this.clipsOrder[idx] = clip.id
+
+    this.updareSvelte(this)
   }
 
-  removeClip(idx: string, args?: ClipArgs) {
-    this.clips[idx] = new Clip(args)
-  }
+  removeClip(idx: string) {
+    delete this.clipsOrder[idx]
 
-  toJSON() {}
-  fromJSON(arg?: ClipTrackArgs) {}
-
-  subscribe(listener) {
-    return () => {}
+    this.updareSvelte(this)
   }
 }

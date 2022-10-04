@@ -21,7 +21,7 @@ export class SvelteStore {
     }
   }
 
-  set(state: this) {
+  updareSvelte(state: this) {
     this._svelteStoreListeners.forEach(s => s(state))
   }
 }

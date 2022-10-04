@@ -9,11 +9,12 @@
   import editorStore, { setInFocusElement } from 'src/store/editor'
   import Player from 'src/components/players/Player.svelte'
   import { objectStyle } from 'src/utils/objectToStyleStr'
+  import ClearEditableText from 'src/components/ClearEditableText.svelte'
+  import { randomLinearGradient } from 'src/utils/randomLinearGradient'
 
   import Clip from './Clip.svelte'
 
   export let project: Project
-  export let color = 'var(--colors__accent)'
   export let track: Track
 
   let mainElRef: HTMLElement
@@ -27,7 +28,7 @@
   class="main"
   class:selected={track.id === $editorStore.inFocusElement}
   style={objectStyle({
-    '--color': color,
+    '--color': track.color,
   })}
   on:contextmenu|preventDefault={evt => {
     setInFocusElement(track.id)
@@ -52,11 +53,19 @@
       },
     ]}
   />
-  <div class="title">
-    {track.label}
+  <div
+    class="title"
+    on:click={() => {
+      track.setColor(randomLinearGradient())
+    }}
+  >
+    <ClearEditableText
+      value={track.label}
+      handleInput={evt => track.setLabel(evt.target.value)}
+    />
   </div>
   {#each clips as _, idx}
-    <Clip clip={track.clipTrack.clips[idx]} {idx} clipTrack={track.clipTrack} />
+    <Clip {idx} clipTrack={track.clipTrack} />
   {/each}
 
   <Layout class="bottom" type="col" padding="var(--spacing__padding)">

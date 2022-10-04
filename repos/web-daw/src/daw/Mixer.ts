@@ -17,9 +17,10 @@ export class Mixer {
     if (master) {
       this.id = id
       this.channels = Object.values(channels).reduce((m, val) => {
-        m[val.id] = val
+        m[val.id] = new Channel(val)
         return m
       }, {} as { [id: string]: Channel })
+      this.master = new Channel(master)
     }
 
     this.master.connect(audioContext.destination)
