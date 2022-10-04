@@ -1,7 +1,7 @@
 import PouchDB from 'pouchdb'
 import debounce from 'lodash/debounce'
 import type { Project } from 'src/daw/Project'
-import type { DBInterface } from './DBInterface'
+import type { DBInterface } from './DbInterface'
 
 /**
  * Schema of the editor document in the database.

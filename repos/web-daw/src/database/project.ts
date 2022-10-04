@@ -1,5 +1,5 @@
 import PouchDB from 'pouchdb'
-import type { DBInterface } from './DBInterface'
+import type { DBInterface } from './DbInterface'
 
 interface TimeSignature {
   top: number
