@@ -127,6 +127,5 @@
 
   .master {
     grid-area: master;
-    padding: var(--spacing__paddingSm) 0;
   }
 </style>
