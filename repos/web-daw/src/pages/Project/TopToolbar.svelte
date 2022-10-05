@@ -36,7 +36,7 @@
   <Layout class="left">
     <Pill title="Link" disabled />
     <Pill title="Tap" disabled />
-    <Pill title={String(project.bpm) + ' bpm'} />
+    <Pill title={String(project.controller.bpm) + ' bpm'} />
     <Pill
       title={String(project.timeSignature.top) +
         ' / ' +

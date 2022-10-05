@@ -24,7 +24,7 @@
   let mainElRef: HTMLElement
   let contextMenuRef: ContextMenu
 
-  let channel = project.mixer.channels[track.channelId]
+  let channel = $project.mixer.channels[track.channelId]
 
   let clips = Array(8).fill({})
 </script>
