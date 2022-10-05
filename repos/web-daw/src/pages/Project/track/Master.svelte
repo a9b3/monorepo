@@ -4,38 +4,21 @@
   import Layout from 'src/components/Layout.svelte'
   import Meter from 'src/components/Meter.svelte'
   import editorStore, { setInFocusElement } from 'src/store/editor'
+  import type { Channel } from 'src/daw/Channel'
   import { objectStyle } from 'src/utils/objectToStyleStr'
+  import StereoMeter from 'src/components/Meter/StereoMeter.svelte'
 
   export let color = 'var(--colors__bg)'
-  export let trackId: string
-
-  let values = {
-    value: 0,
-    secondary: 0,
-  }
-  let values2 = {
-    value: 0,
-    secondary: 0,
-  }
-  setInterval(() => {
-    values = {
-      value: Math.random() * 100,
-      secondary: Math.random() * 100,
-    }
-    values2 = {
-      value: Math.random() * 100,
-      secondary: Math.random() * 100,
-    }
-  }, 100)
+  export let channel: Channel
 </script>
 
 <div
   class="main"
-  class:selected={trackId === $editorStore.inFocusElement}
+  class:selected={channel.id === $editorStore.inFocusElement}
   style={objectStyle({
     '--color': color,
   })}
-  on:click={() => setInFocusElement(trackId)}
+  on:click={() => setInFocusElement(channel.id)}
 >
   <div class="title">Master</div>
 
@@ -53,17 +36,13 @@
         flexDirection: 'row',
       })}
     >
-      <Meter
-        value={values.value}
-        secondaryValue={values.secondary}
-        style={objectStyle({ width: '5px' })}
-      />
-      <div style={objectStyle({ width: '5px' })} />
-      <Meter
-        value={values2.value}
-        secondaryValue={values2.secondary}
-        style={objectStyle({ width: '5px' })}
-      />
+      <div
+        style={objectStyle({
+          width: '15px',
+        })}
+      >
+        <StereoMeter analyser={channel.analyser} />
+      </div>
     </div>
   </Layout>
 </div>

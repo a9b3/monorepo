@@ -72,7 +72,7 @@
     </div>
     <div class="master">
       <div class="track">
-        <Master trackId={$project.mixer.master.id} />
+        <Master channel={$project.mixer.master} />
       </div>
     </div>
     <div class="bottom-panel" />

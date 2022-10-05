@@ -12,7 +12,7 @@
 
   function update() {
     rms = analyser.getRms().map(rms => rms * 50)
-    peak = analyser.getPeaks().map(peak => peak * 50)
+    peak = analyser.getPeaks().map(peak => peak * 25)
   }
 
   onMount(() => {
