@@ -27,9 +27,10 @@
       e.target === menuEl ||
       (e.target instanceof Element && menuEl?.contains(e.target))
     ) {
-      return
+      // do nothing
+    } else {
+      showMenu = false
     }
-    showMenu = false
   }
   function onMouseDown(e: MouseEvent) {
     if (showMenu && e.which === 3 && e.target !== parentEl) {
@@ -67,6 +68,7 @@
     outline: 1px solid var(--colors__fg2);
     width: 200px;
     box-shadow: 0px 5px 5px 5px rgba(0, 0, 0, 0.05);
+    z-index: 100;
   }
 
   .row {

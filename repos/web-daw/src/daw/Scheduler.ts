@@ -7,11 +7,13 @@ export interface SchedulerConstructorArgs {
   ticksPerBeat?: number
 }
 
-export type SchedulerHandler = (SchedulerHandler: {
+export type SchedulerHandlerArg = {
   currentTick: number
   nextTickTime: number
   ticksPerBeat: number
-}) => void
+}
+
+export type SchedulerHandler = (arg0: SchedulerHandlerArg) => void
 
 /**
  * Handle all scheduling logic here.

@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import { SvelteStore } from 'src/utils/SvelteStore'
+import type { SchedulerHandlerArg } from './Scheduler'
 
 export type Note = {
   type: 'on' | 'off'
@@ -14,8 +14,11 @@ export interface ClipArgs {
   beat?: number
 }
 
+export type ClipHandlerArg = SchedulerHandlerArg & { note: Note }
+
 export class Clip extends EventEmitter {
   id = crypto.randomUUID()
+  name: string
 
   /**
    * Notes will be keyed by ticks. The scheduler will attempt to access this map
@@ -30,17 +33,13 @@ export class Clip extends EventEmitter {
 
   instrument
 
-  constructor({ id, label, notes }: any = {}) {
+  constructor({ id, label, notes, name }: any = {}) {
     super()
-    if (label) {
-      this.label = label
-    }
-    if (id) {
-      this.id = id
-    }
-    if (notes) {
-      this.notes = notes
-    }
+
+    if (name) this.name = name
+    if (label) this.label = label
+    if (id) this.id = id
+    if (notes) this.notes = notes
   }
 
   setBar(bar: number) {
@@ -57,6 +56,12 @@ export class Clip extends EventEmitter {
 
   setLabel(label: string) {
     this.label = label
+
+    this.emit('update')
+  }
+
+  setName(name: string) {
+    this.name = name
 
     this.emit('update')
   }
@@ -92,13 +97,13 @@ export class Clip extends EventEmitter {
 
     const notes = this.notes[offsetTick]
     if (notes) {
-      console.log('playing', offsetTick, notes)
       Object.values(notes).forEach(note => {
         if (this.instrument) {
-          this.instrument.processNote(note, {
+          this.instrument.handler({
             currentTick,
             nextTickTime,
             ticksPerBeat,
+            note,
           })
         }
       })
@@ -108,7 +113,6 @@ export class Clip extends EventEmitter {
   subscribe = (listener: (state: this) => void) => {
     listener(this)
     const invokeListener = () => {
-      console.log(`here`)
       listener(this)
     }
     this.on('update', invokeListener)

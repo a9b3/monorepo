@@ -12,6 +12,7 @@
   import ClearEditableText from 'src/components/ClearEditableText.svelte'
   import { randomLinearGradient } from 'src/utils/randomLinearGradient'
 
+  import Instrument from './Instrument.svelte'
   import Clip from './Clip.svelte'
 
   export let project: Project
@@ -77,6 +78,7 @@
         paddingRight: '30px',
       })}
     >
+      <Instrument instrument={track.instrument} />
       <Player />
     </div>
     <Layout class="section" type="col">

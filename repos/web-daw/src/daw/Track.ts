@@ -1,5 +1,6 @@
 import { ClipTrack } from './ClipTrack'
 import { Arrangement } from './Arrangement'
+import { MPC } from './instruments/MPC'
 
 export class Track {
   id: string
@@ -7,6 +8,7 @@ export class Track {
   color: string
   clipTrack = new ClipTrack()
   arrangement = new Arrangement()
+  instrument: MPC
   /**
    * The channel that this track is connected to.
    */
@@ -14,10 +16,17 @@ export class Track {
 
   constructor({ id, label, clipTrack, arrangement, channelId, color } = {}) {
     this.id = id ? id : crypto.randomUUID()
+
+    // TODO default to this for now
+    this.instrument = new MPC()
+
     this.color = color
     this.label = label
-    this.clipTrack = new ClipTrack(clipTrack)
-    this.arrangement = new Arrangement(arrangement)
+    this.clipTrack = new ClipTrack({
+      ...clipTrack,
+      instrument: this.instrument,
+    })
+    this.arrangement = new Arrangement()
     this.channelId = channelId
   }
 

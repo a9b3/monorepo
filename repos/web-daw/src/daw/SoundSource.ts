@@ -15,6 +15,10 @@ import type { UnitInterface } from './UnitInterface'
 import { audioContext } from './audioContext'
 import { getAudioBuffer } from './utils/getAudioBuffer'
 
+export interface SoundSourceConstructorArgs {
+  url?: string
+}
+
 /*
  * A SoundSource encapsulates logic regarding the loading and playing of a
  * particular sound.
@@ -32,9 +36,10 @@ export class SoundSource {
   ready = false
   output = audioContext.createGain()
 
-  constructor(args?: args) {
-    if (args) {
-      this.fromJSON(args)
+  constructor(arg?: SoundSourceConstructorArgs) {
+    if (arg.url) {
+      this.url = arg.url
+      this.load(this.url)
     }
   }
 
@@ -150,7 +155,4 @@ export class SoundSource {
     }
     return arr
   }
-
-  toJSON() {}
-  fromJSON(args?: args) {}
 }

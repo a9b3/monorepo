@@ -1,5 +1,8 @@
 <script lang="ts">
   import type { ClipTrack } from 'src/daw/ClipTrack'
+  import ClearEditableText from 'src/components/ClearEditableText.svelte'
+  import Icon from 'src/components/Icon.svelte'
+  import { objectStyle } from 'src/utils/objectToStyleStr'
   import type { Clip } from 'src/daw/Clip'
   import editorStore, { setInFocusElement } from 'src/store/editor'
   import ContextMenu from 'src/components/ContextMenu.svelte'
@@ -28,9 +31,10 @@
 
 <div
   class="clip"
-  class:active={clip?.id}
+  class:occupied={clip?.id}
+  class:active={$clipTrack?.activeClip === clip?.id}
   class:selected={$editorStore.inFocusElement === getClipInFocusElementId()}
-  on:click={() => {
+  on:mousedown={() => {
     setInFocusElement(getClipInFocusElementId())
   }}
   on:dblclick={() => {
@@ -58,6 +62,7 @@
               label: 'Delete Clip',
               onClick: () => {
                 clipTrack.removeClip(String(idx))
+                showWindow = false
               },
               type: 'item',
             },
@@ -65,13 +70,42 @@
         : []}
     />
   {/if}
-  <div class="square" />
+  <div
+    class="icon"
+    on:click={() => {
+      clipTrack.setActiveClip(clip?.id)
+    }}
+  >
+    <Icon
+      type={!clip?.id ? 'stop' : 'play'}
+      style={objectStyle({
+        transform: 'scale(1.2)',
+      })}
+    />
+  </div>
+  {#if clip?.id}
+    <div
+      style={objectStyle({
+        width: '100%',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        marginLeft: '10px',
+      })}
+    >
+      <ClearEditableText
+        value={clip?.name}
+        handleInput={e => $clip?.setName(e.target.value)}
+      />
+    </div>
+  {/if}
 </div>
 
 <style>
   .clip {
-    padding: var(--spacing__paddingM);
     border-bottom: 1px dashed var(--colors__bg);
+    height: 22px;
+    display: flex;
   }
 
   .clip.selected {
@@ -79,14 +113,18 @@
     outline-offset: -2px;
   }
 
-  .clip.active {
-    border-left: 4px solid var(--colors__accent);
+  .clip.occupied {
     background: var(--colors__bg);
+    border-bottom: 1px solid var(--colors__bg2);
   }
 
-  .square {
-    width: 10px;
-    height: 10px;
-    background: var(--colors__bg);
+  .icon {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+  }
+  .icon:hover {
+    filter: brightness(0.8);
   }
 </style>

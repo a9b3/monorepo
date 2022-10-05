@@ -3,6 +3,7 @@ import type { ProjectDoc } from 'src/database/project'
 import { Mixer } from './Mixer'
 import { Track } from './Track'
 import { Controller } from './Controller'
+import { audioContext } from './audioContext'
 
 export class Project extends SvelteStore {
   id: string
@@ -42,14 +43,18 @@ export class Project extends SvelteStore {
     this.name = name
     this.bpm = bpm
     this.timeSignature = timeSignature
-    this.tracks = Object.values(tracks).reduce((m, track) => {
-      m[track.id] = new Track(track)
-      return m
-    }, {})
     this.trackOrder = trackOrder
     if (controller) this.controller = new Controller(controller)
     this.controller.addHandler(this.handler)
     this.mixer = new Mixer(mixer)
+    this.tracks = Object.values(tracks).reduce((m, track) => {
+      const _track = new Track(track)
+      m[_track.id] = _track
+      if (_track.channelId) {
+        _track.instrument.connect(this.mixer.channels[_track.channelId])
+      }
+      return m
+    }, {})
   }
 
   setName(name: string) {
@@ -64,6 +69,9 @@ export class Project extends SvelteStore {
     const track = new Track({ id, channelId: channel.id, label })
     this.tracks[id] = track
     this.trackOrder.push(id)
+
+    // TODO default to this for now
+    track.instrument.connect(channel.input)
 
     this.updareSvelte(this)
   }

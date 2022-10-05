@@ -10,6 +10,7 @@ interface ClipTrackConstructorArgs {
     [idx: string]: string
   }
   activeClip?: string | undefined
+  instrument?: any
 }
 
 export class ClipTrack extends SvelteStore {
@@ -19,21 +20,25 @@ export class ClipTrack extends SvelteStore {
     [idx: string]: string
   } = {}
   activeClip: string | undefined
+  instrument
 
   constructor({
     id,
     clips,
     clipsOrder,
     activeClip,
+    instrument,
   }: ClipTrackConstructorArgs = {}) {
     super()
 
+    if (instrument) this.instrument = instrument
     if (id) {
       this.id = id
     }
     if (clips) {
       this.clips = Object.values(clips).reduce((m, val) => {
         m[val.id] = new Clip(val)
+        m[val.id].instrument = instrument
         return m
       }, {})
     }
@@ -45,6 +50,7 @@ export class ClipTrack extends SvelteStore {
 
   addClip(idx: string, args?: ClipArgs) {
     const clip = new Clip(args)
+    clip.instrument = this.instrument
     this.clips[clip.id] = clip
     this.clipsOrder[idx] = clip.id
 
