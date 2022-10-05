@@ -1,6 +1,7 @@
 import type { UnitInterface } from './UnitInterface'
 import { audioContext } from './audioContext'
 import { FxChain } from './FxChain'
+import { Analyser } from './Analyser'
 
 export interface ChannelConstructorArgs {
   id?: string
@@ -57,6 +58,8 @@ export class Channel implements UnitInterface {
   fx: FxChain = new FxChain()
   output: GainNode = audioContext.createGain()
 
+  analyser = new Analyser()
+
   constructor({
     id = crypto.randomUUID(),
     gain = 1,
@@ -73,6 +76,8 @@ export class Channel implements UnitInterface {
     this.fader.connect(this.stereoPanner)
     this.stereoPanner.connect(this.output)
     this.setPan(this.panPosition)
+
+    this.connect(this.analyser)
   }
 
   connect(unit: UnitInterface | AudioNode) {

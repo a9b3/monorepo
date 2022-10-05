@@ -13,6 +13,7 @@
   import Player from 'src/components/players/Player.svelte'
   import { objectStyle } from 'src/utils/objectToStyleStr'
   import ClearEditableText from 'src/components/ClearEditableText.svelte'
+  import StereoMeter from 'src/components/Meter/StereoMeter.svelte'
 
   import Instrument from './Instrument.svelte'
   import Clip from './Clip.svelte'
@@ -22,6 +23,8 @@
 
   let mainElRef: HTMLElement
   let contextMenuRef: ContextMenu
+
+  let channel = project.mixer.channels[track.channelId]
 
   let clips = Array(8).fill({})
 </script>
@@ -108,17 +111,13 @@
         flexDirection: 'row',
       })}
     >
-      <Meter
-        value={0}
-        secondaryValue={0}
-        style={objectStyle({ width: '5px' })}
-      />
-      <div style={objectStyle({ width: '5px' })} />
-      <Meter
-        value={0}
-        secondaryValue={0}
-        style={objectStyle({ width: '5px' })}
-      />
+      <div
+        style={objectStyle({
+          width: '15px',
+        })}
+      >
+        <StereoMeter analyser={channel.analyser} />
+      </div>
     </div>
   </Layout>
 </div>
