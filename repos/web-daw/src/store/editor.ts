@@ -8,6 +8,7 @@ const editorStore = writable<EditorDoc>({
   openedProjects: [],
   selectedProjectId: undefined,
   inFocusElement: undefined,
+  inFocusTrack: undefined,
   user: undefined,
 })
 
@@ -87,6 +88,17 @@ export function setSelectedProject(id?: string) {
 export function setInFocusElement(id?: string) {
   editorStore.update((prev: EditorDoc) => {
     prev.inFocusElement = id
+
+    // TODO sync database strat
+    editorDb.update(prev.id, prev)
+
+    return prev
+  })
+}
+
+export function setInFocusTrack(id?: string) {
+  editorStore.update((prev: EditorDoc) => {
+    prev.inFocusTrack = id
 
     // TODO sync database strat
     editorDb.update(prev.id, prev)

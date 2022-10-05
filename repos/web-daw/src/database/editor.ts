@@ -11,6 +11,7 @@ export interface EditorDoc {
   openedProjects: Project[]
   selectedProjectId: string | undefined
   inFocusElement: string | undefined
+  inFocusTrack: string | undefined
   user?: string
 }
 
@@ -78,6 +79,7 @@ export class EditorDB implements DBInterface<EditorDoc> {
         openedProjects: [],
         selectedProjectId: undefined,
         inFocusElement: undefined,
+        inFocusTrack: undefined
         user: id,
       })
       return created
