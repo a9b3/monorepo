@@ -101,12 +101,16 @@ export class Controller extends EventEmitter {
     this.scheduler.addHandler(this.#runHandlers)
     this.scheduler.start(this.position.cursor)
     this.isPlaying = true
+
+    this.emit('play')
   }
 
   stop() {
     this.scheduler.stop()
     this.scheduler.removeHandler(this.#runHandlers)
     this.isPlaying = false
+
+    this.emit('stop')
   }
 
   toggleMetronome(intentState: boolean) {
@@ -116,6 +120,20 @@ export class Controller extends EventEmitter {
       this.addHandler(this.#metronome.handler)
     } else {
       this.removeHandler(this.#metronome.handler)
+    }
+  }
+
+  subscribe(listener: (state: this) => void) {
+    listener(this)
+    const invokeListener = () => {
+      listener(this)
+    }
+    this.on('play', invokeListener)
+    this.on('stop', invokeListener)
+
+    return () => {
+      this.removeListener('play', invokeListener)
+      this.removeListener('stop', invokeListener)
     }
   }
 }
