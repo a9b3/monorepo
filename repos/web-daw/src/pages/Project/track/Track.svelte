@@ -56,7 +56,7 @@
   <div
     class="title"
     on:click={() => {
-      track.setColor(randomLinearGradient())
+      track.setColor('var(--colors__accent)')
     }}
   >
     <ClearEditableText
@@ -146,6 +146,7 @@
 
   .main > :global(.bottom) {
     margin-top: auto;
+    font-size: 0.8em;
     padding: var(--spacing__paddingM);
     padding-bottom: var(--spacing__paddingM);
   }

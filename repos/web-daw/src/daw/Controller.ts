@@ -1,54 +1,73 @@
+import { EventEmitter } from 'events'
 import { Metronome } from './Metronome'
+import type { SchedulerHandler } from './Scheduler'
 import { Scheduler } from './Scheduler'
 
-type ControllerHandler = (arg: {
-  currentTick: number
-  nextTickTime: number
-  ticksPerBeat: number
-}) => void
+/**
+ * Controller houses the logic for the scheduler and play time information.
+ */
+export class Controller extends EventEmitter {
+  #metronome: Metronome
+  #handlers: SchedulerHandler[] = []
 
-export class Controller {
-  handlers: ControllerHandler[] = []
-  metronome = new Metronome()
-  scheduler = new Scheduler()
+  scheduler: Scheduler
   id = crypto.randomUUID()
   bpm = 120
   timeSignature: { top: number; bottom: number } = {
     top: 4,
     bottom: 4,
   }
+  position: {
+    cursor: number
+    lastStartTime: number
+    lastStopTime: number
+  } = {
+    cursor: 0,
+    lastStartTime: 0,
+    lastStopTime: 0,
+  }
   isPlaying = false
   isMetronomeActive = true
 
-  constructor(args?: any) {
-    if (args) {
-      this.fromJSON(args)
-    } else {
-      this.setBpm(this.bpm)
-      this.toggleMetronome(this.isMetronomeActive)
-    }
+  constructor({
+    scheduler,
+    id,
+    bpm,
+    position,
+    timeSignature,
+    isMetronomeActive,
+  }: any) {
+    super()
+
+    this.#metronome = new Metronome()
+    this.scheduler = new Scheduler(scheduler)
+    this.id = id
+    if (timeSignature) this.timeSignature = timeSignature
+    if (position) this.position = position
+    this.setBpm(bpm)
+    this.toggleMetronome(isMetronomeActive)
   }
 
   setBpm(bpm: number) {
     this.bpm = bpm
-    this.scheduler.setTempo(bpm)
+    this.scheduler.setBpm(bpm)
   }
 
-  runHandlers = (...args: Parameters<ControllerHandler>) => {
-    this.handlers.forEach(handler => handler(...args))
+  #runHandlers = (...args: Parameters<SchedulerHandler>) => {
+    this.#handlers.forEach(handler => handler(...args))
   }
 
-  addHandler(fn: ControllerHandler) {
-    if (this.handlers.indexOf(fn) > -1) {
+  addHandler(fn: SchedulerHandler) {
+    if (this.#handlers.indexOf(fn) > -1) {
       return
     }
-    this.handlers.push(fn)
+    this.#handlers.push(fn)
   }
 
-  removeHandler(fn: ControllerHandler) {
-    const i = this.handlers.indexOf(fn)
+  removeHandler(fn: SchedulerHandler) {
+    const i = this.#handlers.indexOf(fn)
     if (i !== -1) {
-      this.handlers.splice(i, 1)
+      this.#handlers.splice(i, 1)
     }
   }
 
@@ -56,17 +75,14 @@ export class Controller {
     if (this.isPlaying) {
       this.stop()
     }
-    this.scheduler.handlers.push(this.runHandlers)
-    this.scheduler.schedule()
+    this.scheduler.addHandler(this.#runHandlers)
+    this.scheduler.start(this.position.cursor)
     this.isPlaying = true
   }
 
   stop() {
     this.scheduler.stop()
-    const i = this.scheduler.handlers.indexOf(this.runHandlers)
-    if (i !== -1) {
-      this.scheduler.handlers.splice(i, 1)
-    }
+    this.scheduler.removeHandler(this.#runHandlers)
     this.isPlaying = false
   }
 
@@ -74,27 +90,9 @@ export class Controller {
     this.isMetronomeActive =
       intentState !== undefined ? intentState : !this.isMetronomeActive
     if (this.isMetronomeActive) {
-      this.addHandler(this.metronome.handler)
+      this.addHandler(this.#metronome.handler)
     } else {
-      this.removeHandler(this.metronome.handler)
+      this.removeHandler(this.#metronome.handler)
     }
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      bpm: this.bpm,
-      timeSignature: this.timeSignature,
-      isMetronomeActive: this.isMetronomeActive,
-    }
-  }
-
-  fromJSON({ id, bpm, timeSignature, isMetronomeActive }) {
-    this.id = id
-    this.bpm = bpm
-    this.setBpm(this.bpm)
-    this.timeSignature = timeSignature
-    this.isMetronomeActive = isMetronomeActive
-    this.toggleMetronome(this.isMetronomeActive)
   }
 }

@@ -18,7 +18,7 @@ export class ClipTrack extends SvelteStore {
     }
     if (clips) {
       this.clips = Object.values(clips).reduce((m, val) => {
-        m[val.id] = val
+        m[val.id] = new Clip(val)
         return m
       }, {})
     }

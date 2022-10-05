@@ -1,68 +1,111 @@
 import { audioContext } from './audioContext'
 
+export type SchedulerHandler = (SchedulerHandler: {
+  currentTick: number
+  nextTickTime: number
+  ticksPerBeat: number
+}) => void
+
+/**
+ * Handle all scheduling logic here.
+ *
+ * Usage.
+ * const scheduler = new Scheduler({ bpm: 120 })
+ * const handler = ({currentTick, nextTickTime, ticksPerBeat}) => {}
+ * scheduler.addHandler(handler)
+ * scheduler.start(0)
+ * scheduler.stop()
+ * scheduler.removeHandler(handler)
+ */
 export class Scheduler {
-  worker = null
+  #worker = null
+  #nextTickTime = 0
+  #currentTick = 0
+  #handlers = []
+
   lookAhead = 25 // ms
   scheduleAheadTime = 0.1 // in seconds
-  tempo = 120
-  ticksPerBeat = 64 // resolution, ex. 8 would be 8 ticks per beat meaning each tick is a 32nd note
-  nextTickTime = 0
-  currentTick = 0
-  handlers = []
+  bpm: number
+  ticksPerBeat = 480 // resolution, ex. 8 would be 8 ticks per beat meaning each tick is a 32nd note
 
-  constructor({ tempo } = {}) {
-    if (tempo) this.setTempo(tempo)
+  constructor({
+    bpm,
+    lookAhead,
+    scheduleAheadTime,
+    ticksPerBeat,
+  }: {
+    bpm: number
+    lookAhead?: number
+    scheduleAheadTime?: number
+    ticksPerBeat?: number
+  }) {
+    this.setBpm(bpm)
+    if (lookAhead) this.lookAhead = lookAhead
+    if (scheduleAheadTime) this.scheduleAheadTime = scheduleAheadTime
+    if (ticksPerBeat) this.ticksPerBeat = ticksPerBeat
   }
 
-  setTempo(tempo) {
-    this.tempo = tempo
+  #advanceNote() {
+    const secondsPerBeat = 60.0 / this.bpm
+    this.#nextTickTime += (1 / this.ticksPerBeat) * secondsPerBeat
+    this.#currentTick += 1
   }
 
-  _advanceNote() {
-    const secondsPerBeat = 60.0 / this.tempo
-    this.nextTickTime += (1 / this.ticksPerBeat) * secondsPerBeat
-    this.currentTick++
-  }
-
-  _scheduleNote() {
-    this.handlers.forEach(handler =>
+  #scheduleNote() {
+    this.#handlers.forEach(handler =>
       handler({
-        currentTick: this.currentTick,
-        nextTickTime: this.nextTickTime,
+        currentTick: this.#currentTick,
+        nextTickTime: this.#nextTickTime,
         ticksPerBeat: this.ticksPerBeat,
       })
     )
   }
 
-  _schedule() {
+  #schedule() {
     while (
-      this.nextTickTime <
+      this.#nextTickTime <
       audioContext.currentTime + this.scheduleAheadTime
     ) {
-      this._scheduleNote()
-      this._advanceNote()
+      this.#scheduleNote()
+      this.#advanceNote()
     }
   }
 
-  schedule() {
-    if (!this.worker) {
-      this.worker = new Worker(new URL('./IntervalWorker.js', import.meta.url))
+  addHandler(handler: SchedulerHandler) {
+    if (this.#handlers.indexOf(handler) === -1) {
+      this.#handlers.push(handler)
+    }
+  }
 
-      this.worker.onmessage = ({ data }) => {
+  removeHandler(handler: SchedulerHandler) {
+    const idx = this.#handlers.indexOf(handler)
+    if (idx > -1) {
+      this.#handlers.splice(idx, 1)
+    }
+  }
+
+  start(startTick = 0) {
+    if (!this.#worker) {
+      this.#worker = new Worker(new URL('./IntervalWorker.js', import.meta.url))
+
+      this.#worker.onmessage = ({ data }) => {
         if (data === 'tick') {
-          this._schedule()
+          this.#schedule()
         }
       }
-      this.worker.postMessage({ type: 'setInterval', args: this.lookAhead })
+      this.#worker.postMessage({ type: 'setInterval', args: this.lookAhead })
     }
 
-    this.currentTick = 0
-    this.nextTickTime = audioContext.currentTime
-
-    this.worker.postMessage({ type: 'start' })
+    this.#currentTick = startTick
+    this.#nextTickTime = audioContext.currentTime
+    this.#worker.postMessage({ type: 'start' })
   }
 
   stop() {
-    this.worker.postMessage({ type: 'stop' })
+    this.#worker.postMessage({ type: 'stop' })
+  }
+
+  setBpm(bpm: number) {
+    this.bpm = bpm
   }
 }

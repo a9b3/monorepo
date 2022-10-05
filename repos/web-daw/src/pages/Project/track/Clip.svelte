@@ -3,8 +3,11 @@
   import type { Clip } from 'src/daw/Clip'
   import editorStore, { setInFocusElement } from 'src/store/editor'
   import ContextMenu from 'src/components/ContextMenu.svelte'
+  import Window from 'src/components/window/Window.svelte'
+  import StepSequencer from 'src/pages/Project/editors/stepSequencer/StepSequencer.svelte'
 
   let contextMenuRef: ContextMenu
+  let showWindow = false
 
   export let clipTrack: ClipTrack
   export let idx: number
@@ -31,7 +34,10 @@
     setInFocusElement(getClipInFocusElementId())
   }}
   on:dblclick={() => {
-    clipTrack.addClip(String(idx))
+    if (!clipId) {
+      clipTrack.addClip(String(idx))
+    }
+    showWindow = true
   }}
   on:contextmenu|preventDefault|stopPropagation={e => {
     if (clipId) {
@@ -40,6 +46,9 @@
     setInFocusElement(getClipInFocusElementId())
   }}
 >
+  <Window bind:showWindow title={'Step Sequencer'}
+    ><StepSequencer {clip} /></Window
+  >
   {#if clipId}
     <ContextMenu
       bind:this={contextMenuRef}

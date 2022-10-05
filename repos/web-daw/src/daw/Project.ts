@@ -12,14 +12,15 @@ export class Project extends SvelteStore {
   lastModifiedBy: string
   name = 'Untitled'
   bpm = 120
+  ticksPerBeat = 480
   timeSignature: { top: number; bottom: number } = {
     top: 4,
     bottom: 4,
   }
   tracks: { [id: string]: Track } = {}
   trackOrder: string[] = []
-  controller: Controller = new Controller()
-  mixer: Mixer = new Mixer()
+  controller: Controller
+  mixer: Mixer
 
   constructor({
     id,
@@ -46,7 +47,7 @@ export class Project extends SvelteStore {
       return m
     }, {})
     this.trackOrder = trackOrder
-    // this.controller = new Controller(controller)
+    this.controller = new Controller(controller)
     this.mixer = new Mixer(mixer)
   }
 
@@ -57,7 +58,6 @@ export class Project extends SvelteStore {
   }
 
   addTrack({ label }: { label: string }) {
-    console.log(`here`)
     const id = crypto.randomUUID()
     const channel = this.mixer.addChannel()
     const track = new Track({ id, channelId: channel.id, label })
@@ -68,9 +68,7 @@ export class Project extends SvelteStore {
   }
 
   removeTrack(id: string) {
-    console.log(id)
     const track = this.tracks[id]
-    console.log(track)
     this.mixer.removeChannel(track.channelId)
     delete this.tracks[id]
     this.trackOrder = this.trackOrder.filter(trackId => id !== trackId)
