@@ -13,6 +13,7 @@ const COLORS = {
   accent: '#3F78F7',
   selected: '#2E4B75',
   red: '#FD1201',
+  neonPink: 'rgba(240, 46, 170, 0.3)',
 }
 
 const FONT = {
@@ -41,6 +42,9 @@ const TRACK = {
 
 const MISC = {
   borderRadius: '4px',
+  // windowBorder: `rgb(85, 91, 255) 0px 0px 0px 3px, rgb(31, 193, 27) 0px 0px 0px 6px, rgb(255, 217, 19) 0px 0px 0px 9px, rgb(255, 156, 85) 0px 0px 0px 12px, rgb(255, 85, 85) 0px 0px 0px 15px`,
+  // windowBorder: `rgba(240, 46, 170, 0.4) 0px 5px 0 5px, rgba(240, 46, 170, 0.3) 0px 10px 0 10px, rgba(240, 46, 170, 0.2) 0px 15px 0 15px, rgba(240, 46, 170, 0.1) 0px 20px 0 20px, rgba(240, 46, 170, 0.05) 0px 25px 25px`,
+  windowBorder: `2px solid ${COLORS.neonPink}`,
 }
 
 export const styles = {
