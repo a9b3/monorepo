@@ -28,4 +28,8 @@ export class Track {
   setColor(color: string) {
     this.color = color
   }
+
+  handler = (...args) => {
+    this.clipTrack.handler(...args)
+  }
 }

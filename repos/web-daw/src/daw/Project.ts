@@ -48,6 +48,7 @@ export class Project extends SvelteStore {
     }, {})
     this.trackOrder = trackOrder
     if (controller) this.controller = new Controller(controller)
+    this.controller.addHandler(this.handler)
     this.mixer = new Mixer(mixer)
   }
 
@@ -78,5 +79,11 @@ export class Project extends SvelteStore {
 
   cleanup() {
     this.mixer.cleanup()
+  }
+
+  handler = (...args) => {
+    Object.values(this.tracks).forEach(track => {
+      track.handler(...args)
+    })
   }
 }
