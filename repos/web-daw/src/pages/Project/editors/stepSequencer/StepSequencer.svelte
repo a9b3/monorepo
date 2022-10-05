@@ -4,6 +4,7 @@
   import { NOTES } from 'src/daw/instruments/constants'
 
   export let clip: Clip
+  let notesPerBeat = 4
 
   let rows = Array(8).fill(Array(16).fill({}))
   let style = objectStyle({
@@ -18,14 +19,14 @@
   function getNote(row: number, col: number) {
     const note = Object.keys(NOTES)[row]
     const frequency = NOTES[note][4]
-    const startTick = col * $clip.ticksPerBeat
+    const startTick = col * ( $clip.ticksPerBeat / notesPerBeat )
     return $clip.notes[startTick] && $clip.notes[startTick][frequency]
   }
 
   function toggleNote(row: number, col: number) {
     const note = Object.keys(NOTES)[row]
     const frequency = NOTES[note][4]
-    const startTick = col * $clip.ticksPerBeat
+    const startTick = col * ( $clip.ticksPerBeat / notesPerBeat )
     if (getNote(row, col)) {
       $clip.removeNote({ startTick, type: 'on', note, frequency })
     } else {

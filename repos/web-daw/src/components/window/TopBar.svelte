@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from 'src/components/Icon.svelte'
 
-  export let title
+  export let title: string
   export let onClose: () => void
 </script>
 

@@ -6,11 +6,13 @@
   import Layout from 'src/components/Layout.svelte'
   import Meter from 'src/components/Meter.svelte'
   import ContextMenu from 'src/components/ContextMenu.svelte'
-  import editorStore, { setInFocusElement } from 'src/store/editor'
+  import editorStore, {
+    setInFocusElement,
+    setInFocusTrack,
+  } from 'src/store/editor'
   import Player from 'src/components/players/Player.svelte'
   import { objectStyle } from 'src/utils/objectToStyleStr'
   import ClearEditableText from 'src/components/ClearEditableText.svelte'
-  import { randomLinearGradient } from 'src/utils/randomLinearGradient'
 
   import Instrument from './Instrument.svelte'
   import Clip from './Clip.svelte'
@@ -27,7 +29,7 @@
 <div
   bind:this={mainElRef}
   class="main"
-  class:selected={track.id === $editorStore.inFocusElement}
+  class:selected={track.id === $editorStore.inFocusTrack}
   style={objectStyle({
     '--color': track.color,
   })}
@@ -35,10 +37,8 @@
     setInFocusElement(track.id)
     contextMenuRef.handleRightClick(evt)
   }}
-  on:click={evt => {
-    if (evt.target === mainElRef) {
-      setInFocusElement(track.id)
-    }
+  on:mousedown={evt => {
+    setInFocusTrack(track.id)
   }}
 >
   <ContextMenu

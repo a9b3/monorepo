@@ -79,7 +79,7 @@ export class EditorDB implements DBInterface<EditorDoc> {
         openedProjects: [],
         selectedProjectId: undefined,
         inFocusElement: undefined,
-        inFocusTrack: undefined
+        inFocusTrack: undefined,
         user: id,
       })
       return created

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte'
   import type { Project } from 'src/daw/Project'
   import Pill from 'src/components/Pill.svelte'
   import Layout from 'src/components/Layout.svelte'
@@ -6,6 +7,29 @@
   import { audioContext } from 'src/daw/audioContext'
 
   export let project: Project
+
+  let elapsedBeats = 0
+
+  function handleStart() {}
+  function handleStop() {
+    elapsedBeats = 0
+  }
+  function handleTick(args) {
+    const currentBeat = Math.floor(args.currentTick / args.ticksPerBeat) % 4
+    if (currentBeat !== elapsedBeats) {
+      elapsedBeats = currentBeat
+    }
+  }
+  onMount(() => {
+    project.controller.on('start', handleStart)
+    project.controller.on('stop', handleStop)
+    project.controller.on('tick', handleTick)
+  })
+  onDestroy(() => {
+    project.controller.removeListener('start', handleStart)
+    project.controller.removeListener('stop', handleStop)
+    project.controller.removeListener('tick', handleTick)
+  })
 </script>
 
 <div class="main">
@@ -21,10 +45,12 @@
     <Pill title="1 Bar" />
   </Layout>
   <Layout class="center">
-    <Pill title="1. 1. 1" disabled />
+    <Pill title="{elapsedBeats + 1}. 1. 1" disabled />
     <Pill
       on:click={() => {
+        // browser requires user action to allow playback
         audioContext.resume()
+
         if ($project.controller.isPlaying) {
           $project.controller.stop()
         } else {
