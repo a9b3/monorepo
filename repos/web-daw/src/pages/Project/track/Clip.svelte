@@ -32,7 +32,7 @@
 <div
   class="clip"
   class:occupied={clip?.id}
-  class:active={$clipTrack?.activeClip === clip?.id}
+  class:active={$clipTrack?.activeClip && $clipTrack?.activeClip === clip?.id}
   class:selected={$editorStore.inFocusElement === getClipInFocusElementId()}
   on:mousedown={() => {
     setInFocusElement(getClipInFocusElementId())
@@ -51,7 +51,11 @@
   }}
 >
   <Window bind:showWindow title={'Step Sequencer'}
-    ><StepSequencer {clip} /></Window
+    ><StepSequencer
+      {clip}
+      clipIsActive={$clipTrack?.activeClip &&
+        $clipTrack?.activeClip === clip?.id}
+    /></Window
   >
   {#if clipId}
     <ContextMenu
@@ -116,6 +120,10 @@
   .clip.occupied {
     background: var(--colors__bg);
     border-bottom: 1px solid var(--colors__bg2);
+  }
+
+  .clip.active {
+    background: var(--colors__neonPink);
   }
 
   .icon {
