@@ -3,14 +3,29 @@ import { SvelteStore } from 'src/utils/SvelteStore'
 import { Clip } from './Clip'
 import type { ClipArgs } from './Clip'
 
+interface ClipTrackConstructorArgs {
+  id?: string
+  clips?: { [key: string]: Clip }
+  clipsOrder?: {
+    [idx: string]: string
+  }
+  activeClip?: string | undefined
+}
+
 export class ClipTrack extends SvelteStore {
   id = crypto.randomUUID()
   clips: { [key: string]: Clip } = {}
   clipsOrder: {
     [idx: string]: string
   } = {}
+  activeClip: string | undefined
 
-  constructor({ id, clips, clipsOrder } = {}) {
+  constructor({
+    id,
+    clips,
+    clipsOrder,
+    activeClip,
+  }: ClipTrackConstructorArgs = {}) {
     super()
 
     if (id) {
@@ -25,6 +40,7 @@ export class ClipTrack extends SvelteStore {
     if (clipsOrder) {
       this.clipsOrder = clipsOrder
     }
+    if (activeClip) this.activeClip = activeClip
   }
 
   addClip(idx: string, args?: ClipArgs) {
@@ -39,5 +55,18 @@ export class ClipTrack extends SvelteStore {
     delete this.clipsOrder[idx]
 
     this.updareSvelte(this)
+  }
+
+  setActiveClip(activeClip?: string) {
+    this.activeClip = activeClip
+
+    this.updareSvelte(this)
+  }
+
+  handler = (...args) => {
+    const activeClip = this.clips[this.activeClip]
+    if (activeClip) {
+      activeClip.handler(...args)
+    }
   }
 }
