@@ -14,11 +14,11 @@ export class Metronome {
   handler = ({ currentTick, nextTickTime, ticksPerBeat }) => {
     if (currentTick % (ticksPerBeat * 4) === 0) {
       this.osc.frequency.value = 440
-      this.output.gain.setValueAtTime(0.2, nextTickTime)
+      this.output.gain.setValueAtTime(0.1, nextTickTime)
       this.output.gain.setValueAtTime(0, nextTickTime + 0.06)
     } else if (currentTick % ticksPerBeat === 0) {
       this.osc.frequency.value = 220
-      this.output.gain.setValueAtTime(0.1, nextTickTime)
+      this.output.gain.setValueAtTime(0.05, nextTickTime)
       this.output.gain.setValueAtTime(0, nextTickTime + 0.06)
     }
   }

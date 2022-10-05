@@ -1,8 +1,9 @@
 import type { UnitInterface } from 'src/daw/UnitInterface'
+import type { InstrumentInterface } from 'src/daw/instruments/InstrumentInterface'
+import type { ClipHandlerArg } from 'src/daw/Clip'
 import { audioContext } from 'src/daw/audioContext'
 import { SoundSource } from 'src/daw/SoundSource'
 import type { SoundSourceConstructorArgs } from 'src/daw/SoundSource'
-import type { ClipHandlerArg } from 'src/daw/Clip'
 import { EventEmitter } from 'events'
 
 export type Samples = { [frequency: string]: SoundSource }
@@ -10,7 +11,7 @@ export interface MPCConstructorArgs {
   samples?: { [k: string]: SoundSourceConstructorArgs }
 }
 
-export class MPC extends EventEmitter implements UnitInterface {
+export class MPC extends EventEmitter implements InstrumentInterface {
   // keyed by frequency
   samples: { [frequency: string]: SoundSource } = {}
   input: GainNode = audioContext.createGain()
@@ -57,13 +58,7 @@ export class MPC extends EventEmitter implements UnitInterface {
     this.emit('update')
   }
 
-  handler = ({
-    currentTick,
-    nextTickTime,
-    note,
-    ticksPerBeat,
-  }: ClipHandlerArg) => {
-    console.log(`here`, note, this.samples)
+  handler = ({ nextTickTime, note }: ClipHandlerArg) => {
     const sample = this.samples[String(note.frequency)]
     if (!sample) {
       return

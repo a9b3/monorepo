@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events'
 import type { SchedulerHandlerArg } from './Scheduler'
+import type { UnitInterface } from './UnitInterface'
 
 export type Note = {
   type: 'on' | 'off'
@@ -28,10 +29,11 @@ export class Clip extends EventEmitter {
 
   ticksPerBeat = 480
   label = 'Untitled'
-  bar = 2
+  bar = 1
   beat = 4
+  notesPerBeat = 4
 
-  instrument
+  instrument: UnitInterface
 
   constructor({ id, label, notes, name }: any = {}) {
     super()
@@ -85,14 +87,14 @@ export class Clip extends EventEmitter {
     this.emit('update')
   }
 
-  setInstrument(instrument) {
+  setInstrument(instrument: UnitInterface) {
     this.instrument = instrument
 
     this.emit('update')
   }
 
   handler = ({ currentTick, nextTickTime, ticksPerBeat }) => {
-    const loopLength = this.bar * 4 * ticksPerBeat
+    const loopLength = this.bar * this.beat * ticksPerBeat
     const offsetTick = currentTick % loopLength
 
     const notes = this.notes[offsetTick]

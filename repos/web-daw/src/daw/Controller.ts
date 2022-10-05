@@ -78,6 +78,7 @@ export class Controller extends EventEmitter {
 
   #runHandlers = (...args: Parameters<SchedulerHandler>) => {
     this.#handlers.forEach(handler => handler(...args))
+    this.emit('tick', ...args)
   }
 
   addHandler(fn: SchedulerHandler) {
