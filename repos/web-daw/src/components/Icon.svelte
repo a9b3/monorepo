@@ -25,6 +25,8 @@
     musicLine: 'music-line.svg',
     closeLine: 'close-line.svg',
     dashboardFill: 'dashboard-fill.svg',
+    stop: 'stop.svg',
+    play: 'play.svg',
   }
 
   function convertToPath(str: string) {
@@ -41,8 +43,8 @@
 
 <style>
   img {
-    width: 1em;
-    height: 1em;
+    width: 1.2em;
+    height: 1.2em;
     filter: invert();
   }
 </style>
