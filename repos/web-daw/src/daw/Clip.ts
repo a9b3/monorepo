@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events'
 import { SvelteStore } from 'src/utils/SvelteStore'
 
 export type Note = {
@@ -13,7 +14,7 @@ export interface ClipArgs {
   beat?: number
 }
 
-export class Clip extends SvelteStore {
+export class Clip extends EventEmitter {
   id = crypto.randomUUID()
 
   /**
@@ -45,19 +46,19 @@ export class Clip extends SvelteStore {
   setBar(bar: number) {
     this.bar = bar
 
-    this.updareSvelte(this)
+    this.emit('update')
   }
 
   setBeat(beat: number) {
     this.beat = beat
 
-    this.updareSvelte(this)
+    this.emit('update')
   }
 
   setLabel(label: string) {
     this.label = label
 
-    this.updareSvelte(this)
+    this.emit('update')
   }
 
   addNote({ startTick, type, note, frequency }) {
@@ -70,19 +71,19 @@ export class Clip extends SvelteStore {
       frequency,
     }
 
-    this.updareSvelte(this)
+    this.emit('update')
   }
 
-  removeNote({ startTick, type, note, frequency }) {
+  removeNote({ startTick, frequency }) {
     delete this.notes[startTick][frequency]
 
-    this.updareSvelte(this)
+    this.emit('update')
   }
 
   setInstrument(instrument) {
     this.instrument = instrument
 
-    this.updareSvelte(this)
+    this.emit('update')
   }
 
   handler = ({ currentTick, nextTickTime, ticksPerBeat }) => {
@@ -90,12 +91,30 @@ export class Clip extends SvelteStore {
     const offsetTick = currentTick % loopLength
 
     const notes = this.notes[offsetTick]
-    for (let i = 0; i < notes.length; i++) {
-      this.instrument.processNote(notes[i], {
-        currentTick,
-        nextTickTime,
-        ticksPerBeat,
+    if (notes) {
+      console.log('playing', offsetTick, notes)
+      Object.values(notes).forEach(note => {
+        if (this.instrument) {
+          this.instrument.processNote(note, {
+            currentTick,
+            nextTickTime,
+            ticksPerBeat,
+          })
+        }
       })
+    }
+  }
+
+  subscribe = (listener: (state: this) => void) => {
+    listener(this)
+    const invokeListener = () => {
+      console.log(`here`)
+      listener(this)
+    }
+    this.on('update', invokeListener)
+
+    return () => {
+      this.removeListener('update', invokeListener)
     }
   }
 }
