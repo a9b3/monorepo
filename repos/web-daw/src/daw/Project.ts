@@ -32,7 +32,7 @@ export class Project extends SvelteStore {
     tracks,
     trackOrder,
     mixer,
-    controller,
+    controller = new Controller({}),
   }: ProjectDoc) {
     super()
 
@@ -47,7 +47,7 @@ export class Project extends SvelteStore {
       return m
     }, {})
     this.trackOrder = trackOrder
-    this.controller = new Controller(controller)
+    if (controller) this.controller = new Controller(controller)
     this.mixer = new Mixer(mixer)
   }
 

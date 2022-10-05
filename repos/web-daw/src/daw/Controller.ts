@@ -1,7 +1,27 @@
 import { EventEmitter } from 'events'
 import { Metronome } from './Metronome'
-import type { SchedulerHandler } from './Scheduler'
+import type { SchedulerConstructorArgs, SchedulerHandler } from './Scheduler'
 import { Scheduler } from './Scheduler'
+
+export interface TimeSignature {
+  top: number
+  bottom: number
+}
+
+export interface ControllerPosition {
+  cursor: number
+  lastStartTime: number
+  lastStopTime: number
+}
+
+export interface ControllerConstructorArgs {
+  scheduler?: SchedulerConstructorArgs
+  id?: string
+  bpm?: number
+  position?: ControllerPosition
+  timeSignature?: TimeSignature
+  isMetronomeActive?: boolean
+}
 
 /**
  * Controller houses the logic for the scheduler and play time information.
@@ -13,15 +33,11 @@ export class Controller extends EventEmitter {
   scheduler: Scheduler
   id = crypto.randomUUID()
   bpm = 120
-  timeSignature: { top: number; bottom: number } = {
+  timeSignature: TimeSignature = {
     top: 4,
     bottom: 4,
   }
-  position: {
-    cursor: number
-    lastStartTime: number
-    lastStopTime: number
-  } = {
+  position: ControllerPosition = {
     cursor: 0,
     lastStartTime: 0,
     lastStopTime: 0,
@@ -31,12 +47,19 @@ export class Controller extends EventEmitter {
 
   constructor({
     scheduler,
-    id,
-    bpm,
-    position,
-    timeSignature,
-    isMetronomeActive,
-  }: any) {
+    id = crypto.randomUUID(),
+    bpm = 120,
+    position = {
+      cursor: 0,
+      lastStartTime: 0,
+      lastStopTime: 0,
+    },
+    timeSignature = {
+      top: 4,
+      bottom: 4,
+    },
+    isMetronomeActive = true,
+  }: ControllerConstructorArgs) {
     super()
 
     this.#metronome = new Metronome()

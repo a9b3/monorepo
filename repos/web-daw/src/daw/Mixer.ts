@@ -1,5 +1,13 @@
 import { audioContext } from './audioContext'
 import { Channel } from './Channel'
+import type { ChannelConstructorArgs } from './Channel'
+
+export interface MixerConstructorArgs {
+  id?: string
+  channels?: { [id: string]: ChannelConstructorArgs }
+  sends?: { [id: string]: ChannelConstructorArgs }
+  master?: ChannelConstructorArgs
+}
 
 /**
  * A mixer is a collection of channel. Each channel is an audio output source,
@@ -7,26 +15,35 @@ import { Channel } from './Channel'
  * they all converge to the master channel which outputs to the audio device.
  */
 export class Mixer {
-  id = crypto.randomUUID()
+  id: string
   // Can have groups
   channels: { [id: string]: Channel } = {}
   sends: { [id: string]: Channel } = {}
   master: Channel = new Channel()
 
-  constructor({ id, channels, sends, master }: any = {}) {
-    if (master) {
-      this.id = id
-      this.channels = Object.values(channels).reduce((m, val) => {
-        m[val.id] = new Channel(val)
-        return m
-      }, {} as { [id: string]: Channel })
-      this.master = new Channel(master)
+  constructor({
+    id = crypto.randomUUID(),
+    channels,
+    sends,
+    master,
+  }: MixerConstructorArgs = {}) {
+    if (id) this.id = id
+    if (master) this.master = new Channel(master)
+    if (channels) {
+      Object.values(channels).forEach(channelArgs => {
+        this.addChannel(channelArgs)
+      })
+    }
+    if (sends) {
+      Object.values(sends).forEach(channelArgs => {
+        this.addSend(channelArgs)
+      })
     }
 
     this.master.connect(audioContext.destination)
   }
 
-  addChannel(arg?: any): Channel {
+  addChannel(arg?: ChannelConstructorArgs): Channel {
     const channel = new Channel(arg)
     channel.connect(this.master)
     this.channels[channel.id] = channel
@@ -39,7 +56,7 @@ export class Mixer {
     delete this.channels[id]
   }
 
-  addSend(arg?: any): Channel {
+  addSend(arg?: ChannelConstructorArgs): Channel {
     const channel = new Channel(arg)
     channel.connect(this.master)
     this.sends[channel.id] = channel

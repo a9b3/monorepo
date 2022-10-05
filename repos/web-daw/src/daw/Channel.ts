@@ -2,6 +2,13 @@ import type { UnitInterface } from './UnitInterface'
 import { audioContext } from './audioContext'
 import { FxChain } from './FxChain'
 
+export interface ChannelConstructorArgs {
+  id?: string
+  gain?: number
+  isMute?: boolean
+  panPosition?: number
+}
+
 /**
  * This is the order in which the dry signal will go through the chain.
  *
@@ -18,21 +25,14 @@ import { FxChain } from './FxChain'
  *
  */
 export class Channel implements UnitInterface {
-  id: string = crypto.randomUUID()
-
-  input: GainNode = audioContext.createGain()
-
-  // Order matters for the fx chain.
-  fx: FxChain = new FxChain()
+  id: string
 
   // Fader settings
-  gain: number = 1
-  fader: GainNode = audioContext.createGain()
-  isMute: boolean = false
+  gain: number
+  isMute: boolean
 
   // Pan settings
-  panPosition: number = 0
-  stereoPanner: StereoPannerNode = audioContext.createStereoPanner()
+  panPosition = 0
 
   // TODO add sends logic
   sends: {
@@ -49,17 +49,30 @@ export class Channel implements UnitInterface {
       [key: string]: UnitInterface
     }
   }
+
+  input: GainNode = audioContext.createGain()
+  fader: GainNode = audioContext.createGain()
+  stereoPanner: StereoPannerNode = audioContext.createStereoPanner()
+  // Order matters for the fx chain.
+  fx: FxChain = new FxChain()
   output: GainNode = audioContext.createGain()
 
-  constructor(arg?: any) {
+  constructor({
+    id = crypto.randomUUID(),
+    gain = 1,
+    isMute = false,
+    panPosition = 0,
+  }: ChannelConstructorArgs = {}) {
+    if (id) this.id = id
+    if (gain) this.setGain(gain)
+    if (isMute) this.toggleMute(isMute)
+    if (panPosition) this.panPosition = panPosition
+
     this.input.connect(this.fx.input)
     this.fx.connect(this.fader)
     this.fader.connect(this.stereoPanner)
     this.stereoPanner.connect(this.output)
     this.setPan(this.panPosition)
-    if (arg) {
-      this.fromJSON(arg)
-    }
   }
 
   connect(unit: UnitInterface | AudioNode) {
@@ -85,31 +98,12 @@ export class Channel implements UnitInterface {
     this.fader.gain.setValueAtTime(value, audioContext.currentTime)
   }
 
-  toggleMute(muteState: boolean = !this.isMute) {
+  toggleMute(muteState = !this.isMute) {
     if (muteState) {
       this.fader.gain.setValueAtTime(0, audioContext.currentTime)
     } else {
       this.fader.gain.setValueAtTime(this.gain, audioContext.currentTime)
     }
     this.isMute = muteState
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      gain: this.gain,
-      isMute: this.isMute,
-      panPosition: this.panPosition,
-    }
-  }
-
-  fromJSON({ id, gain, isMute, panPosition }) {
-    this.id = id
-    this.gain = gain
-    this.setGain(this.gain)
-    this.isMute = isMute
-    this.toggleMute(this.isMute)
-    this.panPosition = panPosition
-    this.setPan(this.panPosition)
   }
 }

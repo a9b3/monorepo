@@ -1,5 +1,12 @@
 import { audioContext } from './audioContext'
 
+export interface SchedulerConstructorArgs {
+  bpm: number
+  lookAhead?: number
+  scheduleAheadTime?: number
+  ticksPerBeat?: number
+}
+
 export type SchedulerHandler = (SchedulerHandler: {
   currentTick: number
   nextTickTime: number
@@ -28,17 +35,16 @@ export class Scheduler {
   bpm: number
   ticksPerBeat = 480 // resolution, ex. 8 would be 8 ticks per beat meaning each tick is a 32nd note
 
-  constructor({
-    bpm,
-    lookAhead,
-    scheduleAheadTime,
-    ticksPerBeat,
-  }: {
-    bpm: number
-    lookAhead?: number
-    scheduleAheadTime?: number
-    ticksPerBeat?: number
-  }) {
+  constructor(
+    {
+      bpm,
+      lookAhead,
+      scheduleAheadTime,
+      ticksPerBeat,
+    }: SchedulerConstructorArgs = {
+      bpm: 120,
+    }
+  ) {
     this.setBpm(bpm)
     if (lookAhead) this.lookAhead = lookAhead
     if (scheduleAheadTime) this.scheduleAheadTime = scheduleAheadTime
