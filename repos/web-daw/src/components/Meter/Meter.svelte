@@ -1,9 +1,12 @@
 <script lang="ts">
   import { objectStyle } from 'src/utils/objectToStyleStr'
+
   export let value = 0
   export let secondaryValue = 0
   export let maxCounter = 100
   export let featureHorizontal = false
+
+  value = 1000
 
   let runningMax = 0
   let counter = 0
@@ -60,14 +63,15 @@
 
 <style>
   .main {
-    --meter_bg: var(--colors__bg);
-    --meter_color: var(--colors__accent);
+    --meter_peak_color: var(--tokens__red);
+    --meter_bg: var(--colors__bg3);
+    --meter_color: var(--tokens__green);
 
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: var(--colors__bg3);
+    background: var(--meter_bg);
   }
   .meter {
     width: 100%;
@@ -87,8 +91,7 @@
     height: '8px';
     margin-bottom: 5px;
     margin-right: 5px;
-    border: 0.5px solid var(--colors__fg);
-    background: var(--meter_bg);
+    border: 0.5px solid var(--meters_peak_color);
   }
   .peak.active {
     background: var(--colors__bg3);
@@ -99,7 +102,6 @@
     height: 100%;
     width: 100%;
     background: var(--meter_color);
-    /* background: black; */
   }
   .secondary {
     position: absolute;

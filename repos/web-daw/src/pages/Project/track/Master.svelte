@@ -2,12 +2,12 @@
   import Text from 'src/components/Text.svelte'
   import Pill from 'src/components/Pill.svelte'
   import Layout from 'src/components/Layout.svelte'
-  import Meter from 'src/components/Meter.svelte'
   import editorStore, { setInFocusElement } from 'src/store/editor'
   import type { Channel } from 'src/daw/Channel'
   import { objectStyle } from 'src/utils/objectToStyleStr'
   import StereoMeter from 'src/components/Meter/StereoMeter.svelte'
 
+  // Color of the track header
   export let color = 'var(--colors__bg)'
   export let channel: Channel
 </script>
@@ -49,7 +49,6 @@
 
 <style>
   .main {
-    --color: var(--colors__accent);
     height: '100%';
     background: var(--colors__bg2);
     width: var(--track__width);

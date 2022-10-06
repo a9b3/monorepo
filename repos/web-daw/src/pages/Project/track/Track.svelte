@@ -4,7 +4,6 @@
   import Text from 'src/components/Text.svelte'
   import Pill from 'src/components/Pill.svelte'
   import Layout from 'src/components/Layout.svelte'
-  import Meter from 'src/components/Meter.svelte'
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import editorStore, {
     setInFocusElement,

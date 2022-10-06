@@ -24,6 +24,9 @@
     grid-template: 'left middle right' 1fr / 1fr 1fr 1fr;
     border-bottom: 1px solid var(--colors__bg2);
   }
+  .main:hover {
+    opacity: 0.98;
+  }
 
   .left {
     display: flex;

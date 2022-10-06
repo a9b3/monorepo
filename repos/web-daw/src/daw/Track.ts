@@ -1,9 +1,21 @@
 import { ClipTrack } from './ClipTrack'
+import type { ClipTrackConstructorArgs } from './ClipTrack'
 import { Arrangement } from './Arrangement'
 import { MPC } from './instruments/MPC'
+import type { MPCConstructorArgs } from './instruments/MPC'
+
+interface TrackConstructorArgs {
+  id?: string
+  label?: string
+  color?: string
+  channelId?: string
+  clipTrack?: ClipTrackConstructorArgs
+  arrangement?: any
+  instrument?: MPCConstructorArgs
+}
 
 export class Track {
-  id: string
+  id: string = crypto.randomUUID()
   label: string
   color: string
   clipTrack = new ClipTrack()
@@ -14,11 +26,18 @@ export class Track {
    */
   channelId: string
 
-  constructor({ id, label, clipTrack, arrangement, channelId, color } = {}) {
-    this.id = id ? id : crypto.randomUUID()
+  constructor({
+    id,
+    label,
+    clipTrack,
+    channelId,
+    instrument,
+    color,
+  }: TrackConstructorArgs) {
+    if (id) this.id = id
 
     // TODO default to this for now
-    this.instrument = new MPC()
+    this.instrument = new MPC(instrument)
 
     this.color = color
     this.label = label
@@ -38,7 +57,7 @@ export class Track {
     this.color = color
   }
 
-  handler = (...args) => {
+  handler = (...args: any) => {
     this.clipTrack.handler(...args)
   }
 }

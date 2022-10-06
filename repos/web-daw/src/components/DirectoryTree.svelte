@@ -1,13 +1,13 @@
 <script lang="ts">
+  import type { DawFile, DawDirectory } from 'src/store/files'
   import { objectStyle } from 'src/utils/objectToStyleStr'
-  import Layout from 'src/components/Layout.svelte'
   import Icon from 'src/components/Icon.svelte'
   import SelectableRow from 'src/components/SelectableRow.svelte'
   import Directory from 'src/components/Directory.svelte'
   import editorStore, { setInFocusElement } from 'src/store/editor'
 
   export let depth = 0
-  export let files = [
+  export let files: (DawFile | DawDirectory)[] = [
     {
       id: crypto.randomUUID(),
       name: 'Delays & Loops',
@@ -79,7 +79,7 @@
     {#if item.type === 'file'}
       <SelectableRow
         selected={$editorStore.inFocusElement === item.id}
-        on:click={() => setInFocusElement(item.id)}
+        on:mousedown={() => setInFocusElement(item.id)}
         style={objectStyle({
           padding: 'var(--spacing__paddingM)',
           paddingLeft: `calc(var(--spacing__padding) * ${depth})`,

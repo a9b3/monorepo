@@ -1,5 +1,14 @@
 import { flattenObj } from './flattenObj'
 
+const TOKENS = {
+  green: '#15D253',
+  yellow: '#FFC908',
+  teal: '#3A8080',
+  blue: '#475D9A',
+  purple: '#584A94',
+  red: '#FE1100',
+}
+
 const COLORS = {
   bottom: '#151515',
   bg: '#222222',
@@ -12,8 +21,7 @@ const COLORS = {
   fg3: '#565656',
   accent: '#3F78F7',
   selected: '#2E4B75',
-  red: '#FD1201',
-  neonPink: 'rgba(240, 46, 170, 0.3)',
+  neonPink: '#EA3FA2',
 }
 
 const FONT = {
@@ -48,6 +56,7 @@ const MISC = {
 }
 
 export const styles = {
+  tokens: TOKENS,
   colors: COLORS,
   font: FONT,
   spacing: SPACING,

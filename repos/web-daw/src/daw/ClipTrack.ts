@@ -3,7 +3,7 @@ import { SvelteStore } from 'src/utils/SvelteStore'
 import { Clip } from './Clip'
 import type { ClipArgs } from './Clip'
 
-interface ClipTrackConstructorArgs {
+export interface ClipTrackConstructorArgs {
   id?: string
   clips?: { [key: string]: Clip }
   clipsOrder?: {

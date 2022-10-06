@@ -14,7 +14,7 @@
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
   <SelectableRow
     selected={$editorStore.inFocusElement === directory.id}
-    on:click={() => {
+    on:mousedown={() => {
       setInFocusElement(directory.id)
       isOpened = !isOpened
     }}

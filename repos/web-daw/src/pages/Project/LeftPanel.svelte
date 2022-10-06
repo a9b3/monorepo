@@ -2,8 +2,16 @@
   import Searchbar from 'src/components/Searchbar.svelte'
   import Layout from 'src/components/Layout.svelte'
   import DirectoryTree from 'src/components/DirectoryTree.svelte'
-
+  import { filesStore, selectedDirectory } from 'src/store/files'
   import Finder from './Finder.svelte'
+
+  const sections = [
+    { label: 'Collections', rows: $filesStore.collections },
+    {
+      label: 'Categories',
+      rows: $filesStore.categories,
+    },
+  ]
 </script>
 
 <div class="main">
@@ -13,9 +21,16 @@
 
   <Layout class="content">
     <div class="left">
-      <Finder />
+      <Finder
+        {sections}
+        selectedId={$filesStore.selectedCategory}
+        onSelect={row => {
+          $filesStore.selectedCategory =
+            $filesStore.selectedCategory === row.id ? undefined : row.id
+        }}
+      />
     </div>
-    <div class="right"><DirectoryTree /></div>
+    <div class="right"><DirectoryTree files={$selectedDirectory} /></div>
   </Layout>
 </div>
 
@@ -38,7 +53,7 @@
     padding: var(--spacing__padding);
   }
   .left {
-    flex: 1;
+    flex: 1.2;
   }
   .right {
     flex: 2;

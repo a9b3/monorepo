@@ -2,32 +2,12 @@
   import Text from 'src/components/Text.svelte'
   import Pill from 'src/components/Pill.svelte'
   import Layout from 'src/components/Layout.svelte'
-  import Meter from 'src/components/Meter.svelte'
   import editorStore, { setInFocusElement } from 'src/store/editor'
   import { objectStyle } from 'src/utils/objectToStyleStr'
 
   export let color = 'var(--colors__bg)'
   export let trackId: string
   export let title = 'Send'
-
-  let values = {
-    value: 0,
-    secondary: 0,
-  }
-  let values2 = {
-    value: 0,
-    secondary: 0,
-  }
-  setInterval(() => {
-    values = {
-      value: Math.random() * 100,
-      secondary: Math.random() * 100,
-    }
-    values2 = {
-      value: Math.random() * 100,
-      secondary: Math.random() * 100,
-    }
-  }, 100)
 </script>
 
 <div
@@ -53,19 +33,7 @@
         display: 'flex',
         flexDirection: 'row',
       })}
-    >
-      <Meter
-        value={values.value}
-        secondaryValue={values.secondary}
-        style={objectStyle({ width: '5px' })}
-      />
-      <div style={objectStyle({ width: '5px' })} />
-      <Meter
-        value={values2.value}
-        secondaryValue={values2.secondary}
-        style={objectStyle({ width: '5px' })}
-      />
-    </div>
+    />
   </Layout>
 </div>
 

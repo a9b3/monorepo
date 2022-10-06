@@ -15,7 +15,7 @@
   export let clipTrack: ClipTrack
   export let idx: number
 
-  let clipId
+  let clipId: string
   let clip: Clip
 
   $: {

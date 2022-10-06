@@ -11,7 +11,9 @@
   class={($$props.class || '') + ' main'}
   class:selected
   on:click
+  on:mousedown
   style={$$restProps.style}
+  draggable=true
 >
   <slot />
 </div>
