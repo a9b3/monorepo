@@ -5,70 +5,10 @@
   import SelectableRow from 'src/components/SelectableRow.svelte'
   import Directory from 'src/components/Directory.svelte'
   import editorStore, { setInFocusElement } from 'src/store/editor'
+  import { createDragSource } from 'src/components/draggable'
 
   export let depth = 0
-  export let files: (DawFile | DawDirectory)[] = [
-    {
-      id: crypto.randomUUID(),
-      name: 'Delays & Loops',
-      type: 'directory',
-      children: [
-        {
-          id: crypto.randomUUID(),
-          name: '808s',
-          type: 'directory',
-          children: [
-            {
-              id: crypto.randomUUID(),
-              name: 'Delays & Loops',
-              type: 'directory',
-              children: [
-                {
-                  id: crypto.randomUUID(),
-                  name: '808s',
-                  type: 'directory',
-                  children: [],
-                },
-                {
-                  id: crypto.randomUUID(),
-                  name: 'Cool Stuff',
-                  type: 'file',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Cool Stuff',
-          type: 'file',
-        },
-      ],
-    },
-    {
-      id: crypto.randomUUID(),
-      name: 'Drive & Color',
-      type: 'directory',
-      children: [
-        {
-          id: crypto.randomUUID(),
-          name: 'Drive',
-          type: 'directory',
-          children: [],
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Color',
-          type: 'file',
-        },
-      ],
-    },
-    {
-      id: crypto.randomUUID(),
-      name: 'Foo',
-      type: 'file',
-    },
-  ]
+  export let files: (DawFile | DawDirectory)[]
 </script>
 
 <div class="main">
@@ -78,6 +18,7 @@
     {/if}
     {#if item.type === 'file'}
       <SelectableRow
+        dragSource={createDragSource(item)}
         selected={$editorStore.inFocusElement === item.id}
         on:mousedown={() => setInFocusElement(item.id)}
         style={objectStyle({

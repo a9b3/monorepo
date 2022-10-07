@@ -46,7 +46,7 @@ export class MPC extends EventEmitter implements InstrumentInterface {
     const soundSource = new SoundSource(arg)
     soundSource.connect(this.input)
     this.samples[frequency] = soundSource
-    await this.samples[frequency].load(arg.url)
+    await this.samples[frequency].load(arg.url, arg.name)
     this.emit('update')
   }
 

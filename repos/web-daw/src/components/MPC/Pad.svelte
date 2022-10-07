@@ -1,21 +1,25 @@
 <script lang="ts">
-  let el: HTMLInputElement
-  export let handleUrl
+  import { createDragTarget } from 'src/components/draggable'
+  import type { SoundSource } from 'src/daw/SoundSource'
 
-  $: {
-    el?.addEventListener('change', function (evt) {
-      const fileUrl = URL.createObjectURL(this.files[0])
-      handleUrl(fileUrl)
-    })
-  }
+  export let handleUrl
+  export let sample: SoundSource
+
+  const useDrop = createDragTarget(handleUrl)
 </script>
 
-<div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
-  <input class="input" bind:this={el} type="file" accept="audio/*" />
+<div
+  class={($$restProps.class || '') + ' main'}
+  style={$$restProps.style}
+  use:useDrop
+>
+  {sample ? sample.name : 'empty'}
 </div>
 
 <style>
   .main {
+    width: 100%;
+    height: 100%;
   }
 
   .input {

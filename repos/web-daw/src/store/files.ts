@@ -101,7 +101,289 @@ export const filesStore = writable<{
       id: crypto.randomUUID(),
       name: 'Drums',
       type: 'directory',
-      children: [],
+      children: [
+        {
+          id: crypto.randomUUID(),
+          name: '808s',
+          type: 'directory',
+          children: [
+            {
+              id: crypto.randomUUID(),
+              name: 'FireYear.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/808s/808 (FireYea).wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'LockDown.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/808s/808 (LockDown).wav',
+              },
+            },
+          ],
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'claps',
+          type: 'directory',
+          children: [
+            {
+              id: crypto.randomUUID(),
+              name: 'Clap 1.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/claps/Clap 1.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Clap 2.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/claps/Clap 2.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Clap 3.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/claps/Clap 3.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Clap 4.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/claps/Clap 4.wav',
+              },
+            },
+          ],
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'hihats',
+          type: 'directory',
+          children: [
+            {
+              id: crypto.randomUUID(),
+              name: 'Hihat 1.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/hats/Hihat 1.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Hihat 2.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/hats/Hihat 2.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Hihat 3.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/hats/Hihat 3.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Hihat 4.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/hats/Hihat 4.wav',
+              },
+            },
+          ],
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'kicks',
+          type: 'directory',
+          children: [
+            {
+              id: crypto.randomUUID(),
+              name: 'Kick Bold.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/kicks/Kick - Bold.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Kick Clutch.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/kicks/Kick - Clutch.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Kick Inner.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/kicks/Kick - Inner.wav',
+              },
+            },
+          ],
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'openhats',
+          type: 'directory',
+          children: [
+            {
+              id: crypto.randomUUID(),
+              name: 'Cymbal.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/openhats/Cymbal.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'OpenShort 1.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/openhats/OpenShort 1.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'OpenShort 2.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/openhats/OpenShort 2.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'OpenShort 3.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/openhats/OpenShort 3.wav',
+              },
+            },
+          ],
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'percs',
+          type: 'directory',
+          children: [
+            {
+              id: crypto.randomUUID(),
+              name: 'Perc 1.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/percs/Perc 1.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Perc 2.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/percs/Perc 2.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Perc 3.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/percs/Perc 3.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Perc 4.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/percs/Perc 4.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Perc 5.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/percs/Perc 5.wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Perc 6.wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/percs/Perc 6.wav',
+              },
+            },
+          ],
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'snares',
+          type: 'directory',
+          children: [
+            {
+              id: crypto.randomUUID(),
+              name: 'Snare (50kWatch).wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/snares/Snare (50kWatch).wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Snare (Bounce3).wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/snares/Snare (Bounce3).wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Snare (Doctor).wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/snares/Snare (Doctor).wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Snare (Factory).wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/snares/Snare (Factory).wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Snare (Future).wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/snares/Snare (Future).wav',
+              },
+            },
+            {
+              id: crypto.randomUUID(),
+              name: 'Snare (GodIsGood).wav',
+              type: 'file',
+              metadata: {
+                url: 'public/content/drums/snares/Snare (GodIsGood).wav',
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       icon: 'musicFill',

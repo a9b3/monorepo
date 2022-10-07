@@ -17,6 +17,18 @@ import { getAudioBuffer } from './utils/getAudioBuffer'
 
 export interface SoundSourceConstructorArgs {
   url?: string
+  name?: string
+}
+
+async function convertUrlToBlob(url: string) {
+  // already blob
+  if (url.startsWith('blob:')) {
+    return url
+  }
+  const res = await fetch(`/${url}`)
+  const blob = await res.blob()
+  const fileUrl = URL.createObjectURL(blob)
+  return fileUrl
 }
 
 /*
@@ -27,6 +39,7 @@ export interface SoundSourceConstructorArgs {
  * should be an edge of an audio graph.
  */
 export class SoundSource {
+  name = ''
   url: string
   audioBuffer: AudioBuffer
   // store buffer source for instance of sound playing
@@ -38,8 +51,10 @@ export class SoundSource {
 
   constructor(arg?: SoundSourceConstructorArgs) {
     if (arg.url) {
-      this.url = arg.url
-      this.load(this.url)
+      this.load(arg.url)
+    }
+    if (arg.name) {
+      this.name = arg.name
     }
   }
 
@@ -59,12 +74,18 @@ export class SoundSource {
   /**
    * url to load sound for
    */
-  async load(url: string): Promise<void> {
+  async load(url: string, name?: string): Promise<void> {
+    console.log('invoking load', url, name)
     this.ready = false
     this.audioBuffer = undefined
+    if (this.url !== url) {
+      URL.revokeObjectURL(this.url)
+    }
     this.url = url
+    if (name) this.name = name
 
-    this.audioBuffer = await getAudioBuffer(url)
+    const blobUrl = await convertUrlToBlob(this.url)
+    this.audioBuffer = await getAudioBuffer(blobUrl)
     this.ready = true
   }
 
@@ -111,7 +132,7 @@ export class SoundSource {
    * Array represents left(0) and right(1)
    */
   getChannelData(): Float32Array[] {
-    if (!this.audioBuffer) return
+    if (!this.audioBuffer) return []
     return [
       this.audioBuffer.getChannelData(0),
       this.audioBuffer.getChannelData(1),
@@ -134,12 +155,12 @@ export class SoundSource {
     const bucketSize = Math.round(channelData[0].length / buckets)
 
     const arr = []
-    for (let i = 0; i < buckets; i++) {
+    for (let i = 0; i < buckets; i += 1) {
       let minLeft = 1
       let maxLeft = -1
       let minRight = 1
       let maxRight = -1
-      for (let j = bucketSize * i; j < bucketSize * (i + 1); j++) {
+      for (let j = bucketSize * i; j < bucketSize * (i + 1); j += 1) {
         const valueLeft = channelData[0][j]
         if (valueLeft < minLeft) minLeft = valueLeft
         if (valueLeft > maxLeft) maxLeft = valueLeft

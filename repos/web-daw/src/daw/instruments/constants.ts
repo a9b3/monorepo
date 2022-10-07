@@ -12,3 +12,9 @@ export const NOTES = Object.freeze({
   Bb: [29.14, 58.27, 116.54, 233.08, 466.16, 932.33, 1864.66, 3729.31],
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
 })
+
+export function getFrequencyFromIdx(idx: number, octave = 4) {
+  const note = Object.keys(NOTES)[idx]
+  const freq = NOTES[note][octave]
+  return freq
+}

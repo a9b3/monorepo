@@ -5,6 +5,7 @@
 -->
 <script lang="ts">
   export let selected = false
+  export let dragSource: (arg0: any) => void = () => {}
 </script>
 
 <div
@@ -13,7 +14,8 @@
   on:click
   on:mousedown
   style={$$restProps.style}
-  draggable=true
+  draggable="true"
+  use:dragSource
 >
   <slot />
 </div>
