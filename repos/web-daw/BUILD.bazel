@@ -17,3 +17,5 @@ vite_bin.vite(
   outs = ["dist"],
   chdir = package_name(),
 )
+
+# TODO need add bazel macro for uploading to s3
