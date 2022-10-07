@@ -92,7 +92,7 @@
               sqlc
 
               # source management
-              pkgs.pre-commit
+              # pkgs.pre-commit
 
               # skaffold
               skaffold
