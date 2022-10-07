@@ -1,4 +1,4 @@
-# monorepo-2
+# monorepo
 
 ## Getting Started
 
