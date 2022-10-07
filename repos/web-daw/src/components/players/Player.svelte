@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount } from 'svelte'
 
-	let players
-	let random
+  let players
+  let random
 
-	onMount(async () => {
-	  const dynamicModules = import.meta.glob('src/assets/players/*.gif')
+  onMount(async () => {
+    const dynamicModules = import.meta.glob('src/assets/players/*.gif')
     const res = await Promise.all(Object.values(dynamicModules).map(im => im()))
     players = res.map(r => r.default)
     random = Math.floor(Math.random() * players.length)
-	})
+  })
 </script>
 
 <div class="main">
   {#if random}
-    <img src={players[random]} alt={'gif'}/>
+    <img src={players[random]} alt={'gif'} />
   {/if}
 </div>
 

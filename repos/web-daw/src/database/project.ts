@@ -22,11 +22,13 @@ export interface ProjectDoc {
   lastModified?: number
   name: string
   bpm: number
+  color?: string
+  emoji?: string
   timeSignature: TimeSignature
   tracks: { [id: string]: Track }
   trackOrder: string[]
-  controller: Controller
-  mixer: Mixer
+  controller?: Controller
+  mixer?: Mixer
 }
 
 /**

@@ -12,6 +12,7 @@ interface TrackConstructorArgs {
   clipTrack?: ClipTrackConstructorArgs
   arrangement?: any
   instrument?: MPCConstructorArgs
+  player?: string
 }
 
 export class Track {
@@ -25,6 +26,7 @@ export class Track {
    * The channel that this track is connected to.
    */
   channelId: string
+  player: string
 
   constructor({
     id,
@@ -33,6 +35,7 @@ export class Track {
     channelId,
     instrument,
     color,
+    player,
   }: TrackConstructorArgs) {
     if (id) this.id = id
 
@@ -47,6 +50,7 @@ export class Track {
     })
     this.arrangement = new Arrangement()
     this.channelId = channelId
+    if (player) this.player = player
   }
 
   setLabel(label: string) {

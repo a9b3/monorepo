@@ -25,6 +25,7 @@
     "@types/pouchdb-find": "^6.3.7",
     "events": "^3.3.0",
     "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "pouchdb": "^7.3.0",
     "pouchdb-browser": "^7.3.0",
     "pouchdb-find": "^7.3.0",

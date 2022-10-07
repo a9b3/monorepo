@@ -102,6 +102,7 @@ importers:
       '@types/pouchdb-find': ^6.3.7
       events: ^3.3.0
       lodash: ^4.17.21
+      moment: ^2.29.4
       pouchdb: ^7.3.0
       pouchdb-browser: ^7.3.0
       pouchdb-find: ^7.3.0
@@ -120,6 +121,7 @@ importers:
       '@types/pouchdb-find': 6.3.7
       events: 3.3.0
       lodash: 4.17.21
+      moment: 2.29.4
       pouchdb: 7.3.0
       pouchdb-browser: 7.3.0
       pouchdb-find: 7.3.0
@@ -4937,6 +4939,10 @@ packages:
     dependencies:
       minimist: 1.2.6
     dev: true
+
+  /moment/2.29.4:
+    resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
+    dev: false
 
   /mri/1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}

@@ -21,6 +21,8 @@ export class Project extends SvelteStore {
   trackOrder: string[] = []
   controller: Controller
   mixer: Mixer
+  color: string
+  emoji: string
 
   constructor({
     id,
@@ -32,6 +34,8 @@ export class Project extends SvelteStore {
     tracks,
     trackOrder,
     mixer,
+    color,
+    emoji,
     controller = new Controller({}),
   }: ProjectDoc) {
     super()
@@ -54,6 +58,8 @@ export class Project extends SvelteStore {
       }
       return m
     }, {})
+    if (color) this.color = color
+    if (emoji) this.emoji = emoji
   }
 
   setName(name: string) {

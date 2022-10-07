@@ -8,6 +8,8 @@
     createProject,
     fetchProjects,
   } from 'src/store/project'
+  import { randomLinearGradient } from 'src/utils/randomLinearGradient'
+  import { randomEmoji } from 'src/utils/randomEmoji'
   import ProjectCard from './ProjectCard.svelte'
 
   let contextMenuRef: ContextMenu
@@ -55,12 +57,13 @@
           onClick: () => {
             createProject({
               createdBy: 'string',
-              createdAt: Date.now(),
               name: 'Untitled',
-              bpm: Math.floor(Math.random() * 120),
-              timeSignature: { top: Math.floor(Math.random() * 4), bottom: 1 },
+              bpm: 120,
+              timeSignature: { top: 4, bottom: 4 },
               tracks: {},
               trackOrder: [],
+              emoji: randomEmoji(),
+              color: randomLinearGradient(),
             })
           },
           type: 'item',

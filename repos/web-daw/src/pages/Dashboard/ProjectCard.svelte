@@ -1,27 +1,25 @@
 <script lang="ts">
   import type { ProjectDoc } from 'src/database/project'
+  import moment from 'moment'
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import { deleteProject } from 'src/store/project'
   import { navigate } from 'svelte-routing'
-  import localStore, {
+  import editorStore, {
     addOpenedProject,
     removeOpenedProject,
     setSelectedProject,
     setInFocusElement,
   } from 'src/store/editor'
-  import { randomLinearGradient } from 'src/utils/randomLinearGradient'
-  import { randomEmoji } from 'src/utils/randomEmoji'
   import { objectStyle } from 'src/utils/objectToStyleStr'
 
   export let project: ProjectDoc
 
-  let randomGradient = `background: ${randomLinearGradient()};`
   let contextMenuRef: ContextMenu
 </script>
 
 <div
   class="project"
-  class:selected={$localStore.inFocusElement === project.id}
+  class:selected={$editorStore.inFocusElement === project.id}
   on:click={() => {
     setInFocusElement(project.id)
   }}
@@ -45,21 +43,32 @@
       },
     ]}
   />
-  <div class="cover" style={randomGradient} />
+  <div
+    class="cover"
+    style={objectStyle({
+      background: project.color,
+    })}
+  />
   <div class="info">
     <div
       style={objectStyle({
         fontSize: '20px',
       })}
     >
-      {randomEmoji()}
+      {project.emoji}
     </div>
     <div>
       <div style={`margin-bottom: 10px; font-weight: bold;`}>
         {project.name}
+        {$editorStore.openedProjects.findIndex(p => p.id === project.id) > -1
+          ? ' (Opened)'
+          : ''}
       </div>
       <div>
         {project.bpm} bpm
+      </div>
+      <div>
+        Last Modified: {moment(project.lastModified).fromNow()}
       </div>
     </div>
   </div>
@@ -90,6 +99,8 @@
     font-size: 12px;
     align-items: center;
     padding: 20px;
+    background: var(--colors__fg);
+    color: var(--colors__bg);
   }
   .info > * {
     margin-right: 20px;

@@ -5,7 +5,6 @@
 -->
 <script lang="ts">
   import Icon from 'src/components/Icon.svelte'
-  import { randomEmoji } from 'src/utils/randomEmoji'
   import { Link, navigate } from 'svelte-routing'
   import ClearEditableText from 'src/components/ClearEditableText.svelte'
   import type { Project } from 'src/daw/Project'
@@ -34,7 +33,7 @@
     class="tab project"
     class:selected={$editorStore.selectedProjectId === $currentProject.id}
   >
-    {randomEmoji()}
+    {$currentProject.emoji}
     <div style={`width: 15px;`} />
 
     {#if $currentController.isPlaying}
