@@ -102,7 +102,13 @@
             shellHook = ''
               echo "---------------------------------------------"
               echo "Welcome to the monorepo"
-              echo $0
+              echo ""
+
+              docker ps 2>/dev/null
+              isDockerRunning="$?"
+              if [ "$isDockerRunning" = "1" ]; then
+                echo "* docker isn't running start docker on mac for minikube"
+              fi
 
               # ----------------------------
               # If minikube is not running start it.
@@ -110,22 +116,23 @@
               # images.
               # The k8s manifest must also have ImagePullPolicy: Never
               # ----------------------------
-              minikubeStarted=$(minikube status | rg Running)
+              if [ "$isDockerRunning" = "0" ]; then
+                minikubeStarted=$(minikube status | rg Running)
+              fi
               if [[ -z "$minikubeStarted" ]]; then
-                echo "Minikube is not running starting now..."
+                echo "* minikube is not running run the following command"
                 echo ""
-                minikube start --driver=docker --container-runtime=docker --addons ingress --cni calico
+                echo "    minikube start --driver=docker --container-runtime=docker --addons ingress --cni calico"
+                echo ""
               fi
 
               # ----------------------------
               # Set npm root so you can use npm global
               # ----------------------------
-              echo "Added npm root -g to PATH"
               npm config set prefix "$HOME/.npm-packages"
               export PATH="$(npm root -g)/../../bin:$PATH"
               if [ ! -f "$(which ibazel)" ]; then
-                echo "Installing ibazel..."
-                echo ""
+                echo "* installing ibazel..."
                 npm install -g @bazel/ibazel
               fi
 
@@ -135,7 +142,6 @@
               # ----------------------------
               pre-commit install -f --hook-type pre-commit
 
-              echo ""
               echo "---------------------------------------------"
             '';
           };
