@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "3.26.0"
+      version = "~> 4.0"
     }
   }
 }
@@ -27,6 +27,7 @@ provider "aws" {
 resource "aws_iam_role" "lambda_execution_role" {
   name_prefix        = "${var.name}-lambda-execution-role-"
   description        = "Managed by Terraform for ${var.name}"
+  provider           = aws.east-1
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -50,6 +51,7 @@ EOF
 resource "aws_iam_role_policy" "lambda_execution" {
   name_prefix = "${var.name}-lambda-execution-policy-"
   role        = aws_iam_role.lambda_execution_role.id
+  provider    = aws.east-1
   policy      = <<EOF
 {
   "Version": "2012-10-17",
@@ -112,7 +114,8 @@ resource "aws_lambda_function" "origin_request_handler" {
 
 # The policy that will be associated with an cloudfront OAI which will allow
 # access into the given bucket.
-data "aws_iam_policy_document" "s3_bucket_policy" {
+data "aws_iam_policy_document" "cloudfront_to_s3" {
+  provider = aws.east-1
   statement {
     sid = "1"
 
@@ -139,18 +142,28 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
 
 # s3 bucket to store all static site assets
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket = var.aws_s3_bucket_name
-  acl    = "private"
+  provider = aws.east-1
+  bucket   = var.aws_s3_bucket_name
+}
 
-  versioning {
-    enabled = true
+resource "aws_s3_bucket_policy" "allow_access_from_cloudfront" {
+  provider = aws.east-1
+  bucket   = aws_s3_bucket.s3_bucket.id
+  policy   = data.aws_iam_policy_document.cloudfront_to_s3.json
+}
+
+resource "aws_s3_bucket_acl" "acl" {
+  provider = aws.east-1
+  bucket   = aws_s3_bucket.s3_bucket.id
+  acl      = "private"
+}
+
+resource "aws_s3_bucket_versioning" "verisoning" {
+  provider = aws.east-1
+  bucket   = aws_s3_bucket.s3_bucket.id
+  versioning_configuration {
+    status = "Enabled"
   }
-
-  lifecycle {
-    prevent_destroy = true
-  }
-
-  policy = data.aws_iam_policy_document.s3_bucket_policy.json
 }
 
 # -------------------------------------------
@@ -160,7 +173,8 @@ resource "aws_s3_bucket" "s3_bucket" {
 # This is assigned s3 bucket access in the iam policy above and this will be
 # used to give cloudfront access
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
-  comment = "Static sites cloud front access identity for ${var.name}."
+  provider = aws.east-1
+  comment  = "Static sites cloud front access identity for ${var.name}."
 }
 
 # TODO - handle multiple domains
@@ -170,6 +184,7 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 # all aliases should belong to the root_domain
 # [{ acm_arn: "", root_domain: "exampe.com", aliases: ["foo.example.com"] }]
 resource "aws_cloudfront_distribution" "s3_distribution" {
+  provider   = aws.east-1
   depends_on = [aws_s3_bucket.s3_bucket]
 
   origin {
@@ -266,7 +281,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 # Routes
 # -------------------------------------------
 
-resource "aws_route53_record" "esayemm_com" {
+resource "aws_route53_record" "records" {
   for_each = toset(var.aliases)
 
   zone_id = var.hosted_zone_id

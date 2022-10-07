@@ -66,6 +66,21 @@
                   sha256 = "sha256-izOrdNg8ZxXMwSEA0dv5IKOap+POwsM94+Eu9T1Xco4=";
                 };
               };
+              terraform = with pkgs; stdenv.mkDerivation rec {
+                name = "terraform";
+                # Need to provide a custom builder since the default assumes there's a
+                # makefile in the source
+                builder = pkgs.writeText "builder.sh" ''
+                  source $stdenv/setup
+                  mkdir -p $out/bin
+                  cp $src/terraform $out/bin/terraform
+                  chmod +x $out/bin/terraform
+                '';
+                src = fetchzip {
+                  url = "https://releases.hashicorp.com/terraform/1.3.2/terraform_1.3.2_darwin_arm64.zip";
+                  sha256 = "sha256-7LSfnrPensPtYnqu4GzcZL0vzW9TssvRgfET/CKbiA0=";
+                };
+              };
             in
             [
               # A wrapper around bazel that will invoke the version specified in
@@ -76,7 +91,7 @@
               # cli
               pkgs.gnupg
               pkgs.awscli2
-              pkgs.terraform
+              terraform
               pkgs.terragrunt
               pkgs.kubectx
               pkgs.grpcurl

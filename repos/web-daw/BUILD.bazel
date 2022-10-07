@@ -7,11 +7,13 @@ load("@npm//repos/web-daw:vite/package_json.bzl", vite_bin = "bin")
 vite_bin.vite(
   name = "build",
   srcs = [
-    "index.js",
+    "index.html",
+    "svelte.config.js",
     "package.json",
+    "tsconfig.json",
+    "tsconfig.node.json",
     ":node_modules",
-  ],
-  outs = ["dist/"],
+  ] + glob(["src/**"]),
+  outs = ["dist"],
   chdir = package_name(),
-  args = ["-p", "tsconfig.json"],
 )

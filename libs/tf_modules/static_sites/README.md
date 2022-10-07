@@ -3,15 +3,19 @@
 Infrastructure to deploy static sites for any domain with support for routing to
 dynamic subdomains.
 
-This only works for subdomains that are one level deep (e.g. foo.example.com NOT
-foo.bar.example.com).
-
-www. is a special case that will add the additional logic of redirecting
-root domain to www.
-You would have to upload root domain sites to `s3://<bucket>/www/*`
-
 This module must be created in us-east-1. Because of lambda and cloudfront
 certs.
+
+---
+
+## Deploy a Static Site
+
+```
+aws s3 sync ./dist s3://<bucket name>/<entire alias>/
+
+ex. This will make www.lllllllll.link serve the contents of ./dist
+aws s3 sync ./dist s3://173316437537-lllllllll-link-static-sites/www.lllllllll.link/
+```
 
 ---
 
@@ -61,7 +65,19 @@ Upload all foo resources to s3_bucket/foo and bar resources to s3_bucket/bar.
 
 ## Gotchas
 
+- All the resources in this module must be defined in us-east-1 because of
+  lambda restrictions.
 - Aliases must all have the same domain.
+
+### Destroying this requires a manual two step process.
+
+You will get this error upon running destroy the first time. Lambdas cannot be
+destroyed until their associations are destroyed so you must run destroy again
+after the cloudfront distribution destroy fully propogated.
+
+```
+Error: Error deleting Lambda Function: InvalidParameterValueException: Lambda was unable to delete <arn> because it is a replicated function. Please see our documentation for Deleting Lambda@Edge Functions and Replicas.
+```
 
 ---
 
