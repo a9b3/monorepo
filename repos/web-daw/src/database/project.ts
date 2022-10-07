@@ -19,6 +19,7 @@ export interface ProjectDoc {
   id?: string
   createdAt?: number
   createdBy: string
+  lastModified?: number
   name: string
   bpm: number
   timeSignature: TimeSignature
@@ -46,6 +47,7 @@ export class ProjectDB implements DBInterface<ProjectDoc> {
     await this.#database.put({
       ...project,
       createdAt: Date.now(),
+      lastModified: Date.now(),
       id,
       _id: id,
     })
@@ -58,6 +60,7 @@ export class ProjectDB implements DBInterface<ProjectDoc> {
     await this.#database.put({
       ...JSON.parse(JSON.stringify(project)),
       ...override,
+      lastModified: Date.now(),
       _id: id,
     })
     return this.#database.get(id)

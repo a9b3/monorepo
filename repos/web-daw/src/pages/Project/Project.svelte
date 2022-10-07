@@ -35,10 +35,9 @@
   // auto-save projects every 5 seconds
   let interval: number
   onMount(() => {
+    projectDB.update(project.id, project)
     interval = setInterval(() => {
-      $editorStore.openedProjects.forEach(p => {
-        projectDB.update(p.id, p)
-      })
+      projectDB.update(project.id, project)
     }, 5000)
   })
   onDestroy(() => {

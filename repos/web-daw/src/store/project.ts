@@ -49,7 +49,7 @@ export async function deleteProject(id: string) {
 
 export const filteredProjects = derived([projectStore], ([$projectStore]) =>
   Object.values($projectStore.projects).sort((a, b) =>
-    a.createdAt < b.createdAt ? 1 : -1
+    a.lastModified < b.lastModified ? 1 : -1
   )
 )
 
