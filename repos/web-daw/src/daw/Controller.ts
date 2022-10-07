@@ -122,6 +122,8 @@ export class Controller extends EventEmitter {
     } else {
       this.removeHandler(this.#metronome.handler)
     }
+
+    this.emit('update')
   }
 
   subscribe(listener: (state: this) => void) {
@@ -131,10 +133,12 @@ export class Controller extends EventEmitter {
     }
     this.on('play', invokeListener)
     this.on('stop', invokeListener)
+    this.on('update', invokeListener)
 
     return () => {
       this.removeListener('play', invokeListener)
       this.removeListener('stop', invokeListener)
+      this.removeListener('update', invokeListener)
     }
   }
 }

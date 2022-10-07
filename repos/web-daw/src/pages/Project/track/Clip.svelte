@@ -8,10 +8,12 @@
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import Window from 'src/components/window/Window.svelte'
   import StepSequencer from 'src/pages/Project/editors/stepSequencer/StepSequencer.svelte'
+  import MPC from 'src/components/MPC/MPC.svelte'
 
   let contextMenuRef: ContextMenu
   let showWindow = false
 
+  export let instrument
   export let clipTrack: ClipTrack
   export let idx: number
 
@@ -50,13 +52,21 @@
     setInFocusElement(getClipInFocusElementId())
   }}
 >
-  <Window bind:showWindow title={'Step Sequencer'}
-    ><StepSequencer
-      {clip}
-      clipIsActive={$clipTrack?.activeClip &&
-        $clipTrack?.activeClip === clip?.id}
-    /></Window
-  >
+  <Window bind:showWindow title={'Step Sequencer'}>
+    <div
+      style={objectStyle({
+        display: 'flex',
+        flexDirection: 'row',
+      })}
+    >
+      <MPC {instrument} />
+      <StepSequencer
+        {clip}
+        clipIsActive={$clipTrack?.activeClip &&
+          $clipTrack?.activeClip === clip?.id}
+      />
+    </div>
+  </Window>
   {#if clipId}
     <ContextMenu
       bind:this={contextMenuRef}

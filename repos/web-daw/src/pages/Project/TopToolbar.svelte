@@ -8,6 +8,8 @@
 
   export let project: Project
 
+  let controller = $project.controller
+
   let elapsedBeats = 0
 
   function handleStart() {}
@@ -41,6 +43,12 @@
       title={String(project.timeSignature.top) +
         ' / ' +
         String(project.timeSignature.bottom)}
+    />
+    <Pill
+      title={$controller.isMetronomeActive ? 'm on' : 'm off'}
+      on:click={() => {
+        $controller.toggleMetronome()
+      }}
     />
     <Pill title="1 Bar" />
   </Layout>

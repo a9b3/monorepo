@@ -36,7 +36,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 200px;
+    width: 120px;
     height: 25px;
     margin-bottom: 10px;
     outline: 1px solid var(--colors__bg3);

@@ -14,7 +14,6 @@
   import ClearEditableText from 'src/components/ClearEditableText.svelte'
   import StereoMeter from 'src/components/Meter/StereoMeter.svelte'
 
-  import Instrument from './Instrument.svelte'
   import Clip from './Clip.svelte'
 
   export let project: Project
@@ -68,7 +67,7 @@
     />
   </div>
   {#each clips as _, idx}
-    <Clip {idx} clipTrack={track.clipTrack} />
+    <Clip {idx} clipTrack={track.clipTrack} instrument={track.instrument} />
   {/each}
 
   <Layout class="bottom" type="col" padding="var(--spacing__padding)">
@@ -80,7 +79,6 @@
         paddingRight: '30px',
       })}
     >
-      <Instrument instrument={track.instrument} />
       <Player />
     </div>
     <Layout class="section" type="col">
