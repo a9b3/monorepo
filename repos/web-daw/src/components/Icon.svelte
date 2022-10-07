@@ -30,7 +30,7 @@
   }
 
   function convertToPath(str: string) {
-    return `/src/assets/icons/${str}`
+    return `/icons/${str}`
   }
 </script>
 
