@@ -52,9 +52,14 @@ export class ProjectDB implements DBInterface<ProjectDoc> {
     return this.getById(id)
   }
 
-  async update(id: string, project: ProjectDoc) {
+  update = async (id: string, project: ProjectDoc) => {
     const response = await this.#database.get(id)
-    await this.#database.put({ ...response, ...project })
+    const override = response ? { id: response.id, _rev: response._rev } : {}
+    await this.#database.put({
+      ...JSON.parse(JSON.stringify(project)),
+      ...override,
+      _id: id,
+    })
     return this.#database.get(id)
   }
 

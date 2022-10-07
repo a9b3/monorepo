@@ -110,7 +110,9 @@ export class Scheduler {
   }
 
   stop() {
-    this.#worker.postMessage({ type: 'stop' })
+    if (this.#worker) {
+      this.#worker.postMessage({ type: 'stop' })
+    }
   }
 
   setBpm(bpm: number) {

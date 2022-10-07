@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte'
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import editorStore from 'src/store/editor'
   import { fetchProject } from 'src/store/project'
   import { navigate } from 'svelte-routing'
   import { setSelectedProject } from 'src/store/editor'
+  import projectDB from 'src/database/project'
 
   import LeftPanel from './LeftPanel.svelte'
   import TopToolbar from './TopToolbar.svelte'
@@ -29,6 +31,19 @@
   })
 
   let contextMenuRef: ContextMenu
+
+  // auto-save projects every 5 seconds
+  let interval: number
+  onMount(() => {
+    interval = setInterval(() => {
+      $editorStore.openedProjects.forEach(p => {
+        projectDB.update(p.id, p)
+      })
+    }, 5000)
+  })
+  onDestroy(() => {
+    clearInterval(interval)
+  })
 </script>
 
 <div class="app-shell">

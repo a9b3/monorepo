@@ -41,11 +41,13 @@
         controller.removeListener('tick', handleTick)
       }
 
-      controller = currentProject.controller
+      if (currentProject) {
+        controller = currentProject.controller
 
-      controller.on('start', handleStart)
-      controller.on('stop', handleStop)
-      controller.on('tick', handleTick)
+        controller.on('start', handleStart)
+        controller.on('stop', handleStop)
+        controller.on('tick', handleTick)
+      }
     }
   }
 

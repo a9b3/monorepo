@@ -9,38 +9,51 @@
   import { Link, navigate } from 'svelte-routing'
   import ClearEditableText from 'src/components/ClearEditableText.svelte'
   import type { Project } from 'src/daw/Project'
+  import type { Controller } from 'src/daw/Controller'
   import editorStore, {
     setSelectedProject,
     removeOpenedProject,
   } from 'src/store/editor'
 
   export let project: Project
+  let currentProject: Project
+  let currentController: Controller
+  $: {
+    currentProject = project
+    currentController = project.controller
+  }
 </script>
 
 <Link
-  to={`/project/${$project.id}`}
+  to={`/project/${$currentProject.id}`}
   on:click={() => {
-    setSelectedProject($project.id)
+    setSelectedProject($currentProject.id)
   }}
 >
   <div
     class="tab project"
-    class:selected={$editorStore.selectedProjectId === $project.id}
+    class:selected={$editorStore.selectedProjectId === $currentProject.id}
   >
     {randomEmoji()}
     <div style={`width: 15px;`} />
 
+    {#if $currentController.isPlaying}
+      <Icon type="play" />
+      <div style={`width: 15px;`} />
+    {/if}
+
     <ClearEditableText
-      value={$project.name}
+      value={$currentProject.name}
       handleInput={evt => {
-        $project.setName(evt.target.value)
+        $currentProject.setName(evt.target.value)
       }}
     />
 
     <div
       class="tabEnd"
       on:click|stopPropagation|preventDefault={() => {
-        const nextId = removeOpenedProject($project.id)
+        $currentProject.shutdown()
+        const nextId = removeOpenedProject($currentProject.id)
         if (nextId) {
           navigate(`/project/${nextId}`, { replace: true })
         } else {

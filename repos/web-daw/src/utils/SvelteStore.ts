@@ -5,23 +5,23 @@
  * https://monad.fi/en/blog/svelte-custom-stores/
  */
 export class SvelteStore {
-  _svelteStoreListeners = []
+  svelteStore = []
 
   subscribe(listener: (state: this) => void) {
-    this._svelteStoreListeners.push(listener)
+    this.svelteStore.push(listener)
     // Typescript throws an error here and svelte requires the initial set to be
     // called.
     listener(this)
 
     return () => {
-      const idx = this._svelteStoreListeners.indexOf(listener)
+      const idx = this.svelteStore.indexOf(listener)
       if (idx !== -1) {
-        this._svelteStoreListeners.splice(idx, 1)
+        this.svelteStore.splice(idx, 1)
       }
     }
   }
 
   updareSvelte(state: this) {
-    this._svelteStoreListeners.forEach(s => s(state))
+    this.svelteStore.forEach(s => s(state))
   }
 }

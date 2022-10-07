@@ -56,9 +56,11 @@
     $currentProject.controller.on('stop', handleStop)
   })
   onDestroy(() => {
-    $currentProject.controller.removeListener('play', handlePlay)
-    $currentProject.controller.removeListener('tick', handleTick)
-    $currentProject.controller.removeListener('stop', handleStop)
+    if ($currentProject) {
+      $currentProject.controller.removeListener('play', handlePlay)
+      $currentProject.controller.removeListener('tick', handleTick)
+      $currentProject.controller.removeListener('stop', handleStop)
+    }
   })
 </script>
 

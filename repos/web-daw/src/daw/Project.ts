@@ -3,7 +3,6 @@ import type { ProjectDoc } from 'src/database/project'
 import { Mixer } from './Mixer'
 import { Track } from './Track'
 import { Controller } from './Controller'
-import { audioContext } from './audioContext'
 
 export class Project extends SvelteStore {
   id: string
