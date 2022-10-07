@@ -1,0 +1,17 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(name = "node_modules")
+
+load("@npm//repos/web-daw:vite/package_json.bzl", vite_bin = "bin")
+
+vite_bin.vite(
+  name = "build",
+  srcs = [
+    "index.js",
+    "package.json",
+    ":node_modules",
+  ],
+  outs = ["dist/"],
+  chdir = package_name(),
+  args = ["-p", "tsconfig.json"],
+)
