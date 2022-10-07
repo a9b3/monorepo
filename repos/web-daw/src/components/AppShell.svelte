@@ -22,7 +22,7 @@
       <Route path="/project/:id" let:params>
         <Project {params} />
       </Route>
-      <Route path="/" component={Dashboard} />
+      <Route path="/*" component={Dashboard} />
     </div>
   </Router>
 </div>

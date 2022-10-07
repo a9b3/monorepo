@@ -144,6 +144,13 @@ func main() {
 					return TemplateActionHandler(cCtx, "go-lib-template")
 				},
 			},
+			{
+				Name:     "terraform-template",
+				Category: "template",
+				Action: func(cCtx *cli.Context) error {
+					return TemplateActionHandler(cCtx, "terraform-template")
+				},
+			},
 		},
 	}
 

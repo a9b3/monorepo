@@ -8,6 +8,7 @@
   import { Link } from 'svelte-routing'
   import Tab from 'src/components/tabBar/Tab.svelte'
   import editorStore, { setSelectedProject } from 'src/store/editor'
+  import { url } from 'src/store/url'
 </script>
 
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
@@ -17,7 +18,7 @@
       setSelectedProject()
     }}
   >
-    <div class="tab" class:selected={!$editorStore.selectedProjectId}>
+    <div class="tab" class:selected={/^\/((?!project).)*$/.test($url.pathname)}>
       <Icon type="dashboardFill" />
     </div>
   </Link>

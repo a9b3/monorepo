@@ -9,10 +9,8 @@
   import ClearEditableText from 'src/components/ClearEditableText.svelte'
   import type { Project } from 'src/daw/Project'
   import type { Controller } from 'src/daw/Controller'
-  import editorStore, {
-    setSelectedProject,
-    removeOpenedProject,
-  } from 'src/store/editor'
+  import { setSelectedProject, removeOpenedProject } from 'src/store/editor'
+  import { url } from 'src/store/url'
 
   export let project: Project
   let currentProject: Project
@@ -21,17 +19,19 @@
     currentProject = project
     currentController = project.controller
   }
+
+  $: tabUrlPath = `/project/${$currentProject.id}`
 </script>
 
 <Link
-  to={`/project/${$currentProject.id}`}
+  to={tabUrlPath}
   on:click={() => {
     setSelectedProject($currentProject.id)
   }}
 >
   <div
     class="tab project"
-    class:selected={$editorStore.selectedProjectId === $currentProject.id}
+    class:selected={$url.pathname.startsWith(tabUrlPath)}
   >
     {$currentProject.emoji}
     <div style={`width: 15px;`} />

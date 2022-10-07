@@ -1,81 +1,39 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { Router, Route, Link, navigate } from 'svelte-routing'
   import { objectStyle } from 'src/utils/objectToStyleStr'
-  import Icon from 'src/components/Icon.svelte'
-  import ContextMenu from 'src/components/ContextMenu.svelte'
-  import {
-    filteredProjects,
-    createProject,
-    fetchProjects,
-  } from 'src/store/project'
-  import { randomLinearGradient } from 'src/utils/randomLinearGradient'
-  import { randomEmoji } from 'src/utils/randomEmoji'
-  import ProjectCard from './ProjectCard.svelte'
+  import Recent from './Recent/Recent.svelte'
+  import url from 'src/store/url'
+  import RouteRedirect from 'src/components/RouteRedirect.svelte'
 
-  let contextMenuRef: ContextMenu
-
-  onMount(() => fetchProjects())
+  let routerUrl = ''
 </script>
 
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
-  <div class="left">
-    <div class="row">
-      <Icon
-        type="fileFill"
+  <Router {routerUrl}>
+    <div class="left">
+      <Link to="/recent">
+        <div class="row" class:active={$url.pathname === '/recent'}>Recent</div>
+      </Link>
+      <div
         style={objectStyle({
-          marginRight: '15px',
+          borderBottom: '1px solid var(--colors__bg3)',
+          margin: '0 20px',
         })}
       />
-      All Projects
+      <div class="row">Favorites</div>
+      <div
+        style={objectStyle({
+          borderBottom: '1px solid var(--colors__bg3)',
+          margin: '0 20px',
+        })}
+      />
+      <div class="row">Teams</div>
     </div>
-    <div class="row">Recent</div>
-    <div class="row">Drafts</div>
-    <div
-      style={objectStyle({
-        borderBottom: '1px solid var(--colors__bg3)',
-        margin: '0 20px',
-      })}
-    />
-    <div class="row">Favorites</div>
-    <div
-      style={objectStyle({
-        borderBottom: '1px solid var(--colors__bg3)',
-        margin: '0 20px',
-      })}
-    />
-    <div class="row">Teams</div>
-  </div>
-  <div
-    class="content"
-    on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
-  >
-    <ContextMenu
-      bind:this={contextMenuRef}
-      menu={[
-        {
-          label: 'Create Project',
-          onClick: () => {
-            createProject({
-              createdBy: 'string',
-              name: 'Untitled',
-              bpm: 120,
-              timeSignature: { top: 4, bottom: 4 },
-              tracks: {},
-              trackOrder: [],
-              emoji: randomEmoji(),
-              color: randomLinearGradient(),
-            })
-          },
-          type: 'item',
-        },
-      ]}
-    />
-    <div class="projects">
-      {#each $filteredProjects as project}
-        <ProjectCard {project} />
-      {/each}
+    <div class="content">
+      <Route path="/recent" component={Recent} />
     </div>
-  </div>
+    <RouteRedirect path="/" to="recent" />
+  </Router>
 </div>
 
 <style>
@@ -108,6 +66,12 @@
     padding: 0 20px;
   }
 
+  .row:hover {
+    background-color: var(--colors__bgHover);
+  }
+  .row.active {
+    background: var(--colors__accent);
+  }
   .projects {
     display: flex;
     flex-direction: row;
