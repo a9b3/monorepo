@@ -114,9 +114,8 @@ export class Controller extends EventEmitter {
     this.emit('stop')
   }
 
-  toggleMetronome(intentState: boolean) {
-    this.isMetronomeActive =
-      intentState !== undefined ? intentState : !this.isMetronomeActive
+  toggleMetronome(intentState = !this.isMetronomeActive) {
+    this.isMetronomeActive = intentState
     if (this.isMetronomeActive) {
       this.addHandler(this.#metronome.handler)
     } else {

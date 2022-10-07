@@ -40,7 +40,7 @@ export class Mixer {
       })
     }
 
-    this.master.connect(audioContext.destination)
+    this.turnon()
   }
 
   addChannel(arg?: ChannelConstructorArgs): Channel {
@@ -69,7 +69,11 @@ export class Mixer {
     delete this.sends[id]
   }
 
-  cleanup() {
+  shutdown() {
     this.master.disconnect()
+  }
+
+  turnon() {
+    this.master.connect(audioContext.destination)
   }
 }

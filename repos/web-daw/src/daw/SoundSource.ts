@@ -75,7 +75,6 @@ export class SoundSource {
    * url to load sound for
    */
   async load(url: string, name?: string): Promise<void> {
-    console.log('invoking load', url, name)
     this.ready = false
     this.audioBuffer = undefined
     if (this.url !== url) {

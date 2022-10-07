@@ -13,18 +13,15 @@
 
   export let params: { id: string }
 
-  let isFetching = true
   $: id = params.id
   $: {
     ;(async () => {
-      isFetching = true
       try {
         await fetchProject(params.id)
       } catch (err) {
         setSelectedProject('')
         navigate('/', { replace: true })
       }
-      isFetching = false
     })()
   }
   $: project = $editorStore.openedProjects.find(proj => {

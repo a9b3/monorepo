@@ -1,36 +1,58 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
+  import { onDestroy } from 'svelte'
   import type { Project } from 'src/daw/Project'
+  import type { Controller } from 'src/daw/Controller'
   import Pill from 'src/components/Pill.svelte'
   import Layout from 'src/components/Layout.svelte'
   import Icon from 'src/components/Icon.svelte'
   import { audioContext } from 'src/daw/audioContext'
 
   export let project: Project
-
-  let controller = $project.controller
-
+  let currentProject: Project
+  let controller: Controller
   let elapsedBeats = 0
+  let elapsedBars = 0
 
   function handleStart() {}
   function handleStop() {
     elapsedBeats = 0
+    elapsedBars = 0
   }
   function handleTick(args) {
     const currentBeat = Math.floor(args.currentTick / args.ticksPerBeat) % 4
+    const currentBar = Math.floor(args.currentTick / (args.ticksPerBeat * 4))
     if (currentBeat !== elapsedBeats) {
       elapsedBeats = currentBeat
     }
+    if (currentBar !== elapsedBars) {
+      elapsedBars = currentBar
+    }
   }
-  onMount(() => {
-    project.controller.on('start', handleStart)
-    project.controller.on('stop', handleStop)
-    project.controller.on('tick', handleTick)
-  })
+
+  $: {
+    if (currentProject !== project) {
+      currentProject = project
+
+      if (controller) {
+        elapsedBeats = 0
+        elapsedBars = 0
+        controller.removeListener('start', handleStart)
+        controller.removeListener('stop', handleStop)
+        controller.removeListener('tick', handleTick)
+      }
+
+      controller = currentProject.controller
+
+      controller.on('start', handleStart)
+      controller.on('stop', handleStop)
+      controller.on('tick', handleTick)
+    }
+  }
+
   onDestroy(() => {
-    project.controller.removeListener('start', handleStart)
-    project.controller.removeListener('stop', handleStop)
-    project.controller.removeListener('tick', handleTick)
+    controller.removeListener('start', handleStart)
+    controller.removeListener('stop', handleStop)
+    controller.removeListener('tick', handleTick)
   })
 </script>
 
@@ -38,14 +60,14 @@
   <Layout class="left">
     <Pill title="Link" disabled />
     <Pill title="Tap" disabled />
-    <Pill title={String(project.controller.bpm) + ' bpm'} />
+    <Pill title={String($currentProject.controller.bpm) + ' bpm'} />
     <Pill
-      title={String(project.timeSignature.top) +
+      title={String($currentProject.timeSignature.top) +
         ' / ' +
-        String(project.timeSignature.bottom)}
+        String($currentProject.timeSignature.bottom)}
     />
     <Pill
-      title={$controller.isMetronomeActive ? 'm on' : 'm off'}
+      title={$controller.isMetronomeActive ? 'On' : 'Off'}
       on:click={() => {
         $controller.toggleMetronome()
       }}
@@ -53,18 +75,18 @@
     <Pill title="1 Bar" />
   </Layout>
   <Layout class="center">
-    <Pill title="{elapsedBeats + 1}. 1. 1" disabled />
+    <Pill title="{elapsedBeats + 1}. {elapsedBars + 1}. 1" disabled />
     <Pill
       on:click={() => {
         // browser requires user action to allow playback
         audioContext.resume()
 
-        if ($project.controller.isPlaying) {
-          $project.controller.stop()
+        if ($currentProject.controller.isPlaying) {
+          $currentProject.controller.stop()
         } else {
-          $project.controller.play()
+          $currentProject.controller.play()
         }
-      }}><Icon type="arrowRightFill" /></Pill
+      }}><Icon type={$controller.isPlaying ? 'stop' : 'play'} /></Pill
     >
   </Layout>
   <div class="right">

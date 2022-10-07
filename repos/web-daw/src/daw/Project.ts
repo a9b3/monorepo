@@ -85,8 +85,13 @@ export class Project extends SvelteStore {
     this.updareSvelte(this)
   }
 
-  cleanup() {
-    this.mixer.cleanup()
+  turnon() {
+    this.mixer.turnon()
+  }
+
+  shutdown() {
+    this.mixer.shutdown()
+    this.controller.stop()
   }
 
   handler = (...args) => {
