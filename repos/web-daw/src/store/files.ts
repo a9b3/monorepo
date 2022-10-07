@@ -112,7 +112,7 @@ export const filesStore = writable<{
               name: 'FireYear.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/808s/808 (FireYea).wav',
+                url: '/content/drums/808s/808 (FireYea).wav',
               },
             },
             {
@@ -120,7 +120,7 @@ export const filesStore = writable<{
               name: 'LockDown.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/808s/808 (LockDown).wav',
+                url: '/content/drums/808s/808 (LockDown).wav',
               },
             },
           ],
@@ -135,7 +135,7 @@ export const filesStore = writable<{
               name: 'Clap 1.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/claps/Clap 1.wav',
+                url: '/content/drums/claps/Clap 1.wav',
               },
             },
             {
@@ -143,7 +143,7 @@ export const filesStore = writable<{
               name: 'Clap 2.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/claps/Clap 2.wav',
+                url: '/content/drums/claps/Clap 2.wav',
               },
             },
             {
@@ -151,7 +151,7 @@ export const filesStore = writable<{
               name: 'Clap 3.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/claps/Clap 3.wav',
+                url: '/content/drums/claps/Clap 3.wav',
               },
             },
             {
@@ -159,7 +159,7 @@ export const filesStore = writable<{
               name: 'Clap 4.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/claps/Clap 4.wav',
+                url: '/content/drums/claps/Clap 4.wav',
               },
             },
           ],
@@ -174,7 +174,7 @@ export const filesStore = writable<{
               name: 'Hihat 1.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/hats/Hihat 1.wav',
+                url: '/content/drums/hats/Hihat 1.wav',
               },
             },
             {
@@ -182,7 +182,7 @@ export const filesStore = writable<{
               name: 'Hihat 2.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/hats/Hihat 2.wav',
+                url: '/content/drums/hats/Hihat 2.wav',
               },
             },
             {
@@ -190,7 +190,7 @@ export const filesStore = writable<{
               name: 'Hihat 3.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/hats/Hihat 3.wav',
+                url: '/content/drums/hats/Hihat 3.wav',
               },
             },
             {
@@ -198,7 +198,7 @@ export const filesStore = writable<{
               name: 'Hihat 4.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/hats/Hihat 4.wav',
+                url: '/content/drums/hats/Hihat 4.wav',
               },
             },
           ],
@@ -213,7 +213,7 @@ export const filesStore = writable<{
               name: 'Kick Bold.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/kicks/Kick - Bold.wav',
+                url: '/content/drums/kicks/Kick - Bold.wav',
               },
             },
             {
@@ -221,7 +221,7 @@ export const filesStore = writable<{
               name: 'Kick Clutch.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/kicks/Kick - Clutch.wav',
+                url: '/content/drums/kicks/Kick - Clutch.wav',
               },
             },
             {
@@ -229,7 +229,7 @@ export const filesStore = writable<{
               name: 'Kick Inner.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/kicks/Kick - Inner.wav',
+                url: '/content/drums/kicks/Kick - Inner.wav',
               },
             },
           ],
@@ -244,7 +244,7 @@ export const filesStore = writable<{
               name: 'Cymbal.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/openhats/Cymbal.wav',
+                url: '/content/drums/openhats/Cymbal.wav',
               },
             },
             {
@@ -252,7 +252,7 @@ export const filesStore = writable<{
               name: 'OpenShort 1.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/openhats/OpenShort 1.wav',
+                url: '/content/drums/openhats/OpenShort 1.wav',
               },
             },
             {
@@ -260,7 +260,7 @@ export const filesStore = writable<{
               name: 'OpenShort 2.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/openhats/OpenShort 2.wav',
+                url: '/content/drums/openhats/OpenShort 2.wav',
               },
             },
             {
@@ -268,7 +268,7 @@ export const filesStore = writable<{
               name: 'OpenShort 3.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/openhats/OpenShort 3.wav',
+                url: '/content/drums/openhats/OpenShort 3.wav',
               },
             },
           ],
@@ -283,7 +283,7 @@ export const filesStore = writable<{
               name: 'Perc 1.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/percs/Perc 1.wav',
+                url: '/content/drums/percs/Perc 1.wav',
               },
             },
             {
@@ -291,7 +291,7 @@ export const filesStore = writable<{
               name: 'Perc 2.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/percs/Perc 2.wav',
+                url: '/content/drums/percs/Perc 2.wav',
               },
             },
             {
@@ -299,7 +299,7 @@ export const filesStore = writable<{
               name: 'Perc 3.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/percs/Perc 3.wav',
+                url: '/content/drums/percs/Perc 3.wav',
               },
             },
             {
@@ -307,7 +307,7 @@ export const filesStore = writable<{
               name: 'Perc 4.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/percs/Perc 4.wav',
+                url: '/content/drums/percs/Perc 4.wav',
               },
             },
             {
@@ -315,7 +315,7 @@ export const filesStore = writable<{
               name: 'Perc 5.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/percs/Perc 5.wav',
+                url: '/content/drums/percs/Perc 5.wav',
               },
             },
             {
@@ -323,7 +323,7 @@ export const filesStore = writable<{
               name: 'Perc 6.wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/percs/Perc 6.wav',
+                url: '/content/drums/percs/Perc 6.wav',
               },
             },
           ],
@@ -338,7 +338,7 @@ export const filesStore = writable<{
               name: 'Snare (50kWatch).wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/snares/Snare (50kWatch).wav',
+                url: '/content/drums/snares/Snare (50kWatch).wav',
               },
             },
             {
@@ -346,7 +346,7 @@ export const filesStore = writable<{
               name: 'Snare (Bounce3).wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/snares/Snare (Bounce3).wav',
+                url: '/content/drums/snares/Snare (Bounce3).wav',
               },
             },
             {
@@ -354,7 +354,7 @@ export const filesStore = writable<{
               name: 'Snare (Doctor).wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/snares/Snare (Doctor).wav',
+                url: '/content/drums/snares/Snare (Doctor).wav',
               },
             },
             {
@@ -362,7 +362,7 @@ export const filesStore = writable<{
               name: 'Snare (Factory).wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/snares/Snare (Factory).wav',
+                url: '/content/drums/snares/Snare (Factory).wav',
               },
             },
             {
@@ -370,7 +370,7 @@ export const filesStore = writable<{
               name: 'Snare (Future).wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/snares/Snare (Future).wav',
+                url: '/content/drums/snares/Snare (Future).wav',
               },
             },
             {
@@ -378,7 +378,7 @@ export const filesStore = writable<{
               name: 'Snare (GodIsGood).wav',
               type: 'file',
               metadata: {
-                url: 'public/content/drums/snares/Snare (GodIsGood).wav',
+                url: '/content/drums/snares/Snare (GodIsGood).wav',
               },
             },
           ],

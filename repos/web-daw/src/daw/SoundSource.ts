@@ -25,7 +25,7 @@ async function convertUrlToBlob(url: string) {
   if (url.startsWith('blob:')) {
     return url
   }
-  const res = await fetch(`/${url}`)
+  const res = await fetch(`${url}`)
   const blob = await res.blob()
   const fileUrl = URL.createObjectURL(blob)
   return fileUrl
