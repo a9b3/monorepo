@@ -1,7 +1,7 @@
 <script lang="ts">
   export let type: 'row' | 'col' = 'row'
   export let padding: string = 'var(--spacing__paddingM)'
-  export let align: 'center' | 'start' = 'start'
+  export let align: 'center' | 'start' = undefined
 
   const overrideStyle = `--padding: ${padding};`
 </script>
