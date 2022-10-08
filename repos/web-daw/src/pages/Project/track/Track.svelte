@@ -1,18 +1,20 @@
 <script lang="ts">
   import type { Project } from 'src/daw/Project'
   import type { Track } from 'src/daw/Track'
-  import Text from 'src/components/Text.svelte'
-  import Pill from 'src/components/Pill.svelte'
-  import Layout from 'src/components/Layout.svelte'
-  import ContextMenu from 'src/components/ContextMenu.svelte'
+  import {
+    Text,
+    Pill,
+    Layout,
+    ContextMenu,
+    ClearEditableText,
+    StereoMeter,
+    Player,
+  } from 'src/components'
   import editorStore, {
     setInFocusElement,
     setInFocusTrack,
   } from 'src/store/editor'
-  import Player from 'src/components/players/Player.svelte'
   import { objectStyle } from 'src/utils/objectToStyleStr'
-  import ClearEditableText from 'src/components/ClearEditableText.svelte'
-  import StereoMeter from 'src/components/Meter/StereoMeter.svelte'
 
   import Clip from './Clip.svelte'
 
@@ -21,10 +23,10 @@
 
   let mainElRef: HTMLElement
   let contextMenuRef: ContextMenu
-
-  let channel = $project.mixer.channels[track.channelId]
-
   let clips = Array(8).fill({})
+
+  $: currentTrack = track
+  $: currentChannel = $project.mixer.channels[currentTrack.channelId]
 </script>
 
 <div
@@ -113,7 +115,7 @@
           width: '15px',
         })}
       >
-        <StereoMeter analyser={channel.analyser} />
+        <StereoMeter analyser={currentChannel.analyser} />
       </div>
     </div>
   </Layout>

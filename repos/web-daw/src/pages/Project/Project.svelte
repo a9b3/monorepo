@@ -36,10 +36,12 @@
   // auto-save projects every 5 seconds
   let interval: number
   onMount(() => {
-    projectDB.update(project.id, project)
+    if ($project) {
+      projectDB.update($project.id, $project)
+    }
     interval = setInterval(() => {
-      projectDB.update(project.id, project)
-    }, 5000)
+      projectDB.update($project.id, $project)
+    }, 2000)
   })
   onDestroy(() => {
     clearInterval(interval)
