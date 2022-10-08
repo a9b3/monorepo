@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { navigate } from 'svelte-routing'
   import { Icon } from 'src/components'
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import {
@@ -7,6 +8,7 @@
     createProject,
     fetchProjects,
   } from 'src/store/project'
+  import { addOpenedProject } from 'src/store/editor'
   import { randomLinearGradient } from 'src/utils/randomLinearGradient'
   import { randomEmoji } from 'src/utils/randomEmoji'
   import ProjectCard from 'src/pages/Dashboard/ProjectCard.svelte'
@@ -20,6 +22,21 @@
   onMount(() => {
     fetchProjects()
   })
+
+  async function handleCreateProject() {
+    const proj = await createProject({
+      createdBy: 'string',
+      name: 'Untitled',
+      bpm: 120,
+      timeSignature: { top: 4, bottom: 4 },
+      tracks: {},
+      trackOrder: [],
+      emoji: randomEmoji(),
+      color: randomLinearGradient(),
+    })
+    addOpenedProject(proj)
+    navigate(`/project/${proj.id}`, { replace: true })
+  }
 </script>
 
 <div
@@ -31,38 +48,13 @@
     menu={[
       {
         label: 'Create Project',
-        onClick: () => {
-          createProject({
-            createdBy: 'string',
-            name: 'Untitled',
-            bpm: 120,
-            timeSignature: { top: 4, bottom: 4 },
-            tracks: {},
-            trackOrder: [],
-            emoji: randomEmoji(),
-            color: randomLinearGradient(),
-          })
-        },
+        onClick: handleCreateProject,
         type: 'item',
       },
     ]}
   />
   <div class="actions">
-    <div
-      class="card"
-      on:click={() => {
-        createProject({
-          createdBy: 'string',
-          name: 'Untitled',
-          bpm: 120,
-          timeSignature: { top: 4, bottom: 4 },
-          tracks: {},
-          trackOrder: [],
-          emoji: randomEmoji(),
-          color: randomLinearGradient(),
-        })
-      }}
-    >
+    <div class="card" on:click={handleCreateProject}>
       Create New Project
       <div
         style={objectStyle({

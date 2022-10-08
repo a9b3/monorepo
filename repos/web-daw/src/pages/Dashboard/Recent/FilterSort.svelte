@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { IconButton, Icon, Text, Layout } from 'src/components'
+  import { SelectInput, IconButton, Icon, Text, Layout } from 'src/components'
   import dashboardStore from 'src/store/dashboard'
 </script>
 
@@ -7,7 +7,9 @@
   <Layout align={'center'} class="sort" padding="10px">
     <Layout align={'center'}>
       <Text color={'fg2'}>Sort By:</Text>
-      <div>Latest</div>
+      <SelectInput>
+        <div>Latest</div>
+      </SelectInput>
     </Layout>
     <div>
       <IconButton

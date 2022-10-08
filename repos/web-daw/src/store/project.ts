@@ -2,6 +2,7 @@ import { writable, derived } from 'svelte/store'
 import type { ProjectDoc } from 'src/database/project'
 import projectDb from 'src/database/project'
 import editorStore from './editor'
+import dashboardStore from './dashboard'
 
 const projectStore = writable<{ projects: { [key: string]: ProjectDoc } }>({
   projects: {},
@@ -13,6 +14,7 @@ export async function createProject(project: ProjectDoc) {
     prev.projects[res.id] = res
     return prev
   })
+  return res
 }
 
 export async function fetchProjects() {
@@ -47,10 +49,20 @@ export async function deleteProject(id: string) {
   })
 }
 
-export const filteredProjects = derived([projectStore], ([$projectStore]) =>
-  Object.values($projectStore.projects).sort((a, b) =>
-    a.lastModified < b.lastModified ? 1 : -1
-  )
+export const filteredProjects = derived(
+  [projectStore, dashboardStore],
+  ([$projectStore, $dashboardStore]) => {
+    if ($dashboardStore.sortBy === 'lastModified') {
+      return Object.values($projectStore.projects).sort((a, b) =>
+        a.lastModified < b.lastModified ? 1 : -1
+      )
+    }
+    if ($dashboardStore.sortBy === 'alphabetical') {
+      return Object.values($projectStore.projects).sort((a, b) =>
+        a.name < b.name ? 1 : -1
+      )
+    }
+  }
 )
 
 export const currentlySelectedProject = derived(

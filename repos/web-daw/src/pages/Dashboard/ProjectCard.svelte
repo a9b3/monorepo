@@ -7,7 +7,6 @@
   import editorStore, {
     addOpenedProject,
     removeOpenedProject,
-    setSelectedProject,
     setInFocusElement,
   } from 'src/store/editor'
   import { objectStyle } from 'src/utils/objectToStyleStr'
@@ -24,10 +23,12 @@
   on:click={() => {
     setInFocusElement(project.id)
   }}
-  on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
+  on:contextmenu|preventDefault={evt => {
+    setInFocusElement(project.id)
+    contextMenuRef.handleRightClick(evt)
+  }}
   on:dblclick={() => {
     addOpenedProject(project)
-    setSelectedProject(project.id)
     navigate(`/project/${project.id}`, { replace: true })
   }}
 >
