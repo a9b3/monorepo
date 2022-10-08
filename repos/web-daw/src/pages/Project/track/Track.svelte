@@ -10,6 +10,7 @@
     StereoMeter,
     Player,
     Slider,
+    Knob,
   } from 'src/components'
   import editorStore, {
     setInFocusElement,
@@ -120,10 +121,14 @@
       >
         <StereoMeter analyser={currentChannel.analyser} />
       </div>
-      <div style={objectStyle({ width: '15px' })} />
+      <div style={objectStyle({ width: '5px' })} />
       <Slider
         value={currentChannel.gain}
         onChange={val => currentChannel.setGain(val)}
+      />
+      <Knob
+        value={currentChannel.panPosition}
+        setValue={val => currentChannel.setPan(val)}
       />
     </div>
   </Layout>

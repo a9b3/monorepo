@@ -1,31 +1,15 @@
-/**
- * Use this directive on any element to subscribe to percentage y deltas.
- *
- * ex.
- * const slider = useSlider(delta => console.log(delta))
- * <div use:slider style={{height: 100px}} />
- */
-export function useSlider(
-  setValue: (percent: number) => void,
-  opts?: { height: number }
+export function useDelta(
+  getDelta: (delta: number) => void,
+  opts: { pxRange: number }
 ) {
   return function handler(node: HTMLElement) {
-    let currValue: number
     let currentY: number
-    let nodeHeight: number
 
     const mousemove = (evt: MouseEvent) => {
       const pxDelta = currentY - evt.clientY
       currentY = evt.clientY
-      const percentageDelta = pxDelta / nodeHeight
-      if (currValue - percentageDelta > 1) {
-        currValue = 1
-      } else if (currValue - percentageDelta < 0) {
-        currValue = 0
-      } else {
-        currValue -= percentageDelta
-      }
-      setValue(currValue)
+      const percentageDelta = pxDelta / opts.pxRange
+      getDelta(percentageDelta)
     }
 
     const mouseup = () => {
@@ -38,10 +22,6 @@ export function useSlider(
         return
       }
       currentY = evt.clientY
-      nodeHeight = opts?.height || node.offsetHeight
-
-      currValue = (currentY - node.offsetTop) / nodeHeight
-      setValue(currValue)
 
       document.addEventListener('mousemove', mousemove)
       document.addEventListener('mouseup', mouseup)
