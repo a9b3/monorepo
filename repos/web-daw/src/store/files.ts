@@ -33,68 +33,7 @@ export const filesStore = writable<{
       id: crypto.randomUUID(),
       name: 'Sounds',
       type: 'directory',
-      children: [
-        {
-          id: crypto.randomUUID(),
-          name: 'Delays & Loops',
-          type: 'directory',
-          children: [
-            {
-              id: crypto.randomUUID(),
-              name: '808s',
-              type: 'directory',
-              children: [
-                {
-                  id: crypto.randomUUID(),
-                  name: 'Delays & Loops',
-                  type: 'directory',
-                  children: [
-                    {
-                      id: crypto.randomUUID(),
-                      name: '808s',
-                      type: 'directory',
-                      children: [],
-                    },
-                    {
-                      id: crypto.randomUUID(),
-                      name: 'Cool Stuff',
-                      type: 'file',
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              id: crypto.randomUUID(),
-              name: 'Cool Stuff',
-              type: 'file',
-            },
-          ],
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Drive & Color',
-          type: 'directory',
-          children: [
-            {
-              id: crypto.randomUUID(),
-              name: 'Drive',
-              type: 'directory',
-              children: [],
-            },
-            {
-              id: crypto.randomUUID(),
-              name: 'Color',
-              type: 'file',
-            },
-          ],
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Foo',
-          type: 'file',
-        },
-      ],
+      children: [],
     },
     {
       icon: 'musicFill',

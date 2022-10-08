@@ -1,7 +1,5 @@
 <script lang="ts">
-  import Searchbar from 'src/components/Searchbar.svelte'
-  import Layout from 'src/components/Layout.svelte'
-  import DirectoryTree from 'src/components/DirectoryTree.svelte'
+  import { Searchbar, Layout, DirectoryTree, Text } from 'src/components'
   import { filesStore, selectedDirectory } from 'src/store/files'
   import Finder from './Finder.svelte'
 
@@ -30,7 +28,15 @@
         }}
       />
     </div>
-    <div class="right"><DirectoryTree files={$selectedDirectory} /></div>
+    <div class="right">
+      {#if !$filesStore.selectedCategory}
+        <Text color={'bg3'}>No category selected</Text>
+      {:else if $selectedDirectory.length === 0}
+        <Text color={'bg3'}>Empty</Text>
+      {:else}
+        <DirectoryTree files={$selectedDirectory} />
+      {/if}
+    </div>
   </Layout>
 </div>
 
