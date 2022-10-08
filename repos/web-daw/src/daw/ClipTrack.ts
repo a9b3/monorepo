@@ -55,6 +55,7 @@ export class ClipTrack extends SvelteStore {
     this.clipsOrder[idx] = clip.id
 
     this.updareSvelte(this)
+    return clip
   }
 
   removeClip(idx: string) {

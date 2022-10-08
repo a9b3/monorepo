@@ -1,6 +1,7 @@
 <script lang="ts">
   import TopBar from './TopBar.svelte'
   import windowState from './windowState'
+  import { mousePosition } from 'src/utils/mousePosition'
 
   export let showWindow = false
   export let title = ''
@@ -8,8 +9,10 @@
   function draggable(node: HTMLElement) {
     const z = windowState.focus(node)
     let moving = false
-    let left = 300
-    let top = 100
+
+    // (note): position the newly created window centered right under the cursor
+    let left = mousePosition.x - node.offsetWidth / 2
+    let top = mousePosition.y - 10
 
     node.style.position = 'absolute'
     node.style.top = `${top}px`

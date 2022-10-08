@@ -6,6 +6,10 @@
   import { navigate } from 'svelte-routing'
   import { setSelectedProject } from 'src/store/editor'
   import projectDB from 'src/database/project'
+  import {
+    trackMousePosition,
+    untrackMousePosition,
+  } from 'src/utils/mousePosition'
 
   import NewTrackHelper from './NewTrackHelper.svelte'
   import LeftPanel from './LeftPanel.svelte'
@@ -42,9 +46,11 @@
     interval = setInterval(() => {
       projectDB.update($project.id, $project)
     }, 2000)
+    trackMousePosition()
   })
   onDestroy(() => {
     clearInterval(interval)
+    untrackMousePosition()
   })
 </script>
 

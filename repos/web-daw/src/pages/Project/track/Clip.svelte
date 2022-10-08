@@ -41,7 +41,8 @@
   }}
   on:dblclick={() => {
     if (!clipId) {
-      clipTrack.addClip(String(idx))
+      const clip = clipTrack.addClip(String(idx))
+      clipTrack.setActiveClip(clip?.id)
     }
     showWindow = true
   }}
