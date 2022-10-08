@@ -23,6 +23,9 @@
     musicLine = 'music-line.svg',
     closeLine = 'close-line.svg',
     dashboardFill = 'dashboard-fill.svg',
+    addLine = 'add-line.svg',
+    gridFill = 'grid-fill.svg',
+    listCheck = 'list-check.svg',
     stop = 'stop.svg',
     play = 'play.svg',
   }

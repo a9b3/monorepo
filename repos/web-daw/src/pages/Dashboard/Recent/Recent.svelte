@@ -10,8 +10,10 @@
   import { randomLinearGradient } from 'src/utils/randomLinearGradient'
   import { randomEmoji } from 'src/utils/randomEmoji'
   import ProjectCard from 'src/pages/Dashboard/ProjectCard.svelte'
+  import ProjectRow from 'src/pages/Dashboard/ProjectRow.svelte'
   import FilterSort from './FilterSort.svelte'
   import { objectStyle } from 'src/utils/objectToStyleStr'
+  import dashboardStore from 'src/store/dashboard'
 
   let contextMenuRef: ContextMenu
 
@@ -46,14 +48,29 @@
     ]}
   />
   <div class="actions">
-    <div class="card">
+    <div
+      class="card"
+      on:click={() => {
+        createProject({
+          createdBy: 'string',
+          name: 'Untitled',
+          bpm: 120,
+          timeSignature: { top: 4, bottom: 4 },
+          tracks: {},
+          trackOrder: [],
+          emoji: randomEmoji(),
+          color: randomLinearGradient(),
+        })
+      }}
+    >
       Create New Project
       <div
         style={objectStyle({
           marginLeft: 'auto',
+          fontSize: '16px',
         })}
       >
-        <Icon type={'closeLine'} />
+        <Icon type={'addLine'} />
       </div>
     </div>
   </div>
@@ -62,7 +79,12 @@
   </div>
   <div class="projects">
     {#each $filteredProjects as project}
-      <ProjectCard {project} />
+      {#if $dashboardStore.selectedView === 'grid'}
+        <ProjectCard {project} />
+      {/if}
+      {#if $dashboardStore.selectedView === 'line'}
+        <ProjectRow {project} />
+      {/if}
     {/each}
   </div>
 </div>

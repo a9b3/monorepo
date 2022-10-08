@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store'
 
 interface DashboardDoc {
-  selectedView: string | undefined
+  selectedView: 'grid' | 'line'
 }
 
 const dashboardStore = writable<DashboardDoc>({
-  selectedView: undefined,
+  selectedView: 'grid',
 })
 
 export default dashboardStore

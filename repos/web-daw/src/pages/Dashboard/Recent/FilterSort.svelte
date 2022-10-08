@@ -1,23 +1,32 @@
 <script lang="ts">
   import { IconButton, Icon, Text, Layout } from 'src/components'
+  import dashboardStore from 'src/store/dashboard'
 </script>
 
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
-  <Text color={'fg2'}>Filter:</Text>
-
   <Layout align={'center'} class="sort" padding="10px">
     <Layout align={'center'}>
       <Text color={'fg2'}>Sort By:</Text>
       <div>Latest</div>
     </Layout>
     <div>
-      <IconButton>
-        <Icon type={'arrowDownFill'} />
+      <IconButton
+        active={$dashboardStore.selectedView === 'grid'}
+        on:click={() => {
+          $dashboardStore.selectedView = 'grid'
+        }}
+      >
+        <Icon type={'gridFill'} />
       </IconButton>
     </div>
     <div>
-      <IconButton>
-        <Icon type={'arrowDownFill'} />
+      <IconButton
+        active={$dashboardStore.selectedView === 'line'}
+        on:click={() => {
+          $dashboardStore.selectedView = 'line'
+        }}
+      >
+        <Icon type={'listCheck'} />
       </IconButton>
     </div>
   </Layout>

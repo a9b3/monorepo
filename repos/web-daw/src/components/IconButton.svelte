@@ -8,6 +8,7 @@
   style={$$restProps.style}
   class:active
   class:disabled
+  on:click
 >
   <slot />
 </div>
