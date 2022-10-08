@@ -6,7 +6,7 @@
 
   $: {
     if ($url.pathname === path) {
-      navigate(to, { replace: true })
+      setTimeout(() => navigate(to, { replace: true }), 0)
     }
   }
 </script>
