@@ -13,11 +13,11 @@
     onChange(1 - currentValue)
   })
 
-  function calcStyle() {
+  function calcStyle(calcValue: number) {
     if (!el) {
       return ``
     }
-    const top = currentValue * el.offsetHeight
+    const top = calcValue * el.offsetHeight
     return objectStyle({
       top: `${top}px`,
     })

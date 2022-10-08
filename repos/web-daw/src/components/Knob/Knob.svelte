@@ -5,7 +5,7 @@
   export let setValue: (currentValue: number) => void
   export let value: number
 
-  let currentValue = value
+  $: currentValue = value
   let pxRange = 100
 
   const onDoubleClick = () => {
