@@ -1,7 +1,5 @@
 <script lang="ts">
-  import Text from 'src/components/Text.svelte'
-  import Pill from 'src/components/Pill.svelte'
-  import Layout from 'src/components/Layout.svelte'
+  import { Text, Pill, Layout, Knob, Slider } from 'src/components'
   import editorStore, { setInFocusElement } from 'src/store/editor'
   import type { Channel } from 'src/daw/Channel'
   import { objectStyle } from 'src/utils/objectToStyleStr'
@@ -43,6 +41,9 @@
       >
         <StereoMeter analyser={channel.analyser} />
       </div>
+      <div style={objectStyle({ width: '5px' })} />
+      <Slider value={channel.gain} onChange={val => channel.setGain(val)} />
+      <Knob value={channel.panPosition} setValue={val => channel.setPan(val)} />
     </div>
   </Layout>
 </div>
