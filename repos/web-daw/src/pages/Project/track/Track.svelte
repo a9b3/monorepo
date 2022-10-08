@@ -9,6 +9,7 @@
     ClearEditableText,
     StereoMeter,
     Player,
+    Slider,
   } from 'src/components'
   import editorStore, {
     setInFocusElement,
@@ -113,10 +114,17 @@
       <div
         style={objectStyle({
           width: '15px',
+          display: 'flex',
+          flexDirection: 'row',
         })}
       >
         <StereoMeter analyser={currentChannel.analyser} />
       </div>
+      <div style={objectStyle({ width: '15px' })} />
+      <Slider
+        value={currentChannel.gain}
+        onChange={val => currentChannel.setGain(val)}
+      />
     </div>
   </Layout>
 </div>
