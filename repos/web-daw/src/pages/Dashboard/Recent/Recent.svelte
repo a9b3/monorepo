@@ -1,8 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { Icon } from 'src/components'
-  import ContextMenu from 'src/components/ContextMenu.svelte'
+  import { Icon, ContextMenu } from 'src/components'
   import {
     filteredProjects,
     createProject,

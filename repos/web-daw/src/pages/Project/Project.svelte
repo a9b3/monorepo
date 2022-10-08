@@ -7,6 +7,7 @@
   import { setSelectedProject } from 'src/store/editor'
   import projectDB from 'src/database/project'
 
+  import NewTrackHelper from './NewTrackHelper.svelte'
   import LeftPanel from './LeftPanel.svelte'
   import TopToolbar from './TopToolbar.svelte'
   import Track from './track/Track.svelte'
@@ -74,6 +75,7 @@
           <Track track={$project.tracks[trackId]} project={$project} />
         </div>
       {/each}
+      <NewTrackHelper onNewMidi={() => $project.addTrack({ label: 'MIDI' })} />
     </div>
     <div class="sends">
       <!-- TODO add sends -->
