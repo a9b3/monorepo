@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ProjectDoc } from 'src/database/project'
-  import moment from 'moment'
+  import { Text } from 'src/components'
   import ContextMenu from 'src/components/ContextMenu.svelte'
   import { deleteProject } from 'src/store/project'
   import { navigate } from 'svelte-routing'
@@ -11,6 +11,7 @@
     setInFocusElement,
   } from 'src/store/editor'
   import { objectStyle } from 'src/utils/objectToStyleStr'
+  import moment from 'moment'
 
   export let project: ProjectDoc
 
@@ -58,18 +59,18 @@
       {project.emoji}
     </div>
     <div>
-      <div style={`margin-bottom: 10px; font-weight: bold;`}>
+      <div style={`margin-bottom: 5px; font-weight: bold;`}>
         {project.name}
         {$editorStore.openedProjects.findIndex(p => p.id === project.id) > -1
           ? ' (Opened)'
           : ''}
       </div>
-      <div>
+      <Text color={'fg2'}>
         {project.bpm} bpm
-      </div>
-      <div>
+      </Text>
+      <Text color={'fg2'}>
         Last Modified: {moment(project.lastModified).fromNow()}
-      </div>
+      </Text>
     </div>
   </div>
 </div>
@@ -77,12 +78,12 @@
 <style>
   .project {
     margin: var(--spacing__padding);
-    height: 200px;
+    height: 220px;
     width: 300px;
     border-radius: var(--misc__borderRadius);
     overflow: hidden;
     display: grid;
-    grid-template-rows: 2fr 1fr;
+    grid-template-rows: 70% 30%;
     outline: 1px solid var(--colors__bg);
   }
   .project.selected {
@@ -99,11 +100,14 @@
     font-size: 12px;
     align-items: center;
     padding: 20px;
-    background: var(--colors__fg);
-    color: var(--colors__bg);
+    background: var(--colors__bg3);
+    color: var(--colors__fg);
   }
   .info > * {
     margin-right: 20px;
+  }
+  .info > *:first-child {
+    margin-left: 0;
   }
   .info > *:last-child {
     margin-right: 0;

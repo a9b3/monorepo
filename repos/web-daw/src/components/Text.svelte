@@ -5,11 +5,14 @@
 -->
 <script lang="ts">
   import { objectToStyleStr } from 'src/utils/objectToStyleStr'
+  import { styles } from 'src/utils/styles'
+
   export let type = 'label'
+  export let color: keyof typeof styles.colors = 'fg'
 
   const types = {
     label: {
-      '--color': 'var(--colors__fg2)',
+      '--color': styles.colors[color],
       color: 'var(--color)',
     },
   }

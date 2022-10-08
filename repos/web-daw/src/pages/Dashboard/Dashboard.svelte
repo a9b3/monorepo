@@ -1,32 +1,21 @@
 <script lang="ts">
-  import { Router, Route, Link, navigate } from 'svelte-routing'
-  import { objectStyle } from 'src/utils/objectToStyleStr'
+  import { Router, Route, Link } from 'svelte-routing'
+  import { RouteRedirect, Linebreak } from 'src/components'
   import Recent from './Recent/Recent.svelte'
   import url from 'src/store/url'
-  import RouteRedirect from 'src/components/RouteRedirect.svelte'
 
   let routerUrl = ''
 </script>
 
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
-  <Router {routerUrl}>
+  <Router url={routerUrl}>
     <div class="left">
       <Link to="/recent">
         <div class="row" class:active={$url.pathname === '/recent'}>Recent</div>
       </Link>
-      <div
-        style={objectStyle({
-          borderBottom: '1px solid var(--colors__bg3)',
-          margin: '0 20px',
-        })}
-      />
+      <Linebreak />
       <div class="row">Favorites</div>
-      <div
-        style={objectStyle({
-          borderBottom: '1px solid var(--colors__bg3)',
-          margin: '0 20px',
-        })}
-      />
+      <Linebreak />
       <div class="row">Teams</div>
     </div>
     <div class="content">

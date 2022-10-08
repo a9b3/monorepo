@@ -1,12 +1,18 @@
 <script lang="ts">
-  export let type = 'row'
-  export let padding = 'var(--spacing__paddingM)'
+  export let type: 'row' | 'col' = 'row'
+  export let padding: string = 'var(--spacing__paddingM)'
+  export let align: 'center' | 'start' = 'start'
 
   const overrideStyle = `--padding: ${padding};`
 </script>
 
 <div class={$$restProps.class || ''}>
-  <div class="layout {type ? type : ''}" style={overrideStyle}>
+  <div
+    class:center={align === 'center'}
+    class:start={align === 'start'}
+    class="layout {type ? type : ''}"
+    style={overrideStyle}
+  >
     <slot />
   </div>
 </div>
@@ -32,5 +38,12 @@
   }
   .layout.col > :global(*:last-child) {
     margin-bottom: 0;
+  }
+
+  .layout.center {
+    align-items: center;
+  }
+  .layout.start {
+    align-items: flex-start;
   }
 </style>
