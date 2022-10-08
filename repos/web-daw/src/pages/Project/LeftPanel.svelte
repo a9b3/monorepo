@@ -39,6 +39,9 @@
     background-color: var(--colors__bg);
     height: 100%;
     width: 350px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .searchbar {
@@ -46,16 +49,22 @@
   }
 
   .main :global(.content) {
-    height: 100%;
+    flex: 1 0 1;
+    max-height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     padding: var(--spacing__padding);
+    overflow: hidden;
   }
   .left {
     flex: 1.2;
+    height: 100%;
+    overflow: auto;
   }
   .right {
     flex: 2;
+    height: 100%;
+    overflow: auto;
   }
 </style>

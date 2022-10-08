@@ -18,6 +18,10 @@
 </div>
 
 <style>
+  .layout {
+    overflow: inherit;
+  }
+
   .layout.row {
     display: flex;
     flex-direction: row;
