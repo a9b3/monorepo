@@ -12,6 +12,7 @@
 
 <style>
   .main {
+    flex-shrink: 0;
     border: 1px dashed var(--colors__fg3);
     border-radius: 4px;
     padding: 10px;

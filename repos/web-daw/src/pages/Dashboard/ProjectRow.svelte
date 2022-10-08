@@ -83,6 +83,9 @@
   .project.selected {
     outline: 2px solid var(--colors__accent);
   }
+  .project:hover {
+    background-color: var(--colors__fg3);
+  }
 
   .row {
     display: grid;
@@ -96,7 +99,6 @@
     font-size: 12px;
     align-items: center;
     padding: 10px;
-    background: var(--colors__bg3);
     color: var(--colors__fg);
   }
   .info > * {
