@@ -1,5 +1,6 @@
 <script lang="ts">
   import { objectStyle } from 'src/utils/objectToStyleStr'
+  import { toClass } from 'src/utils'
   export let title = ''
   export let disabled = false
   export let align = 'center'
@@ -14,9 +15,9 @@
 </script>
 
 <div
-  class="main {align ? align : ''}"
+  class={toClass([$$restProps.class, 'main', align])}
   class:disabled
-  style={overrideStyle + $$restProps.style}
+  style={toClass([overrideStyle, $$restProps.style])}
   on:click
 >
   {title}
@@ -39,7 +40,7 @@
   }
 
   .main.disabled {
-    color: var(--colors__fg2);
+    color: var(--colors__fg3);
   }
   .main.disabled:hover {
     background-color: var(--colors__bg3);

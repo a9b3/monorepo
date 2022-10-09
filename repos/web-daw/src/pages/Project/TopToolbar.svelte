@@ -2,9 +2,7 @@
   import { onDestroy } from 'svelte'
   import type { Project } from 'src/daw/Project'
   import type { Controller } from 'src/daw/Controller'
-  import Pill from 'src/components/Pill.svelte'
-  import Layout from 'src/components/Layout.svelte'
-  import Icon from 'src/components/Icon.svelte'
+  import { Pill, Layout, Icon } from 'src/components'
   import { audioContext } from 'src/daw/audioContext'
   import { useDelta } from 'src/components/Knob/useDelta'
   import { objectStyle } from 'src/utils/objectToStyleStr'
@@ -91,7 +89,6 @@
         $controller.toggleMetronome()
       }}
     />
-    <Pill title="1 Bar" />
   </Layout>
   <Layout class="center">
     <Pill title="{elapsedBeats + 1}. {elapsedBars + 1}. 1" disabled />
@@ -109,7 +106,7 @@
     >
   </Layout>
   <div class="right">
-    <Pill title="MIDI" />
+    <Pill title="MIDI" disabled />
   </div>
 </div>
 
