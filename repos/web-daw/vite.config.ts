@@ -15,6 +15,7 @@ export default defineConfig({
   resolve: {
     alias: {
       src: path.resolve('src/'),
+      daw: path.resolve('src/daw'),
     },
   },
   define: {

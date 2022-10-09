@@ -16,6 +16,8 @@
     "checkJs": true,
     "isolatedModules": true,
     "paths": {
+      "daw/*": ["./src/daw/*"],
+      "daw": ["./src/daw"],
       "*": ["./*"]
     }
   },

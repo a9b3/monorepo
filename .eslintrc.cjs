@@ -25,6 +25,9 @@ module.exports = {
   settings: {
     'import/resolver': {
       typescript: {},
+      node: {
+        extensions: ['.js', '.jsx', '.ts'],
+      },
     },
     'svelte3/typescript': true, // load TypeScript as peer dependency
   },
