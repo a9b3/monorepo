@@ -6,12 +6,22 @@
   import Layout from 'src/components/Layout.svelte'
   import Icon from 'src/components/Icon.svelte'
   import { audioContext } from 'src/daw/audioContext'
+  import { useDelta } from 'src/components/Knob/useDelta'
+  import { objectStyle } from 'src/utils/objectToStyleStr'
 
   export let project: Project
   let currentProject: Project
   let controller: Controller
   let elapsedBeats = 0
   let elapsedBars = 0
+
+  const deltaDirective = useDelta(
+    delta => {
+      const nextBpm = Math.floor($controller.bpm + delta * 100)
+      $controller.setBpm(nextBpm <= 0 ? 0 : nextBpm)
+    },
+    { pxRange: 200 }
+  )
 
   function handleStart() {}
   function handleStop() {
@@ -62,7 +72,14 @@
   <Layout class="left">
     <Pill title="Link" disabled />
     <Pill title="Tap" disabled />
-    <Pill title={String($currentProject.controller.bpm) + ' bpm'} />
+    <div use:deltaDirective>
+      <Pill
+        title={String($controller.bpm) + ' bpm'}
+        style={objectStyle({
+          width: '80px',
+        })}
+      />
+    </div>
     <Pill
       title={String($currentProject.timeSignature.top) +
         ' / ' +

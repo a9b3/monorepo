@@ -16,7 +16,7 @@
 <div
   class="main {align ? align : ''}"
   class:disabled
-  style={overrideStyle}
+  style={overrideStyle + $$restProps.style}
   on:click
 >
   {title}

@@ -74,6 +74,7 @@ export class Controller extends EventEmitter {
   setBpm(bpm: number) {
     this.bpm = bpm
     this.scheduler.setBpm(bpm)
+    this.emit('update')
   }
 
   #runHandlers = (...args: Parameters<SchedulerHandler>) => {
