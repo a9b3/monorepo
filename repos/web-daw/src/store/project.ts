@@ -1,8 +1,17 @@
 import { writable, derived } from 'svelte/store'
-import type { ProjectDoc } from 'src/database/project'
-import projectDb from 'src/database/project'
+// import projectDb from 'src/database/project'
+import { projectDb } from 'src/db'
+import type { ProjectDoc } from 'src/db'
 import editorStore from './editor'
 import dashboardStore from './dashboard'
+
+export const projects = writable<{
+  isFetching: boolean
+  projects: Map<string, ProjectDoc>
+}>({
+  isFetching: false,
+  projects: new Map(),
+})
 
 const projectStore = writable<{ projects: { [key: string]: ProjectDoc } }>({
   projects: {},

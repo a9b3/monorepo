@@ -1,0 +1,32 @@
+import type { SchedulerHandler } from 'daw/core/scheduler'
+
+export class Metronome {
+  #ticksPerBeat: number
+
+  osc: OscillatorNode
+  output: GainNode
+
+  constructor(args: { audioContext: AudioContext; ticksPerBeat: number }) {
+    this.#ticksPerBeat = args.ticksPerBeat
+    this.osc = args.audioContext.createOscillator()
+    this.output = args.audioContext.createGain()
+
+    this.osc.connect(this.output)
+    this.output.gain.setValueAtTime(0, 0)
+    this.osc.start(0)
+
+    this.output.connect(args.audioContext.destination)
+  }
+
+  onTick: SchedulerHandler = currentTick => {
+    if (currentTick % (this.#ticksPerBeat * 4) === 0) {
+      this.osc.frequency.value = 440
+      this.output.gain.setValueAtTime(0.1, currentTick)
+      this.output.gain.setValueAtTime(0, currentTick + 0.06)
+    } else if (currentTick % this.#ticksPerBeat === 0) {
+      this.osc.frequency.value = 220
+      this.output.gain.setValueAtTime(0.05, currentTick)
+      this.output.gain.setValueAtTime(0, currentTick + 0.06)
+    }
+  }
+}

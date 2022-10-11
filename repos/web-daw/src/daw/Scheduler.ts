@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events'
 import { audioContext } from './audioContext'
 
 export interface SchedulerConstructorArgs {
@@ -26,7 +27,7 @@ export type SchedulerHandler = (arg0: SchedulerHandlerArg) => void
  * scheduler.stop()
  * scheduler.removeHandler(handler)
  */
-export class Scheduler {
+export class Scheduler extends EventEmitter {
   #worker = null
   #nextTickTime = 0
   #currentTick = 0
@@ -47,6 +48,7 @@ export class Scheduler {
       bpm: 120,
     }
   ) {
+    super()
     this.setBpm(bpm)
     if (lookAhead) this.lookAhead = lookAhead
     if (scheduleAheadTime) this.scheduleAheadTime = scheduleAheadTime
@@ -60,6 +62,7 @@ export class Scheduler {
   }
 
   #scheduleNote() {
+    this.emit('tick', this.#currentTick)
     this.#handlers.forEach(handler =>
       handler({
         currentTick: this.#currentTick,
@@ -76,19 +79,6 @@ export class Scheduler {
     ) {
       this.#scheduleNote()
       this.#advanceNote()
-    }
-  }
-
-  addHandler(handler: SchedulerHandler) {
-    if (this.#handlers.indexOf(handler) === -1) {
-      this.#handlers.push(handler)
-    }
-  }
-
-  removeHandler(handler: SchedulerHandler) {
-    const idx = this.#handlers.indexOf(handler)
-    if (idx > -1) {
-      this.#handlers.splice(idx, 1)
     }
   }
 
@@ -117,5 +107,18 @@ export class Scheduler {
 
   setBpm(bpm: number) {
     this.bpm = bpm
+  }
+
+  addHandler(handler: SchedulerHandler) {
+    if (this.#handlers.indexOf(handler) === -1) {
+      this.#handlers.push(handler)
+    }
+  }
+
+  removeHandler(handler: SchedulerHandler) {
+    const idx = this.#handlers.indexOf(handler)
+    if (idx > -1) {
+      this.#handlers.splice(idx, 1)
+    }
   }
 }

@@ -2,6 +2,7 @@ import { ClipTrack } from './ClipTrack'
 import type { ClipTrackConstructorArgs } from './ClipTrack'
 import { Arrangement } from './Arrangement'
 import { MPC } from './instruments/MPC'
+import { DX7 } from './instruments/DX7'
 import type { MPCConstructorArgs } from './instruments/MPC'
 
 interface TrackConstructorArgs {
@@ -40,6 +41,7 @@ export class Track {
     if (id) this.id = id
 
     // TODO default to this for now
+    // this.instrument = new DX7(instrument)
     this.instrument = new MPC(instrument)
 
     this.color = color

@@ -38,6 +38,28 @@
         </div>
       </SelectableRow>
     {/if}
+    {#if item.type === 'instrument'}
+      <SelectableRow
+        dragSource={createDragSource(item)}
+        selected={$editorStore.inFocusElement === item.id}
+        on:mousedown={() => setInFocusElement(item.id)}
+        style={objectStyle({
+          padding: 'var(--spacing__paddingM)',
+          paddingLeft: `calc(var(--spacing__padding) * ${depth})`,
+        })}
+      >
+        <Icon type="empty" />
+        <Icon
+          type={'musicFill'}
+          style={objectStyle({
+            marginRight: 'var(--spacing__padding)',
+          })}
+        />
+        <div>
+          {item.name}
+        </div>
+      </SelectableRow>
+    {/if}
   {/each}
 </div>
 

@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 
-export type DawFileType = 'file' | 'directory'
+export type DawFileType = 'file' | 'directory' | 'instrument'
 
 export type DawFileMetaData = {
   url?: string
@@ -329,7 +329,18 @@ export const filesStore = writable<{
       id: crypto.randomUUID(),
       name: 'Instruments',
       type: 'directory',
-      children: [],
+      children: [
+        {
+          id: crypto.randomUUID(),
+          name: 'DX7',
+          type: 'instrument',
+        },
+        {
+          id: crypto.randomUUID(),
+          name: 'Sampler',
+          type: 'instrument',
+        },
+      ],
     },
     {
       icon: 'musicFill',

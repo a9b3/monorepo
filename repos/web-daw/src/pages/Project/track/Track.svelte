@@ -83,7 +83,9 @@
         paddingRight: '30px',
       })}
     >
-      <Player />
+      {#if currentTrack.instrument}
+        <Player />
+      {/if}
     </div>
     <Layout class="section" type="col">
       <Text type="label">MIDI From</Text>

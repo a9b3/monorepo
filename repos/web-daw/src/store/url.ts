@@ -1,6 +1,9 @@
 import { derived, writable } from 'svelte/store'
 
-export function createUrlStore(ssrUrl) {
+/**
+ * Svelte store to subscribe to url changes.
+ */
+export function createUrlStore(ssrUrl?: string) {
   // Ideally a bundler constant so that it's tree-shakable
   if (typeof window === 'undefined') {
     const { subscribe } = writable(ssrUrl)
@@ -9,18 +12,18 @@ export function createUrlStore(ssrUrl) {
 
   const href = writable(window.location.href)
 
-  const originalPushState = history.pushState
-  const originalReplaceState = history.replaceState
+  const originalPushState = window.history.pushState
+  const originalReplaceState = window.history.replaceState
 
   const updateHref = () => href.set(window.location.href)
 
-  history.pushState = function () {
-    originalPushState.apply(this, arguments)
+  window.history.pushState = function pushState(...args) {
+    originalPushState.apply(this, args)
     updateHref()
   }
 
-  history.replaceState = function () {
-    originalReplaceState.apply(this, arguments)
+  window.history.replaceState = function replaceState(...args) {
+    originalReplaceState.apply(this, args)
     updateHref()
   }
 

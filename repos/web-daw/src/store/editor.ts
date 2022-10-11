@@ -1,8 +1,9 @@
 import { writable, derived } from 'svelte/store'
 import type { EditorDoc } from 'src/database/editor'
 import type { ProjectDoc } from 'src/database/project'
-import editorDb from 'src/database/editor'
+// import editorDb from 'src/database/editor'
 import { Project } from 'src/daw/Project'
+import { editorDb } from 'src/db'
 
 const editorStore = writable<EditorDoc>({
   id: '',

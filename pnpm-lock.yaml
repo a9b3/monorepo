@@ -100,6 +100,7 @@ importers:
       '@types/lodash': ^4.14.186
       '@types/pouchdb': ^6.4.0
       '@types/pouchdb-find': ^6.3.7
+      '@types/webmidi': ^2.0.6
       events: ^3.3.0
       lodash: ^4.17.21
       moment: ^2.29.4
@@ -119,6 +120,7 @@ importers:
       '@types/lodash': 4.14.186
       '@types/pouchdb': 6.4.0
       '@types/pouchdb-find': 6.3.7
+      '@types/webmidi': 2.0.6
       events: 3.3.0
       lodash: 4.17.21
       moment: 2.29.4
@@ -2100,6 +2102,10 @@ packages:
 
   /@types/trusted-types/2.0.2:
     resolution: {integrity: sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==}
+    dev: false
+
+  /@types/webmidi/2.0.6:
+    resolution: {integrity: sha512-sfS0A5IryqmBrUpcGPipEPeFdpqmZzP6b6lZFxHKgz5n2Vhzh4yJ5P2TvoDUhDjqJyv0Y25ng0Qodgo2Vu08ug==}
     dev: false
 
   /@types/yargs-parser/21.0.0:

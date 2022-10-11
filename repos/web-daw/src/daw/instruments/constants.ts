@@ -18,3 +18,9 @@ export function getFrequencyFromIdx(idx: number, octave = 4) {
   const freq = NOTES[note][octave]
   return freq
 }
+
+export function midiNoteToName(midiNote: number): string {
+  const note = midiNote % 12
+  const octave = Math.floor(midiNote / 12 - 2)
+  return Object.keys(NOTES)[note] + octave
+}

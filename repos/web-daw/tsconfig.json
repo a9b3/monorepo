@@ -19,7 +19,9 @@
       "daw/*": ["./src/daw/*"],
       "daw": ["./src/daw"],
       "*": ["./*"]
-    }
+    },
+    "types": ["webmidi"],
+    "esModuleInterop": true
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
   "references": [{ "path": "./tsconfig.node.json" }]
