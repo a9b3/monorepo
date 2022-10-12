@@ -1,4 +1,4 @@
-export default function rafInterval(cb: () => void) {
+export function rafInterval(cb: () => void) {
   let interval: number
 
   function next() {

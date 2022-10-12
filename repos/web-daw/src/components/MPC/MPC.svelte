@@ -1,10 +1,9 @@
 <script lang="ts">
-  import type { MPC } from 'src/daw/instruments/MPC'
-  import { getFrequencyFromIdx } from 'src/daw/instruments/constants'
+  import type { Sampler } from 'daw/core/instruments'
 
   import Pad from './Pad.svelte'
 
-  export let instrument: MPC
+  export let instrument: Sampler
 
   const samples = Array(8).fill({})
 </script>
@@ -13,10 +12,9 @@
   {#each samples as sample, idx}
     <div class="sample">
       <Pad
-        sample={$instrument.samples[getFrequencyFromIdx(idx)]}
+        sample={$instrument.samples[60 + idx]}
         handleUrl={async arg => {
-          const freq = getFrequencyFromIdx(idx)
-          await $instrument.addSoundSource(String(freq), {
+          await $instrument.addSoundSource(String(60 + idx), {
             url: arg.metadata.url,
             name: arg.name,
           })

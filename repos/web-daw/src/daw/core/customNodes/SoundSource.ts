@@ -91,6 +91,7 @@ export class SoundSource extends IONode {
     if (args.url) {
       this.load(args.url, args.name)
     }
+    this.bufferSources = []
   }
 
   /**
@@ -128,12 +129,10 @@ export class SoundSource extends IONode {
   play({
     startTime = 0,
     offset = 0,
-    duration = 0,
     oneShot = false,
   }: {
     startTime?: number
     offset?: number
-    duration?: number
     oneShot?: boolean
   } = {}) {
     if (oneShot) {
@@ -142,7 +141,7 @@ export class SoundSource extends IONode {
 
     const bufferSource = this.#audioContext.createBufferSource()
     bufferSource.buffer = this.audioBuffer
-    bufferSource.start(startTime, offset, duration)
+    bufferSource.start(startTime, offset)
     bufferSource.connect(this.output)
     this.bufferSources.push(bufferSource)
 

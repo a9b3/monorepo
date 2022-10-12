@@ -1,56 +1,47 @@
 <script lang="ts">
-  import type { ClipTrack } from 'src/daw/ClipTrack'
-  import ClearEditableText from 'src/components/ClearEditableText.svelte'
-  import Icon from 'src/components/Icon.svelte'
-  import { objectStyle } from 'src/utils/objectToStyleStr'
-  import type { Clip } from 'src/daw/Clip'
-  import editorStore, { setInFocusElement } from 'src/store/editor'
-  import ContextMenu from 'src/components/ContextMenu.svelte'
-  import Window from 'src/components/window/Window.svelte'
-  import StepSequencer from 'src/pages/Project/editors/stepSequencer/StepSequencer.svelte'
+  import { beforeUpdate } from 'svelte'
+  import type { Track } from 'daw/core/ui'
+  import type { MidiClip } from 'daw/core/midi'
+  import { ContextMenu, Window, Icon, ClearEditableText } from 'src/components'
+  import { objectStyle } from 'src/utils'
+  import { editorStore, setInFocusElement } from 'src/store'
+  import StepSequencer from 'src/pages/Project/Editors/StepSequencer/StepSequencer.svelte'
   import MPC from 'src/components/MPC/MPC.svelte'
+
+  export let ticksPerBeat: number
+  export let clip: MidiClip
+  export let instrument
+  export let instrumentType
+  export let idx: number
+  export let activeClipId: string
+  export let addClip: InstanceType<typeof Track>['addMidiClip']
+  export let setActiveClip: InstanceType<typeof Track>['setActiveMidiClip']
+  export let removeClip: InstanceType<typeof Track>['removeMidiClip']
 
   let contextMenuRef: ContextMenu
   let showWindow = false
-
-  export let instrument
-  export let clipTrack: ClipTrack
-  export let idx: number
-
-  let clipId: string
-  let clip: Clip
-
-  $: {
-    clipId = $clipTrack?.clipsOrder[idx]
-    clip = $clipTrack?.clips[clipId]
-  }
-
-  // Need to use this since non created clips won't have an unique id.
-  function getClipInFocusElementId() {
-    return `${clipTrack.id}.${idx}`
-  }
+  $: clipId = clip?.id || crypto.randomUUID()
 </script>
 
 <div
   class="clip"
-  class:occupied={clip?.id}
-  class:active={$clipTrack?.activeClip && $clipTrack?.activeClip === clip?.id}
-  class:selected={$editorStore.inFocusElement === getClipInFocusElementId()}
+  class:occupied={clip && clip?.id}
+  class:active={activeClipId !== undefined && activeClipId === clip?.id}
+  class:selected={$editorStore.inFocusElement === clipId}
   on:mousedown={() => {
-    setInFocusElement(getClipInFocusElementId())
+    setInFocusElement(clipId)
   }}
   on:dblclick={() => {
-    if (!clipId) {
-      const clip = clipTrack.addClip(String(idx))
-      clipTrack.setActiveClip(clip?.id)
+    if (!clip) {
+      setActiveClip(addClip(idx).id)
     }
     showWindow = true
   }}
   on:contextmenu|preventDefault|stopPropagation={e => {
-    if (clipId) {
+    if (clip) {
       contextMenuRef.handleRightClick(e)
     }
-    setInFocusElement(getClipInFocusElementId())
+    setInFocusElement(clipId)
   }}
 >
   <Window bind:showWindow title={'Step Sequencer'}>
@@ -60,23 +51,25 @@
         flexDirection: 'row',
       })}
     >
-      <MPC {instrument} />
+      {#if instrumentType === 'Sampler'}
+        <MPC {instrument} />
+      {/if}
       <StepSequencer
+        {ticksPerBeat}
         {clip}
-        clipIsActive={$clipTrack?.activeClip &&
-          $clipTrack?.activeClip === clip?.id}
+        clipIsActive={activeClipId === clip?.id}
       />
     </div>
   </Window>
-  {#if clipId}
+  {#if clip}
     <ContextMenu
       bind:this={contextMenuRef}
-      menu={clipId
+      menu={clip
         ? [
             {
               label: 'Delete Clip',
               onClick: () => {
-                clipTrack.removeClip(String(idx))
+                removeClip(idx)
                 showWindow = false
               },
               type: 'item',
@@ -88,17 +81,17 @@
   <div
     class="icon"
     on:click={() => {
-      clipTrack.setActiveClip(clip?.id)
+      setActiveClip(clip?.id)
     }}
   >
     <Icon
-      type={!clip?.id ? 'stop' : 'play'}
+      type={!clip ? 'stop' : 'play'}
       style={objectStyle({
         transform: 'scale(1.2)',
       })}
     />
   </div>
-  {#if clip?.id}
+  {#if clip}
     <div
       style={objectStyle({
         width: '100%',
@@ -110,7 +103,7 @@
     >
       <ClearEditableText
         value={clip?.name}
-        handleInput={e => $clip?.setName(e.target.value)}
+        handleInput={e => clip?.setName(e.target.value)}
       />
     </div>
   {/if}

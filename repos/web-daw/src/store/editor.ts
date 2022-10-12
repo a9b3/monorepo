@@ -1,11 +1,16 @@
 import { writable, derived } from 'svelte/store'
-import type { EditorDoc } from 'src/database/editor'
-import type { ProjectDoc } from 'src/database/project'
-// import editorDb from 'src/database/editor'
-import { Project } from 'src/daw/Project'
-import { editorDb } from 'src/db'
 
-const editorStore = writable<EditorDoc>({
+import { Project } from 'daw/core/ui'
+import type { EditorDoc, ProjectDoc } from 'src/db'
+import { editorDb } from 'src/db'
+import { audioContext } from 'src/daw/audioContext'
+import { instanceToJson } from 'src/utils'
+
+// ***********************************
+// Store
+// ***********************************
+
+export const editorStore = writable<EditorDoc>({
   id: '',
   openedProjects: [],
   selectedProjectId: undefined,
@@ -14,11 +19,17 @@ const editorStore = writable<EditorDoc>({
   user: undefined,
 })
 
+// ***********************************
+// Actions
+// ***********************************
+
 export async function fetchEditor(id: string) {
   const editor = await editorDb.getByUserId(id)
   editorStore.set({
     ...editor,
-    openedProjects: editor.openedProjects.map(proj => new Project(proj)),
+    openedProjects: editor.openedProjects.map(
+      proj => new Project({ ...proj, audioContext })
+    ),
   })
 }
 
@@ -28,22 +39,23 @@ export async function fetchEditor(id: string) {
  * Would there be a use case for opening a project but not focusing it right
  * away?
  */
-export function addOpenedProject(project: ProjectDoc) {
+export function addOpenedProject(project: ProjectDoc & { id: string }) {
   editorStore.update(prev => {
     if (prev.openedProjects.findIndex(proj => proj.id === project.id) > -1) {
       return prev
     }
+
     const nextState = {
       ...prev,
       selectedProjectId: project.id,
       openedProjects: [
         ...prev.openedProjects.filter(x => x.id !== project.id),
-        new Project(project),
+        new Project({ ...project, audioContext }),
       ],
     }
 
     // TODO sync database strat
-    editorDb.update(prev.id, nextState)
+    editorDb.update(prev.id, instanceToJson(nextState))
 
     return nextState
   })
@@ -70,7 +82,7 @@ export function removeOpenedProject(id: string) {
         selectedProjectId: nextSelectedId,
       }
       // TODO sync database strat
-      editorDb.update(prev.id, nextState)
+      editorDb.update(prev.id, instanceToJson(nextState))
       return nextState
     }
 
@@ -83,7 +95,7 @@ export function removeOpenedProject(id: string) {
       selectedProjectId: nextSelectedId,
     }
     // TODO sync database strat
-    editorDb.update(prev.id, nextState)
+    editorDb.update(prev.id, instanceToJson(nextState))
     return nextState
   })
   return nextSelectedId
@@ -97,7 +109,7 @@ export function setSelectedProject(id?: string) {
     prev.selectedProjectId = id
 
     // TODO sync database strat
-    editorDb.update(prev.id, prev)
+    editorDb.update(prev.id, instanceToJson(prev))
 
     return prev
   })
@@ -116,7 +128,7 @@ export function setInFocusElement(id?: string) {
     prev.inFocusElement = id
 
     // TODO sync database strat
-    editorDb.update(prev.id, prev)
+    editorDb.update(prev.id, instanceToJson(prev))
 
     return prev
   })
@@ -131,11 +143,15 @@ export function setInFocusTrack(id?: string) {
     prev.inFocusTrack = id
 
     // TODO sync database strat
-    editorDb.update(prev.id, prev)
+    editorDb.update(prev.id, instanceToJson(prev))
 
     return prev
   })
 }
+
+// ***********************************
+// Derived
+// ***********************************
 
 /**
  * Returns the current project. Use this in the project view.

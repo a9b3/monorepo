@@ -3,7 +3,11 @@ import { EventEmitter } from 'events'
 /**
  * scheduler.on('tick', SchedulerHandler)
  */
-export type SchedulerHandler = (tick: number) => void
+export type SchedulerHandler = (arg0: {
+  currentTick: number
+  nextTickTime: number
+  ticksPerBeat: number
+}) => void
 
 /**
  * Handle all scheduling logic here.
@@ -63,7 +67,11 @@ export class Scheduler extends EventEmitter {
   }
 
   #scheduleNote() {
-    this.emit('tick', this.#currentTick)
+    this.emit('tick', {
+      currentTick: this.#currentTick,
+      nextTickTime: this.#nextTickTime,
+      ticksPerBeat: this.ticksPerBeat,
+    })
   }
 
   #schedule() {

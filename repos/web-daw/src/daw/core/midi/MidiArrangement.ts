@@ -8,7 +8,7 @@ export enum MidiEventTypeInteger {
   PitchBend = 14,
 }
 
-export interface MidiEvent {
+export interface MidiEventT {
   type:
     | 'NoteOff'
     | 'NoteOn'

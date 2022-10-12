@@ -35,7 +35,7 @@ export function createUrlStore(ssrUrl?: string) {
   }
 }
 
-const urlStore = createUrlStore()
+export const urlStore = createUrlStore()
 
 export const url = derived([urlStore], ([$urlStore]) => {
   return new URL($urlStore)

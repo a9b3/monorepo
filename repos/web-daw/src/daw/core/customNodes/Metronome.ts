@@ -18,15 +18,15 @@ export class Metronome {
     this.output.connect(args.audioContext.destination)
   }
 
-  onTick: SchedulerHandler = currentTick => {
+  onTick: SchedulerHandler = ({ currentTick, nextTickTime }) => {
     if (currentTick % (this.#ticksPerBeat * 4) === 0) {
       this.osc.frequency.value = 440
-      this.output.gain.setValueAtTime(0.1, currentTick)
-      this.output.gain.setValueAtTime(0, currentTick + 0.06)
+      this.output.gain.setValueAtTime(0.1, nextTickTime)
+      this.output.gain.setValueAtTime(0, nextTickTime + 0.06)
     } else if (currentTick % this.#ticksPerBeat === 0) {
       this.osc.frequency.value = 220
-      this.output.gain.setValueAtTime(0.05, currentTick)
-      this.output.gain.setValueAtTime(0, currentTick + 0.06)
+      this.output.gain.setValueAtTime(0.05, nextTickTime)
+      this.output.gain.setValueAtTime(0, nextTickTime + 0.06)
     }
   }
 }

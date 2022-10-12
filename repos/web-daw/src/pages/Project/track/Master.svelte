@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Text, Pill, Layout, Knob, Slider } from 'src/components'
   import editorStore, { setInFocusElement } from 'src/store/editor'
-  import type { Channel } from 'src/daw/Channel'
+  import type { Channel } from 'daw/core/mixer'
   import { objectStyle } from 'src/utils/objectToStyleStr'
   import StereoMeter from 'src/components/Meter/StereoMeter.svelte'
 
@@ -43,7 +43,10 @@
       </div>
       <div style={objectStyle({ width: '5px' })} />
       <Slider value={channel.gain} onChange={val => channel.setGain(val)} />
-      <Knob value={channel.panPosition} setValue={val => channel.setPan(val)} />
+      <Knob
+        value={channel.panPosition}
+        setValue={val => channel.setPanPosition(val)}
+      />
     </div>
   </Layout>
 </div>

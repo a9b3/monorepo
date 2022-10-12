@@ -1,8 +1,12 @@
+<!--
+  @component
+
+  Top level finder.
+
+  ex. Collections and Categories
+-->
 <script lang="ts">
-  import Layout from 'src/components/Layout.svelte'
-  import Icon from 'src/components/Icon.svelte'
-  import SelectableRow from 'src/components/SelectableRow.svelte'
-  import LabeledSection from 'src/components/LabeledSection.svelte'
+  import { Layout, Icon, SelectableRow, LabeledSection } from 'src/components'
   import type { DawFile, DawDirectory } from 'src/store/files'
 
   export let selectedId: string | undefined

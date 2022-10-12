@@ -1,63 +1,46 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
-  import ContextMenu from 'src/components/ContextMenu.svelte'
-  import editorStore from 'src/store/editor'
-  import { fetchProject } from 'src/store/project'
+  import { onMount, onDestroy, beforeUpdate } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { setSelectedProject } from 'src/store/editor'
-  import projectDB from 'src/database/project'
-  import {
-    trackMousePosition,
-    untrackMousePosition,
-  } from 'src/utils/mousePosition'
+  import { ContextMenu } from 'src/components'
+  import { editorStore, setSelectedProject, fetchProject } from 'src/store'
+  import { trackMousePosition, untrackMousePosition } from 'src/utils'
 
-  import NewTrackHelper from './NewTrackHelper.svelte'
+  import AutoSave from './AutoSave.svelte'
   import LeftPanel from './LeftPanel.svelte'
-  import TopToolbar from './TopToolbar.svelte'
-  import Track from './track/Track.svelte'
-  import Master from './track/Master.svelte'
-  // import Send from './track/Send.svelte'
+  import Toolbar from './Toolbar.svelte'
+  import Master from './Track/Master.svelte'
+  import NewTrackHelper from './Track/NewTrackHelper.svelte'
+  import Track from './Track/Track.svelte'
 
   export let params: { id: string }
 
-  $: id = params.id
-  $: {
-    ;(async () => {
-      try {
-        await fetchProject(params.id)
-      } catch (err) {
-        setSelectedProject('')
-        navigate('/', { replace: true })
-      }
-    })()
-  }
   $: project = $editorStore.openedProjects.find(proj => {
-    return proj.id === id
+    return proj.id === params.id
   })
 
   let contextMenuRef: ContextMenu
 
-  // auto-save projects every 5 seconds
-  let interval: number
-  onMount(() => {
-    if ($project) {
-      projectDB.update($project.id, $project)
+  beforeUpdate(async () => {
+    try {
+      await fetchProject(params.id)
+    } catch (err) {
+      setSelectedProject()
+      navigate('/', { replace: true })
     }
-    interval = setInterval(() => {
-      projectDB.update($project.id, $project)
-    }, 2000)
+  })
+  onMount(() => {
     trackMousePosition()
   })
   onDestroy(() => {
-    clearInterval(interval)
     untrackMousePosition()
   })
 </script>
 
+<AutoSave id={params.id} />
 <div class="app-shell">
   {#if $project}
     <div class="top">
-      <TopToolbar {project} />
+      <Toolbar project={$project} />
     </div>
     <div class="left">
       <LeftPanel />
@@ -72,18 +55,21 @@
           {
             label: 'Add Track',
             onClick: () => {
-              $project.addTrack({ label: 'Untitled' })
+              $project.addTrack({ label: 'Untitled', id: crypto.randomUUID() })
             },
             type: 'item',
           },
         ]}
       />
-      {#each $project.trackOrder as trackId}
+      {#each $project.tracks as track}
         <div class="track">
-          <Track track={$project.tracks[trackId]} project={$project} />
+          <Track {track} project={$project} />
         </div>
       {/each}
-      <NewTrackHelper onNewMidi={() => $project.addTrack({ label: 'MIDI' })} />
+      <NewTrackHelper
+        onNewMidi={() =>
+          $project.addTrack({ label: 'MIDI', id: crypto.randomUUID() })}
+      />
     </div>
     <div class="sends">
       <!-- TODO add sends -->

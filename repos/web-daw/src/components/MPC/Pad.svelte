@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createDragTarget } from 'src/components/draggable'
-  import type { SoundSource } from 'src/daw/SoundSource'
+  import type { SoundSource } from 'daw/core/customNodes'
 
   export let handleUrl
   export let sample: SoundSource

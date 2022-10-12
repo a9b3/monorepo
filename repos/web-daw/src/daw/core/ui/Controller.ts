@@ -55,9 +55,13 @@ export class Controller extends Subscribable {
       lastStartTime: 0,
       lastStopTime: 0,
     }
-    this.setIsMetronomeActive(args.isMetronomeActive || true)
+    this.setIsMetronomeActive(args.isMetronomeActive)
     this.isPlaying = false
     this.setBpm(args.bpm || 120)
+  }
+
+  #onschedulertick = args => {
+    this.emit('tick', args)
   }
 
   play() {
@@ -67,14 +71,20 @@ export class Controller extends Subscribable {
     this.scheduler.start(this.position.cursor)
     this.isPlaying = true
 
+    this.emit('play')
     this.emit('update')
+
+    this.scheduler.on('tick', this.#onschedulertick)
   }
 
   stop() {
     this.scheduler.stop()
     this.isPlaying = false
 
+    this.emit('stop')
     this.emit('update')
+
+    this.scheduler.removeListener('tick', this.#onschedulertick)
   }
 
   setIsMetronomeActive(intentState = !this.isMetronomeActive) {

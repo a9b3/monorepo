@@ -4,13 +4,10 @@
   An individual tab used by TabBar
 -->
 <script lang="ts">
-  import Icon from 'src/components/Icon.svelte'
   import { Link, navigate } from 'svelte-routing'
-  import ClearEditableText from 'src/components/ClearEditableText.svelte'
-  import type { Project } from 'src/daw/Project'
-  import type { Controller } from 'src/daw/Controller'
-  import { setSelectedProject, removeOpenedProject } from 'src/store/editor'
-  import { url } from 'src/store/url'
+  import { Icon, ClearEditableText } from 'src/components'
+  import type { Controller, Project } from 'daw/core/ui'
+  import { setSelectedProject, removeOpenedProject, url } from 'src/store'
 
   export let project: Project
   let currentProject: Project

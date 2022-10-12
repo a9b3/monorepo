@@ -1,3 +1,8 @@
+<!--
+  @component
+
+  Entire left panel of the project view.
+-->
 <script lang="ts">
   import { Searchbar, Layout, DirectoryTree, Text } from 'src/components'
   import { filesStore, selectedDirectory } from 'src/store/files'

@@ -1,20 +1,21 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { Icon, ContextMenu } from 'src/components'
+  import { Loader, Icon, ContextMenu } from 'src/components'
   import {
-    filteredProjects,
+    addOpenedProject,
     createProject,
+    dashboardStore,
     fetchProjects,
-  } from 'src/store/project'
-  import { addOpenedProject } from 'src/store/editor'
-  import { randomLinearGradient } from 'src/utils/randomLinearGradient'
-  import { randomEmoji } from 'src/utils/randomEmoji'
-  import ProjectCard from 'src/pages/Dashboard/ProjectCard.svelte'
-  import ProjectRow from 'src/pages/Dashboard/ProjectRow.svelte'
+    filteredProjects,
+    userStore,
+    projectFetching,
+  } from 'src/store'
+  import { objectStyle, randomEmoji, randomLinearGradient } from 'src/utils'
+
+  import ProjectCard from './ProjectCard.svelte'
+  import ProjectRow from './ProjectRow.svelte'
   import FilterSort from './FilterSort.svelte'
-  import { objectStyle } from 'src/utils/objectToStyleStr'
-  import dashboardStore from 'src/store/dashboard'
 
   let contextMenuRef: ContextMenu
 
@@ -24,14 +25,14 @@
 
   async function handleCreateProject() {
     const proj = await createProject({
-      createdBy: 'string',
+      createdBy: $userStore.id,
       name: 'Untitled',
-      bpm: 120,
-      timeSignature: { top: 4, bottom: 4 },
-      tracks: {},
-      trackOrder: [],
+      tracks: [],
       emoji: randomEmoji(),
       color: randomLinearGradient(),
+      controller: {
+        bpm: 120,
+      },
     })
     addOpenedProject(proj)
     navigate(`/project/${proj.id}`, { replace: true })
@@ -42,42 +43,47 @@
   class="content"
   on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
 >
-  <ContextMenu
-    bind:this={contextMenuRef}
-    menu={[
-      {
-        label: 'Create Project',
-        onClick: handleCreateProject,
-        type: 'item',
-      },
-    ]}
-  />
-  <div class="actions">
-    <div class="card" on:click={handleCreateProject}>
-      Create New Project
-      <div
-        style={objectStyle({
-          marginLeft: 'auto',
-          fontSize: '16px',
-        })}
-      >
-        <Icon type={'addLine'} />
+  {#if $projectFetching}
+    <Loader />
+  {/if}
+  {#if !$projectFetching}
+    <ContextMenu
+      bind:this={contextMenuRef}
+      menu={[
+        {
+          label: 'Create Project',
+          onClick: handleCreateProject,
+          type: 'item',
+        },
+      ]}
+    />
+    <div class="actions">
+      <div class="card" on:click={handleCreateProject}>
+        Create New Project
+        <div
+          style={objectStyle({
+            marginLeft: 'auto',
+            fontSize: '16px',
+          })}
+        >
+          <Icon type={'addLine'} />
+        </div>
       </div>
     </div>
-  </div>
-  <div class="filter">
-    <FilterSort />
-  </div>
-  <div class="projects">
-    {#each $filteredProjects as project}
-      {#if $dashboardStore.selectedView === 'grid'}
-        <ProjectCard {project} />
-      {/if}
-      {#if $dashboardStore.selectedView === 'line'}
-        <ProjectRow {project} />
-      {/if}
-    {/each}
-  </div>
+    <div class="filter">
+      <FilterSort />
+    </div>
+    <div class="projects">
+      {#each $filteredProjects as project}
+        {#if $dashboardStore.selectedView === 'grid'}
+          <ProjectCard {project} />
+        {/if}
+        {#if $dashboardStore.selectedView === 'line'}
+          <ProjectRow {project} />
+        {/if}
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style>

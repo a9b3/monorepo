@@ -1,5 +1,6 @@
 import { SoundSource } from 'daw/core/customNodes'
 import { IONode } from 'daw/core/mixer'
+import type { MidiEvent } from 'daw/core/midi'
 import type { Instrument } from './interface'
 
 // keyed by midi note 0-127
@@ -23,16 +24,17 @@ export class Sampler extends IONode implements Instrument {
 
     this.#audioContext = args.audioContext
     this.output = args.audioContext.createGain()
+    this.samples = {}
     if (args.samples) {
       Object.entries(args.samples).forEach(([key, val]) => {
-        this.addSoundSource(key, { ...val, audioContext: args.audioContext })
+        this.addSoundSource(key, { ...val })
       })
     }
   }
 
   async addSoundSource(
     note: string,
-    arg: ConstructorParameters<typeof SoundSource>[0]
+    arg: Omit<ConstructorParameters<typeof SoundSource>[0], 'audioContext'>
   ) {
     this.removeSoundSource(note)
     const soundSource = new SoundSource({
@@ -49,17 +51,21 @@ export class Sampler extends IONode implements Instrument {
   removeSoundSource(note: string) {
     if (this.samples[note]) {
       this.samples[note].disconnect()
+      this.samples[note].unload()
+      delete this.samples[note]
     }
-    this.samples[note].unload()
-    delete this.samples[note]
 
     this.emit('update')
   }
 
-  onMidi = (e: WebMidi.MIDIMessageEvent) => {
-    const sample = this.samples[String(note)]
-    if (type === 144) {
-      sample.play()
+  onMidi = (e: MidiEvent) => {
+    const sample = this.samples[String(e.note)]
+    if (!sample) {
+      return
+    }
+    if (e.type === 'noteOn') {
+      console.log(e.nextTickTime)
+      sample.play({ startTime: e.nextTickTime })
 
       this.emit('update')
     }

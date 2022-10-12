@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import type { Analyser } from 'src/daw/Analyser'
-  import rafInterval from 'src/utils/rafInterval'
+  import type { Analyser } from 'daw/core/customNodes'
+  import { rafInterval } from 'src/utils'
+
   import Meter from './Meter.svelte'
 
   export let analyser: Analyser

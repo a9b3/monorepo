@@ -1,6 +1,6 @@
-import { Subscribable } from './Subscribable'
-import type { ProjectDoc } from 'src/database/project'
 import { Mixer } from 'daw/core/mixer'
+
+import { Subscribable } from './Subscribable'
 import { Track } from './Track'
 import { Controller } from './Controller'
 
@@ -29,7 +29,7 @@ export class Project extends Subscribable {
     name?: string
     emoji?: string
     color?: string
-    controller?: Omit<
+    controller: Omit<
       ConstructorParameters<typeof Controller>[0],
       'audioContext'
     >
@@ -65,11 +65,9 @@ export class Project extends Subscribable {
   }
 
   addTrack(
-    trackArgs: Omit<
-      ConstructorParameters<typeof Track>[0],
-      'audioContext',
-      'id'
-    >
+    trackArgs: Omit<ConstructorParameters<typeof Track>[0], 'audioContext'> & {
+      id?: string
+    }
   ) {
     const channelId =
       trackArgs.channelId ||
@@ -81,7 +79,7 @@ export class Project extends Subscribable {
     const track = new Track({
       ...trackArgs,
       id: trackId,
-      channelId: channelId,
+      channelId,
       audioContext: this.#audioContext,
     })
     this.controller.scheduler.on('tick', track.onTick)
@@ -92,10 +90,9 @@ export class Project extends Subscribable {
   }
 
   removeTrack(id: string) {
-    const track = this.tracks[id]
+    const track = this.tracks.find(t => t.id === id)
     this.mixer.removeChannel(track.channelId)
-    delete this.tracks[id]
-    this.trackOrder = this.trackOrder.filter(trackId => id !== trackId)
+    this.tracks = this.tracks.filter(t => t.id !== id)
 
     this.emit('update')
   }

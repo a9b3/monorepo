@@ -1,3 +1,6 @@
+/**
+ * Used by Window to keep track of it's positions.
+ */
 export const mousePosition = {
   x: 0,
   y: 0,

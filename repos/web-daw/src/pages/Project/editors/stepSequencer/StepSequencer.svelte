@@ -1,14 +1,14 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
-  import { objectStyle } from 'src/utils/objectToStyleStr'
-  import type { Clip } from 'src/daw/Clip'
-  import { NOTES } from 'src/daw/instruments/constants'
+  import { objectStyle } from 'src/utils'
+  import type { MidiClip } from 'daw/core/midi'
   import { currentProject } from 'src/store/editor'
 
-  export let clip: Clip
+  export let ticksPerBeat: number
+  export let clip: MidiClip
   export let clipIsActive: boolean
-  let notesPerBeat = 4
 
+  let notesPerBeat = 4
   let rows = Array(8).fill(Array(16).fill({}))
   let style = objectStyle({
     gridTemplateColumns: `repeat(${16}, 1fr)`,
@@ -20,25 +20,27 @@
   }
 
   function getNote(row: number, col: number) {
-    const note = Object.keys(NOTES)[row]
-    const frequency = NOTES[note][4]
-    const startTick = col * ($clip.ticksPerBeat / notesPerBeat)
-    return $clip.notes[startTick] && $clip.notes[startTick][frequency]
+    // Middle C
+    const note = 60 + row
+    const startTick = col * (ticksPerBeat / notesPerBeat)
+    return Object.values($clip.eventsMap[startTick]?.[note] || {}).find(
+      midiEvent => midiEvent.type === 'noteOn'
+    )
   }
 
   function toggleNote(row: number, col: number) {
-    const note = Object.keys(NOTES)[row]
-    const frequency = NOTES[note][4]
-    const startTick = col * ($clip.ticksPerBeat / notesPerBeat)
-    if (getNote(row, col)) {
-      $clip.removeNote({ startTick, frequency })
+    // Middle C
+    const note = 60 + row
+    const startTick = col * (ticksPerBeat / notesPerBeat)
+    const midiEvent = getNote(row, col)
+    if (midiEvent) {
+      $clip.removeEvent(startTick, String(note), midiEvent.id)
     } else {
-      $clip.addNote({ startTick, type: 'on', note, frequency })
+      $clip.addEvent(startTick, { note, type: 'noteOn', velocity: 67 })
     }
   }
 
   let elapsedCounter: number
-  function handlePlay() {}
   function handleTick(args) {
     const currentBeat =
       Math.floor(args.currentTick / (args.ticksPerBeat / notesPerBeat)) %
@@ -50,14 +52,13 @@
   function handleStop() {
     elapsedCounter = 0
   }
+
   onMount(() => {
-    $currentProject.controller.on('play', handlePlay)
     $currentProject.controller.on('tick', handleTick)
     $currentProject.controller.on('stop', handleStop)
   })
   onDestroy(() => {
     if ($currentProject) {
-      $currentProject.controller.removeListener('play', handlePlay)
       $currentProject.controller.removeListener('tick', handleTick)
       $currentProject.controller.removeListener('stop', handleStop)
     }

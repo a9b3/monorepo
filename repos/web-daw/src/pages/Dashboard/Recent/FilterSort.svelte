@@ -6,8 +6,8 @@
     Text,
     Layout,
   } from 'src/components'
-  import dashboardStore from 'src/store/dashboard'
-  import { objectStyle } from 'src/utils/objectToStyleStr'
+  import { dashboardStore } from 'src/store'
+  import { objectStyle } from 'src/utils'
 
   const SortBy = {
     alphabetical: 'Alphabetical',

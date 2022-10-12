@@ -1,4 +1,4 @@
-import { Project } from 'daw/core/ui/Project'
+import type { Project } from 'daw/core/ui/Project'
 import { dbFactory } from './factory'
 import type { DBManagedFields } from './factory'
 
@@ -47,5 +47,8 @@ export const editorDb = (() => {
   }
 })()
 
-export type ProjectDoc = ConstructorParameters<typeof Project>[0]
+export type ProjectDoc = Omit<
+  ConstructorParameters<typeof Project>[0],
+  'id' | 'audioContext'
+>
 export const projectDb = dbFactory<ProjectDoc>('project')

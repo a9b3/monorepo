@@ -5,7 +5,7 @@ interface DashboardDoc {
   sortBy: 'lastModified' | 'alphabetical'
 }
 
-const dashboardStore = writable<DashboardDoc>({
+export const dashboardStore = writable<DashboardDoc>({
   selectedView: 'grid',
   sortBy: 'lastModified',
 })

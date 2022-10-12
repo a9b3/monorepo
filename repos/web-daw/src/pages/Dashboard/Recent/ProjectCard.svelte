@@ -1,16 +1,17 @@
 <script lang="ts">
-  import type { ProjectDoc } from 'src/database/project'
-  import { Text } from 'src/components'
-  import ContextMenu from 'src/components/ContextMenu.svelte'
-  import { deleteProject } from 'src/store/project'
   import { navigate } from 'svelte-routing'
-  import editorStore, {
+  import moment from 'moment'
+
+  import type { ProjectDoc } from 'src/db'
+  import { ContextMenu, Text } from 'src/components'
+  import {
+    editorStore,
+    deleteProject,
     addOpenedProject,
     removeOpenedProject,
     setInFocusElement,
-  } from 'src/store/editor'
-  import { objectStyle } from 'src/utils/objectToStyleStr'
-  import moment from 'moment'
+  } from 'src/store'
+  import { objectStyle } from 'src/utils'
 
   export let project: ProjectDoc
 
@@ -45,24 +46,29 @@
       },
     ]}
   />
+  <div
+    class="cover"
+    style={objectStyle({
+      background: project.color,
+    })}
+  />
   <div class="info">
     <div
       style={objectStyle({
         fontSize: '20px',
-        width: '30px',
       })}
     >
       {project.emoji}
     </div>
-    <div class="row">
-      <div style={`font-weight: bold;`}>
+    <div>
+      <div style={`margin-bottom: 5px; font-weight: bold;`}>
         {project.name}
         {$editorStore.openedProjects.findIndex(p => p.id === project.id) > -1
           ? ' (Opened)'
           : ''}
       </div>
       <Text color={'fg2'}>
-        {project.bpm} bpm
+        {project.controller.bpm} bpm
       </Text>
       <Text color={'fg2'}>
         Last Modified: {moment(project.lastModified).fromNow()}
@@ -73,23 +79,23 @@
 
 <style>
   .project {
-    margin: var(--spacing__paddingM);
-    width: 100%;
+    margin: var(--spacing__padding);
+    height: 220px;
+    width: 300px;
     border-radius: var(--misc__borderRadius);
     overflow: hidden;
     display: grid;
+    grid-template-rows: 70% 30%;
     outline: 1px solid var(--colors__bg2);
   }
   .project.selected {
     outline: 2px solid var(--colors__accent);
   }
   .project:hover {
-    background-color: var(--colors__fg3);
+    background: var(--colors__fg3);
   }
 
-  .row {
-    display: grid;
-    grid-template-columns: 250px 100px 1fr;
+  .cover {
   }
 
   .info {
@@ -98,7 +104,7 @@
     background: transparent;
     font-size: 12px;
     align-items: center;
-    padding: 10px;
+    padding: 20px;
     color: var(--colors__fg);
   }
   .info > * {

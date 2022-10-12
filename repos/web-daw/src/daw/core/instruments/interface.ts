@@ -1,7 +1,8 @@
 import type { IONode } from 'daw/core/mixer'
+import type { MidiEvent } from 'daw/core/midi'
 
 export interface Instrument extends IONode {
-  onMidi(e: WebMidi.MIDIMessageEvent): void
+  onMidi(e: MidiEvent): void
   connect(node: AudioNode): void
   disconnect(node?: AudioNode): void
 }

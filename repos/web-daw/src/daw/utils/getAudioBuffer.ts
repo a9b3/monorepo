@@ -1,4 +1,4 @@
-import { audioContext } from 'src/daw/audioContext'
+import { audioContext } from 'daw/audioContext'
 
 /**
  * Wrap call to return promise.

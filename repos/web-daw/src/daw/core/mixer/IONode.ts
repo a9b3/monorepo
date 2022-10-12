@@ -22,6 +22,7 @@ export class IONode extends Subscribable {
   disconnect(unit?: IONode | AudioNode) {
     if (!unit) {
       this.output.disconnect()
+      return
     }
     if (unit instanceof AudioNode) {
       this.output.disconnect(unit)

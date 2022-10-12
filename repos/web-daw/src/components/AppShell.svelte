@@ -1,30 +1,41 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { Router, Route } from 'svelte-routing'
   import Project from 'src/pages/Project/Project.svelte'
   import Dashboard from 'src/pages/Dashboard/Dashboard.svelte'
-  import { Theme, TabBar } from 'src/components'
+  import { Theme, TabBar, Loader } from 'src/components'
   import userStore from 'src/store/user'
   import { fetchEditor } from 'src/store/editor'
 
   export let url = ''
 
-  fetchEditor($userStore.id)
+  let ready = false
+
+  onMount(async () => {
+    await fetchEditor($userStore.id)
+    ready = true
+  })
 </script>
 
-<div class="shell">
-  <Theme />
-  <Router {url}>
-    <div class="nav">
-      <TabBar />
-    </div>
-    <div class="content">
-      <Route path="/project/:id" let:params>
-        <Project {params} />
-      </Route>
-      <Route path="/*" component={Dashboard} />
-    </div>
-  </Router>
-</div>
+{#if !ready}
+  <Loader />
+{/if}
+{#if ready}
+  <div class="shell">
+    <Theme />
+    <Router {url}>
+      <div class="nav">
+        <TabBar />
+      </div>
+      <div class="content">
+        <Route path="/project/:id" let:params>
+          <Project {params} />
+        </Route>
+        <Route path="/*" component={Dashboard} />
+      </div>
+    </Router>
+  </div>
+{/if}
 
 <style>
   .shell {

@@ -1,13 +1,19 @@
+<!--
+  @component
+
+  Project toolbar, display the project metadata like bpm and play controls.
+-->
 <script lang="ts">
   import { onDestroy } from 'svelte'
-  import type { Project } from 'src/daw/Project'
-  import type { Controller } from 'src/daw/Controller'
+
+  import type { Project, Controller } from 'daw/core/ui'
   import { Pill, Layout, Icon } from 'src/components'
-  import { audioContext } from 'src/daw/audioContext'
+  import { objectStyle } from 'src/utils'
+  import { audioContext } from 'daw/audioContext'
   import { useDelta } from 'src/components/Knob/useDelta'
-  import { objectStyle } from 'src/utils/objectToStyleStr'
 
   export let project: Project
+
   let currentProject: Project
   let controller: Controller
   let elapsedBeats = 0
@@ -21,14 +27,16 @@
     { pxRange: 200 }
   )
 
-  function handleStart() {}
   function handleStop() {
     elapsedBeats = 0
     elapsedBars = 0
   }
-  function handleTick(args) {
-    const currentBeat = Math.floor(args.currentTick / args.ticksPerBeat) % 4
-    const currentBar = Math.floor(args.currentTick / (args.ticksPerBeat * 4))
+  function handleTick({ currentTick }) {
+    const currentBeat =
+      Math.floor(currentTick / controller.scheduler.ticksPerBeat) % 4
+    const currentBar = Math.floor(
+      currentTick / (controller.scheduler.ticksPerBeat * 4)
+    )
     if (currentBeat !== elapsedBeats) {
       elapsedBeats = currentBeat
     }
@@ -44,25 +52,22 @@
       if (controller) {
         elapsedBeats = 0
         elapsedBars = 0
-        controller.removeListener('start', handleStart)
         controller.removeListener('stop', handleStop)
-        controller.removeListener('tick', handleTick)
+        controller.scheduler.removeListener('tick', handleTick)
       }
 
       if (currentProject) {
         controller = currentProject.controller
 
-        controller.on('start', handleStart)
         controller.on('stop', handleStop)
-        controller.on('tick', handleTick)
+        controller.scheduler.on('tick', handleTick)
       }
     }
   }
 
   onDestroy(() => {
-    controller.removeListener('start', handleStart)
     controller.removeListener('stop', handleStop)
-    controller.removeListener('tick', handleTick)
+    controller.scheduler.removeListener('tick', handleTick)
   })
 </script>
 
@@ -79,14 +84,14 @@
       />
     </div>
     <Pill
-      title={String($currentProject.timeSignature.top) +
+      title={String($controller.beatsPerBeat) +
         ' / ' +
-        String($currentProject.timeSignature.bottom)}
+        String($controller.barsPerMeasure)}
     />
     <Pill
       title={$controller.isMetronomeActive ? 'On' : 'Off'}
       on:click={() => {
-        $controller.toggleMetronome()
+        $controller.setIsMetronomeActive()
       }}
     />
   </Layout>

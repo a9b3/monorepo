@@ -1,6 +1,5 @@
 <script lang="ts">
-  import type { Project } from 'src/daw/Project'
-  import type { Track } from 'src/daw/Track'
+  import type { Project, Track } from 'daw/core/ui'
   import {
     Text,
     Pill,
@@ -12,11 +11,8 @@
     Slider,
     Knob,
   } from 'src/components'
-  import editorStore, {
-    setInFocusElement,
-    setInFocusTrack,
-  } from 'src/store/editor'
-  import { objectStyle } from 'src/utils/objectToStyleStr'
+  import { editorStore, setInFocusElement, setInFocusTrack } from 'src/store'
+  import { objectStyle } from 'src/utils'
 
   import Clip from './Clip.svelte'
 
@@ -28,6 +24,7 @@
   let clips = Array(8).fill({})
 
   $: currentTrack = track
+  $: currentMidiClips = currentTrack.midiClips
   $: currentChannel = $project.mixer.channels[currentTrack.channelId]
 </script>
 
@@ -71,7 +68,17 @@
     />
   </div>
   {#each clips as _, idx}
-    <Clip {idx} clipTrack={track.clipTrack} instrument={track.instrument} />
+    <Clip
+      {idx}
+      ticksPerBeat={project.controller.scheduler.ticksPerBeat}
+      activeClipId={$currentTrack.activeMidiClip}
+      addClip={$currentTrack.addMidiClip}
+      clip={currentMidiClips[$currentTrack.midiClipOrder[idx]]}
+      instrumentType={$currentTrack.instrumentType}
+      instrument={$currentTrack.instrument}
+      removeClip={$currentTrack.removeMidiClip}
+      setActiveClip={$currentTrack.setActiveMidiClip}
+    />
   {/each}
 
   <Layout class="bottom" type="col" padding="var(--spacing__padding)">
@@ -83,6 +90,22 @@
         paddingRight: '30px',
       })}
     >
+      <div>
+        <div
+          on:click={() => {
+            $currentTrack.addInstrument('Sampler')
+          }}
+        >
+          Sampler
+        </div>
+        <div
+          on:click={() => {
+            $currentTrack.addInstrument('DX7')
+          }}
+        >
+          DX7
+        </div>
+      </div>
       {#if currentTrack.instrument}
         <Player />
       {/if}
@@ -131,7 +154,7 @@
       />
       <Knob
         value={currentChannel.panPosition}
-        setValue={val => currentChannel.setPan(val)}
+        setValue={val => currentChannel.setPanPosition(val)}
       />
     </div>
   </Layout>
