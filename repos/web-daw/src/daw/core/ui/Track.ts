@@ -70,11 +70,11 @@ export class Track extends Subscribable {
       this.addInstrument(args.instrumentType, args.instrument)
     } else {
       // TODO remove this, default to this for now
-      this.addInstrument('DX7', {})
+      // this.addInstrument('DX7', {})
     }
   }
 
-  addInstrument = (instrumentType: string, instrument: any) => {
+  addInstrument = (instrumentType: string, instrument?: any) => {
     if (this.instrument) {
       this.instrument.disconnect()
     }

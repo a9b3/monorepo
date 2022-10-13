@@ -11,6 +11,7 @@
     Slider,
     Knob,
   } from 'src/components'
+  import InstrumentSelect from './InstrumentSelect.svelte'
   import { editorStore, setInFocusElement, setInFocusTrack } from 'src/store'
   import { objectStyle } from 'src/utils'
 
@@ -83,33 +84,12 @@
   {/each}
 
   <Layout class="bottom" type="col" padding="var(--spacing__padding)">
-    <div
-      style={objectStyle({
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        paddingRight: '30px',
-      })}
-    >
-      <div>
-        <div
-          on:click={() => {
-            $currentTrack.addInstrument('Sampler')
-          }}
-        >
-          Sampler
-        </div>
-        <div
-          on:click={() => {
-            $currentTrack.addInstrument('DX7')
-          }}
-        >
-          DX7
-        </div>
-      </div>
-      {#if currentTrack.instrument}
-        <Player />
-      {/if}
+    <div class="instrumentSelect">
+      <InstrumentSelect
+        addInstrument={$currentTrack.addInstrument}
+        instrument={$currentTrack.instrument}
+        instrumentType={$currentTrack.instrumentType}
+      />
     </div>
     <Layout class="section" type="col">
       <Text type="label">MIDI From</Text>
@@ -192,5 +172,9 @@
 
   .main > :global(.bottom) > :global(*) {
     margin-bottom: var(--spacing__padding);
+  }
+
+  .instrumentSelect {
+    height: 100px;
   }
 </style>

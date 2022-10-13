@@ -334,11 +334,17 @@ export const filesStore = writable<{
           id: crypto.randomUUID(),
           name: 'DX7',
           type: 'instrument',
+          metadata: {
+            instrumentType: 'DX7',
+          },
         },
         {
           id: crypto.randomUUID(),
           name: 'Sampler',
           type: 'instrument',
+          metadata: {
+            instrumentType: 'Sampler',
+          },
         },
       ],
     },
