@@ -1,7 +1,6 @@
 <script lang="ts">
   import { beforeUpdate } from 'svelte'
-  import type { Track } from 'daw/core/ui'
-  import type { MidiClip } from 'daw/core/midi'
+  import type { Track, MidiClip, Instrument, InstrumentType } from 'daw/core'
   import { ContextMenu, Window, Icon, ClearEditableText } from 'src/components'
   import { objectStyle } from 'src/utils'
   import { editorStore, setInFocusElement } from 'src/store'
@@ -11,8 +10,8 @@
 
   export let ticksPerBeat: number
   export let clip: MidiClip
-  export let instrument
-  export let instrumentType
+  export let instrument: Instrument
+  export let instrumentType: InstrumentType
   export let idx: number
   export let activeClipId: string
   export let addClip: InstanceType<typeof Track>['addMidiClip']
@@ -22,6 +21,10 @@
   let contextMenuRef: ContextMenu
   let showWindow = false
   $: clipId = clip?.id || crypto.randomUUID()
+
+  function handleNameChange(evt: Event) {
+    clip?.setName((evt.target as HTMLInputElement).value)
+  }
 </script>
 
 <div
@@ -111,10 +114,7 @@
         marginLeft: '10px',
       })}
     >
-      <ClearEditableText
-        value={clip?.name}
-        handleInput={e => clip?.setName(e.target.value)}
-      />
+      <ClearEditableText value={clip?.name} handleInput={handleNameChange} />
     </div>
   {/if}
 </div>

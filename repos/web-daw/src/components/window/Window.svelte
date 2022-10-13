@@ -1,12 +1,24 @@
+<!--
+  @component
+
+  A generic window component.
+-->
 <script lang="ts">
+  import { mousePosition, objectStyle } from 'src/utils'
   import TopBar from './TopBar.svelte'
+  import DragXy from './DragXY.svelte'
   import windowState from './windowState'
-  import { mousePosition } from 'src/utils/mousePosition'
 
   export let showWindow = false
   export let title = ''
 
   let topbarEl: HTMLElement
+  let mainWindowEl: HTMLElement
+
+  function resizeHandler(x, y) {
+    mainWindowEl.style.width = `${mainWindowEl.offsetWidth + x}px`
+    mainWindowEl.style.height = `${mainWindowEl.offsetHeight + y}px`
+  }
 
   function draggable(node: HTMLElement) {
     const z = windowState.focus(node)
@@ -67,6 +79,7 @@
 
 {#if showWindow}
   <div
+    bind:this={mainWindowEl}
     class={($$restProps.class || '') + ' main'}
     style={$$restProps.style}
     use:draggable
@@ -82,6 +95,15 @@
     <div class="content">
       <slot />
     </div>
+    <DragXy
+      onDrag={resizeHandler}
+      style={objectStyle({
+        width: '20px',
+        height: '20px',
+        background: 'black',
+        marginLeft: 'auto',
+      })}
+    />
   </div>
 {/if}
 
@@ -95,11 +117,15 @@
     border-radius: var(--misc__borderRadius);
     outline: 1px solid var(--colors__bg2);
     box-shadow: var(--shadows__2);
+    width: 800px;
+    height: 900px;
   }
   .top {
     height: 30px;
   }
   .content {
+    width: 100%;
+    height: 100%;
     flex-grow: 1;
   }
 </style>

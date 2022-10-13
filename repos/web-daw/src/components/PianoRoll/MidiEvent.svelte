@@ -19,18 +19,18 @@
       destroy() {},
     }
   }
-  afterUpdate(() => {
-    if (el) {
-      const totalLength = numberOfBeats * ticksPerBeat
-      const widthPercentage =
-        ((midiEvent.endTick - midiEvent.startTick) / totalLength) * 100
-      console.log(`HERERERERE`, widthPercentage, midiEvent)
-      el.style.width = `${widthPercentage}%`
-
-      const left = (midiEvent.startTick / totalLength) * 100
-      el.style.left = `${left}%`
-    }
-  })
+  // afterUpdate(() => {
+  //   if (el) {
+  //     const totalLength = numberOfBeats * ticksPerBeat
+  //     const widthPercentage =
+  //       ((midiEvent.endTick - midiEvent.startTick) / totalLength) * 100
+  //     console.log(`HERERERERE`, widthPercentage, midiEvent)
+  //     el.style.width = `${widthPercentage}%`
+  //
+  //     const left = (midiEvent.startTick / totalLength) * 100
+  //     el.style.left = `${left}%`
+  //   }
+  // })
 </script>
 
 {#if midiEvent?.endTick}

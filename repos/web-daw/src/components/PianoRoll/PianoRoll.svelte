@@ -49,7 +49,7 @@
     background: var(--colors__bg);
     max-height: 700px;
     overflow: auto;
-    width: 800px;
+    width: 100%;
     display: grid;
     grid-template: 'keyboard arrangement' auto / 100px 1fr;
     position: relative;

@@ -19,6 +19,7 @@
   class:disabled
   style={toClass([overrideStyle, $$restProps.style])}
   on:click
+  on:mousedown
 >
   {title}
   <slot />

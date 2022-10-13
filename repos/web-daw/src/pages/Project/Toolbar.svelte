@@ -98,7 +98,7 @@
   <Layout class="center">
     <Pill title="{elapsedBeats + 1}. {elapsedBars + 1}. 1" disabled />
     <Pill
-      on:click={() => {
+      on:mousedown={() => {
         // browser requires user action to allow playback
         audioContext.resume()
 
