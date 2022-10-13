@@ -55,13 +55,19 @@
       {#if instrumentType === 'Sampler'}
         <MPC {instrument} />
         <StepSequencer
+          beatsPerLoop={clip.beatsPerLoop}
           {ticksPerBeat}
           {clip}
           clipIsActive={activeClipId === clip?.id}
         />
       {/if}
-      {#if instrumentType !== 'Sampler'}
-        <PianoRoll onMidi={instrument.onMidi} />
+      {#if instrumentType !== 'Sampler' && clip}
+        <PianoRoll
+          numberOfBars={clip.beatsPerLoop / 4}
+          onMidi={instrument.onMidi}
+          {ticksPerBeat}
+          midiClip={clip}
+        />
       {/if}
     </div>
   </Window>

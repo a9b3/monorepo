@@ -41,6 +41,7 @@
   style={$$restProps.style}
   src={convertToPath(Icons[type])}
   alt={Icons[type]}
+  draggable={false}
 />
 
 <style>

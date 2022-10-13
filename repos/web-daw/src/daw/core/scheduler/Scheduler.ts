@@ -8,6 +8,7 @@ export type SchedulerHandler = (arg0: {
   nextTickTime: number
   ticksPerBeat: number
 }) => void
+export type TickHandler = SchedulerHandler
 
 /**
  * Handle all scheduling logic here.

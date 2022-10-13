@@ -64,7 +64,6 @@ export class Sampler extends IONode implements Instrument {
       return
     }
     if (e.type === 'noteOn') {
-      console.log(e.nextTickTime)
       sample.play({ startTime: e.nextTickTime })
 
       this.emit('update')

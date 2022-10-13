@@ -129,7 +129,6 @@ if (!AudioWorkletGlobalScope.WAMProcessor) {
     onmessage(e) {
       var msg = e.data
       var data = msg.data
-      console.log('-----------------------st', data)
       switch (msg.type) {
         case 'midi':
           this.onmidi(data[0], data[1], data[2], data[3])

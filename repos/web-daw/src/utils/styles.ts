@@ -53,8 +53,6 @@ const HSL = {
   ),
 }
 
-console.log('HSL', HSL)
-
 const FONT = {
   family: `'Roboto', sans-serif`,
   size: '12px',
@@ -86,6 +84,11 @@ const MISC = {
   windowBorder: `2px solid ${COLORS.neonPink}`,
 }
 
+const SHADOWS = {
+  1: `rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px`,
+  2: `rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px`,
+}
+
 export const styles = {
   tokens: TOKENS,
   hsl: HSL,
@@ -94,6 +97,7 @@ export const styles = {
   spacing: SPACING,
   track: TRACK,
   misc: MISC,
+  shadows: SHADOWS,
 }
 
 /**

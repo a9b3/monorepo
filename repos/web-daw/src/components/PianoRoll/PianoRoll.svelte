@@ -2,12 +2,15 @@
   import Keyboard from './Keyboard.svelte'
   import Arrangement from './Arrangement.svelte'
   import ResizerY from './Controls/ResizerY.svelte'
+  import type { MidiClip } from 'daw/core/midi'
   import { objectStyle } from 'src/utils'
 
   export let numberOfKeys = 120
   export let numberOfBars = 4
   export let barDivision = 8
   export let startingKey = 60
+  export let midiClip: MidiClip
+  export let ticksPerBeat: number
   export let onMidi
 
   let keyHeight = 25
@@ -34,6 +37,8 @@
         {onMidi}
         {keyHeight}
         {numberOfKeys}
+        {midiClip}
+        {ticksPerBeat}
       />
     </div>
   </div>
@@ -60,7 +65,7 @@
     grid-area: keyboard;
     left: 0;
     position: sticky;
-    z-index: 3;
+    z-index: 5;
   }
 
   .arrangement {

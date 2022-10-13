@@ -83,6 +83,7 @@ export class Project extends Subscribable {
       audioContext: this.#audioContext,
     })
     this.controller.scheduler.on('tick', track.onTick)
+    this.controller.on('stop', track.onStop)
     this.tracks.push(track)
     track.output.connect(this.mixer.channels[channelId].input)
 

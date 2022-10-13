@@ -14,7 +14,7 @@ export interface MidiEvent {
   velocity: number
 }
 
-type EventsMap = {
+export type EventsMap = {
   [tick: string]: { [note: string]: { [id: string]: MidiEvent } }
 }
 
@@ -80,7 +80,7 @@ export class MidiClip extends Subscribable {
     }
     this.eventsMap = args.eventsMap || {}
     this.offsetStartTick = args.offsetStartTick || 0
-    this.beatsPerLoop = args.beatsPerLoop || 4
+    this.beatsPerLoop = args.beatsPerLoop || 8
   }
 
   /**

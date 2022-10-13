@@ -4,20 +4,82 @@
   The arrangement view for the piano roll.
 -->
 <script lang="ts">
+  import { beforeUpdate } from 'svelte'
   import { objectStyle } from 'src/utils'
+  import CursorLine from './CursorLine/CursorLine.svelte'
+  import type { MidiClip, EventsMap } from 'daw/core/midi'
   import {
     mouseDown,
     setMouseDown,
     hoverKey,
     setHoverKey,
+    snapEnabled,
   } from './pianoRollStore'
+  import MidiEvent from './MidiEvent.svelte'
 
   export let numberOfKeys: number
   export let keyHeight: number
   export let barWidth: number
   export let numberOfBars: number
+  export let ticksPerBeat: number
   export let barDivision: number
   export let onMidi
+  export let midiClip: MidiClip
+
+  // Total ticks in current arrangement view
+  $: totalTicks = numberOfBars * 4 * ticksPerBeat
+
+  function addEvent(
+    evt: MouseEvent,
+    { note, snapEnabled, ticksPerBeat, totalTicks },
+    onAdd
+  ) {
+    const startTick =
+      (evt.target.offsetLeft / evt.target.offsetParent.offsetWidth) * totalTicks
+    const endTick =
+      startTick +
+      (evt.target.offsetWidth / evt.target.offsetParent.offsetWidth) *
+        totalTicks
+
+    onAdd({ note, startTick, endTick })
+  }
+
+  function transformEventsMap(copy: EventsMap): {
+    [note: string]: [{ id: string; startTick: number; endTick: number }]
+  } {
+    const eventsMap = { ...copy }
+    let transformed = {}
+
+    const allTicks = Object.keys(eventsMap)
+    const sorted = allTicks.sort((a, b) => (Number(a) < Number(b) ? -1 : 1))
+
+    for (let i = 0; i < sorted.length; i++) {
+      const curTick = sorted[i]
+      const notes = Object.keys(eventsMap[String(curTick)])
+      for (let j = 0; j < notes.length; j++) {
+        const note = String(notes[j])
+        transformed[note] = transformed[note] || []
+        transformed = { ...transformed }
+
+        Object.values(eventsMap[String(curTick)][note]).forEach(midiEvent => {
+          if (midiEvent.type === 'noteOn') {
+            transformed[note] = [
+              ...transformed[note],
+              { id: midiEvent.id, startTick: curTick, endTick: undefined },
+            ]
+          } else if (midiEvent.type === 'noteOff') {
+            for (let k = 0; k < transformed[note].length; k++) {
+              if (transformed[note][k].endTick === undefined) {
+                transformed[note][k].endTick = curTick
+              }
+            }
+          }
+        })
+      }
+    }
+    return transformed
+  }
+  $: transformedMap = transformEventsMap($midiClip.eventsMap)
 
   let rows = Array(numberOfKeys)
     .fill(1)
@@ -43,6 +105,7 @@
     '--notewidth': `${barWidth / barDivision}px`,
   })}
 >
+  <CursorLine numberOfBeats={numberOfBars * 4} />
   <div class="timeline">
     {#each bars as bar}
       <div class="bar" class:offset={bar % 2 === 1}>
@@ -59,10 +122,26 @@
       class:accent={[0, 5].includes(row % 12)}
       class:hover={$hoverKey === row}
       on:focus={() => {}}
-      on:mousedown|stopPropagation={() => {
-        onMidi({ note: row })
+      on:mousedown|stopPropagation={evt => {
+        onMidi({ type: 'noteOn', note: row, velocity: 67 })
         setMouseDown(true)
         window.addEventListener('mouseup', mouseup)
+        addEvent(
+          evt,
+          { note: row, snapEnabled: $snapEnabled, ticksPerBeat, totalTicks },
+          ({ note, startTick, endTick }) => {
+            $midiClip.addEvent(Math.floor(startTick), {
+              type: 'noteOn',
+              note,
+              velocity: 67,
+            })
+            $midiClip.addEvent(Math.floor(endTick) - 1, {
+              type: 'noteOff',
+              note,
+              velocity: 67,
+            })
+          }
+        )
       }}
       on:mouseover={() => {
         setHoverKey(row)
@@ -71,6 +150,17 @@
         }
       }}
     >
+      {#if transformedMap[String(row)]}
+        {#each transformedMap[String(row)] as transformedMidiEvent, idx}
+          {#key transformedMidiEvent.id}
+            <MidiEvent
+              midiEvent={transformedMidiEvent}
+              ticksPerBeat={960}
+              numberOfBeats={numberOfBars * 4}
+            />
+          {/key}
+        {/each}
+      {/if}
       {#each bars as bar}
         <div class="bar" class:offset={bar % 2 === 1}>
           {#each notesPerBar as _}
@@ -103,7 +193,6 @@
       1
     );
 
-    width: 1000px;
     height: 100%;
     position: relative;
   }
@@ -122,6 +211,7 @@
     height: var(--keyheight);
     border-bottom: 1px solid var(--border-hsl);
     display: flex;
+    position: relative;
   }
   .row.offset {
     background: var(--offset-hsl);

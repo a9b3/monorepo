@@ -34,14 +34,14 @@
   })}
   on:focus={() => {}}
   on:mousedown|stopPropagation={() => {
-    onMidi({ note: key })
+    onMidi({ type: 'noteOn', note: key, velocity: 67 })
     setMouseDown(true)
     window.addEventListener('mouseup', mouseup)
   }}
   on:mouseover={() => {
     setHoverKey(key)
     if ($mouseDown) {
-      onMidi({ note: key })
+      onMidi({ type: 'noteOn', note: key, velocity: 67 })
     }
   }}
 >

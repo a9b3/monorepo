@@ -94,7 +94,7 @@
     overflow: hidden;
     border-radius: var(--misc__borderRadius);
     outline: 1px solid var(--colors__bg2);
-    box-shadow: var(--misc__windowBorder);
+    box-shadow: var(--shadows__2);
   }
   .top {
     height: 30px;

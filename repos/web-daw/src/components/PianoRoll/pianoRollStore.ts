@@ -14,3 +14,8 @@ export const scaleY = writable(1)
 export const setScaleY = v => {
   scaleY.set(v)
 }
+
+export const snapEnabled = writable(true)
+export const setSnapEnabled = v => {
+  snapEnabled.set(v)
+}

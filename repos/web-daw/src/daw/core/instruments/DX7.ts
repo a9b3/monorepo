@@ -3,6 +3,7 @@ import { IONode } from 'daw/core/mixer'
 import { DX7Node } from './wams/DX7Node'
 
 export class DX7 extends IONode {
+  #nextTickTime = 0
   dx7: DX7Node
   ready = false
   audioContext: AudioContext
@@ -23,17 +24,22 @@ export class DX7 extends IONode {
   }
 
   onMidi = e => {
-    console.log(`********`, e)
-    this.dx7.onMidi([MidiEventTypeInteger.NoteOn, e.note, 67, e.nextTickTime])
-    setTimeout(() => {
-      this.dx7.onMidi([
-        MidiEventTypeInteger.NoteOff,
-        e.note,
-        67,
-        e.nextTickTime,
-      ])
-    }, 1000)
+    console.log(`onmidi`, e)
+    const type =
+      e.type === 'noteOn'
+        ? MidiEventTypeInteger.NoteOn
+        : MidiEventTypeInteger.NoteOff
+    this.dx7.onMidi([type, e.note, e.velocity, e.nextTickTime])
+    this.#nextTickTime = e.nextTickTime
 
     this.emit('update')
+  }
+
+  stop() {
+    setTimeout(() => {
+      for (let i = 0; i < 127; i++) {
+        this.dx7.onMidi([MidiEventTypeInteger.NoteOff, i, 0])
+      }
+    }, 80)
   }
 }

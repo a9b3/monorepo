@@ -163,7 +163,6 @@
 <style>
   .main {
     --color: var(--colors__accent);
-    /* --misc__borderRadius: var(--misc__borderRadius); */
 
     height: '100%';
     background: var(--colors__bg2);

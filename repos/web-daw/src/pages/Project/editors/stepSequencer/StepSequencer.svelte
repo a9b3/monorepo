@@ -4,19 +4,20 @@
   import type { MidiClip } from 'daw/core/midi'
   import { currentProject } from 'src/store/editor'
 
+  export let beatsPerLoop: number
   export let ticksPerBeat: number
   export let clip: MidiClip
   export let clipIsActive: boolean
 
   let notesPerBeat = 4
-  let rows = Array(8).fill(Array(16).fill({}))
+  let rows = Array(8).fill(Array(beatsPerLoop * notesPerBeat).fill({}))
   let style = objectStyle({
-    gridTemplateColumns: `repeat(${16}, 1fr)`,
+    gridTemplateColumns: `repeat(${beatsPerLoop * notesPerBeat}, 1fr)`,
     gridTemplateRows: `repeat(${8}, 1fr)`,
   })
 
   function isInOddBar(quarterNote: number) {
-    return [1, 2, 3, 4, 9, 10, 11, 12].includes(quarterNote)
+    return quarterNote % 8 >= 4
   }
 
   function getNote(row: number, col: number) {
@@ -44,7 +45,7 @@
   function handleTick(args) {
     const currentBeat =
       Math.floor(args.currentTick / (args.ticksPerBeat / notesPerBeat)) %
-      (4 * 4)
+      (4 * beatsPerLoop)
     if (currentBeat !== elapsedCounter) {
       elapsedCounter = currentBeat
     }
@@ -73,7 +74,7 @@
           class="cell"
           class:clipIsActive
           class:playing={elapsedCounter === idx}
-          class:odd={isInOddBar(idx + 1)}
+          class:odd={isInOddBar(idx)}
           class:active={$clip && getNote(rowIdx, idx)}
           on:mousedown={() => toggleNote(rowIdx, idx)}
         />
