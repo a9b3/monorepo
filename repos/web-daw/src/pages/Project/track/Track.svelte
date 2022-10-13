@@ -70,6 +70,7 @@
   {#each clips as _, idx}
     <Clip
       {idx}
+      trackLabel={$currentTrack.label}
       ticksPerBeat={project.controller.scheduler.ticksPerBeat}
       activeClipId={$currentTrack.activeMidiClip}
       addClip={$currentTrack.addMidiClip}

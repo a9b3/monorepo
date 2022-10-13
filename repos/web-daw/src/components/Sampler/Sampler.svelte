@@ -1,6 +1,10 @@
-<script lang="ts">
-  import type { Sampler } from 'daw/core/instruments'
+<!--
+  @component
 
+  daw Sampler ui
+-->
+<script lang="ts">
+  import type { Sampler } from 'daw/core'
   import Pad from './Pad.svelte'
 
   export let instrument: Sampler
@@ -8,8 +12,8 @@
   const samples = Array(8).fill({})
 </script>
 
-<div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
-  {#each samples as sample, idx}
+<div class={'main'}>
+  {#each samples as _, idx}
     <div class="sample">
       <Pad
         sample={$instrument.samples[60 + idx]}

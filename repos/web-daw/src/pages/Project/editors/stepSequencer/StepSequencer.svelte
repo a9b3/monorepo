@@ -1,29 +1,33 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { objectStyle } from 'src/utils'
-  import type { MidiClip } from 'daw/core/midi'
+  import type { MidiClip, TickHandler } from 'daw/core'
   import { currentProject } from 'src/store/editor'
 
   export let beatsPerLoop: number
+  // TODO use this later to handle time signature change
+  // export let beatsPerBar = 4
+  // Sequencer's division. ex. 4 would mean 1/16, 16 notes per bar.
+  export let beatDivision: number = 4
+  export let numNotes: number = 8
   export let ticksPerBeat: number
   export let clip: MidiClip
   export let clipIsActive: boolean
 
-  let notesPerBeat = 4
-  let rows = Array(8).fill(Array(beatsPerLoop * notesPerBeat).fill({}))
+  let rows = Array(numNotes).fill(Array(beatsPerLoop * beatDivision).fill({}))
   let style = objectStyle({
-    gridTemplateColumns: `repeat(${beatsPerLoop * notesPerBeat}, 1fr)`,
-    gridTemplateRows: `repeat(${8}, 1fr)`,
+    gridTemplateColumns: `repeat(${beatsPerLoop * beatDivision}, 1fr)`,
+    gridTemplateRows: `repeat(${numNotes}, 1fr)`,
   })
 
-  function isInOddBar(quarterNote: number) {
-    return quarterNote % 8 >= 4
+  function isOddBeat(cellNumber: number) {
+    return cellNumber % (beatDivision * 2) >= beatDivision
   }
 
   function getNote(row: number, col: number) {
     // Middle C
     const note = 60 + row
-    const startTick = col * (ticksPerBeat / notesPerBeat)
+    const startTick = col * (ticksPerBeat / beatDivision)
     return Object.values($clip.eventsMap[startTick]?.[note] || {}).find(
       midiEvent => midiEvent.type === 'noteOn'
     )
@@ -32,19 +36,20 @@
   function toggleNote(row: number, col: number) {
     // Middle C
     const note = 60 + row
-    const startTick = col * (ticksPerBeat / notesPerBeat)
+    const startTick = col * (ticksPerBeat / beatDivision)
     const midiEvent = getNote(row, col)
     if (midiEvent) {
       $clip.removeEvent(startTick, String(note), midiEvent.id)
     } else {
+      // TODO add a noteOff event too
       $clip.addEvent(startTick, { note, type: 'noteOn', velocity: 67 })
     }
   }
 
   let elapsedCounter: number
-  function handleTick(args) {
+  const handleTick: TickHandler = args => {
     const currentBeat =
-      Math.floor(args.currentTick / (args.ticksPerBeat / notesPerBeat)) %
+      Math.floor(args.currentTick / (args.ticksPerBeat / beatDivision)) %
       (4 * beatsPerLoop)
     if (currentBeat !== elapsedCounter) {
       elapsedCounter = currentBeat
@@ -66,15 +71,15 @@
   })
 </script>
 
-<div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
+<div class={'main'}>
   <div class="sequencer" {style}>
     {#each rows as row, rowIdx}
-      {#each row as col, idx}
+      {#each row as _, idx}
         <div
           class="cell"
           class:clipIsActive
           class:playing={elapsedCounter === idx}
-          class:odd={isInOddBar(idx)}
+          class:odd={isOddBeat(idx)}
           class:active={$clip && getNote(rowIdx, idx)}
           on:mousedown={() => toggleNote(rowIdx, idx)}
         />
@@ -86,8 +91,8 @@
 <style>
   .main {
     background: var(--colors__bg);
-    width: 100%;
     padding: var(--spacing__padding);
+    width: 100%;
   }
 
   .sequencer {
@@ -97,11 +102,11 @@
     height: 100%;
   }
   .cell {
-    width: 25px;
+    width: 20px;
     height: 25px;
     outline: 1px solid var(--colors__fg2);
     border-radius: 4px;
-    margin: 5px;
+    margin: 3px;
     background: var(--colors__bg3);
   }
   .cell:hover {

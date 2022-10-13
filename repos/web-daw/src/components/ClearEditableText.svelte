@@ -17,6 +17,5 @@
     pointer-events: auto;
     max-width: 100%;
     overflow: scroll;
-    color: var(--colors__fg);
   }
 </style>

@@ -1,13 +1,18 @@
 <script lang="ts">
-  import { beforeUpdate } from 'svelte'
   import type { Track, MidiClip, Instrument, InstrumentType } from 'daw/core'
-  import { ContextMenu, Window, Icon, ClearEditableText } from 'src/components'
+  import {
+    ClearEditableText,
+    ContextMenu,
+    Icon,
+    PianoRoll,
+    Sampler,
+    Window,
+  } from 'src/components'
   import { objectStyle } from 'src/utils'
   import { editorStore, setInFocusElement } from 'src/store'
-  import StepSequencer from 'src/pages/Project/Editors/StepSequencer/StepSequencer.svelte'
-  import PianoRoll from 'src/components/PianoRoll/PianoRoll.svelte'
-  import MPC from 'src/components/MPC/MPC.svelte'
+  import StepSequencer from '../Editors/StepSequencer/StepSequencer.svelte'
 
+  export let trackLabel: string
   export let ticksPerBeat: number
   export let clip: MidiClip
   export let instrument: Instrument
@@ -24,6 +29,14 @@
 
   function handleNameChange(evt: Event) {
     clip?.setName((evt.target as HTMLInputElement).value)
+  }
+
+  function getWindowTitle(
+    trackLabel: string | undefined,
+    clipName: string | undefined,
+    customText?: string
+  ) {
+    return [trackLabel, clipName, customText].filter(Boolean).join(' :: ')
   }
 </script>
 
@@ -48,7 +61,7 @@
     setInFocusElement(clipId)
   }}
 >
-  <Window bind:showWindow title={'Step Sequencer'}>
+  <Window bind:showWindow title={getWindowTitle(trackLabel, clip?.name)}>
     <div
       style={objectStyle({
         display: 'flex',
@@ -56,7 +69,7 @@
       })}
     >
       {#if instrumentType === 'Sampler'}
-        <MPC {instrument} />
+        <Sampler {instrument} />
         <StepSequencer
           beatsPerLoop={clip.beatsPerLoop}
           {ticksPerBeat}
@@ -105,15 +118,7 @@
     />
   </div>
   {#if clip}
-    <div
-      style={objectStyle({
-        width: '100%',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        marginLeft: '10px',
-      })}
-    >
+    <div class="edittext">
       <ClearEditableText value={clip?.name} handleInput={handleNameChange} />
     </div>
   {/if}
@@ -148,5 +153,15 @@
   }
   .icon:hover {
     filter: brightness(0.8);
+  }
+
+  .edittext {
+    color: hsla(var(--hsl__fg-h), var(--hsl__fg-s), var(--hsl__fg-l), 0.5);
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    font-size: 10px;
   }
 </style>

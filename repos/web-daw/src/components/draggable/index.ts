@@ -1,4 +1,4 @@
-let dragState = undefined
+let dragState
 
 export function createDragSource(arg: any) {
   return function dragSourceHandler(node: HTMLElement) {
@@ -16,21 +16,21 @@ export function createDragSource(arg: any) {
   }
 }
 
-export function createDragTarget(onDrop: (arg: any) => void) {
-  return function dragTargetHandler(node) {
+export function createDragTarget(onDrop: (arg: string | any) => void) {
+  return function dragTargetHandler(node: HTMLElement) {
     const handleDrop = () => {
       onDrop(dragState)
       dragState = undefined
-      node.style.opacity = 1
+      node.style.opacity = '1'
     }
 
-    const handleDragover = evt => {
-      node.style.opacity = 0.6
+    const handleDragover = (evt: MouseEvent) => {
+      node.style.opacity = '0.6'
       evt.preventDefault()
     }
 
     const handleDragLeave = evt => {
-      node.style.opacity = 1
+      node.style.opacity = '1'
     }
 
     node.addEventListener('dragover', handleDragover)
