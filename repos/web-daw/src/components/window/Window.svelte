@@ -6,6 +6,8 @@
   export let showWindow = false
   export let title = ''
 
+  let topbarEl: HTMLElement
+
   function draggable(node: HTMLElement) {
     const z = windowState.focus(node)
     let moving = false
@@ -21,9 +23,13 @@
     node.style.userSelect = 'none'
     node.style.zIndex = `${z}`
 
-    function handleMouseDown() {
-      windowState.focus(node)
-      moving = true
+    function handleMouseDown(evt: MouseEvent) {
+      if (topbarEl && topbarEl.contains(evt.target)) {
+        windowState.focus(node)
+        moving = true
+        window.addEventListener('mousemove', handleMouseMove)
+        window.addEventListener('mouseup', handleMouseUp)
+      }
     }
     function handleMouseMove(e: MouseEvent) {
       if (moving) {
@@ -35,6 +41,8 @@
     }
     function handleMouseUp() {
       moving = false
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
     }
 
     function handleChange() {
@@ -43,8 +51,6 @@
     }
 
     node.addEventListener('mousedown', handleMouseDown)
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mouseup', handleMouseUp)
     windowState.on('change', handleChange)
 
     return {
@@ -65,7 +71,7 @@
     style={$$restProps.style}
     use:draggable
   >
-    <div class="top">
+    <div class="top" bind:this={topbarEl}>
       <TopBar
         {title}
         onClose={() => {

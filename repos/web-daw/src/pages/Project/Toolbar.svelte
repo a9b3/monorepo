@@ -4,7 +4,7 @@
   Project toolbar, display the project metadata like bpm and play controls.
 -->
 <script lang="ts">
-  import { onDestroy } from 'svelte'
+  import { onDestroy, beforeUpdate } from 'svelte'
 
   import type { Project, Controller } from 'daw/core/ui'
   import { Pill, Layout, Icon } from 'src/components'

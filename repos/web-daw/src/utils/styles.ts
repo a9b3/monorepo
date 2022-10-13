@@ -1,4 +1,5 @@
 import { flattenObj } from './flattenObj'
+import { hexToHSL } from './hexToHSL'
 
 const TOKENS = {
   green: '#15D253',
@@ -9,7 +10,7 @@ const TOKENS = {
   red: '#FE1100',
 }
 
-const COLORS = {
+const COLORS = Object.freeze({
   bottom: '#151515',
   bg: '#222222',
   bgHover: '#262626',
@@ -22,7 +23,37 @@ const COLORS = {
   accent: '#3F78F7',
   selected: '#2E4B75',
   neonPink: '#EA3FA2',
+})
+
+const HSL = {
+  ...Object.fromEntries(
+    Object.entries(COLORS).map(([key, value]) => {
+      return [`${key}-h`, hexToHSL(value)[0]]
+    })
+  ),
+  ...Object.fromEntries(
+    Object.entries(COLORS).map(([key, value]) => {
+      return [`${key}-s`, hexToHSL(value)[1]]
+    })
+  ),
+  ...Object.fromEntries(
+    Object.entries(COLORS).map(([key, value]) => {
+      return [`${key}-l`, hexToHSL(value)[2]]
+    })
+  ),
+  ...Object.fromEntries(
+    Object.entries(COLORS).map(([key, value]) => {
+      return [`${key}-raw`, hexToHSL(value).join(', ')]
+    })
+  ),
+  ...Object.fromEntries(
+    Object.entries(COLORS).map(([key, value]) => {
+      return [`${key}-hsl`, `hsl(${hexToHSL(value).join(', ')})`]
+    })
+  ),
 }
+
+console.log('HSL', HSL)
 
 const FONT = {
   family: `'Roboto', sans-serif`,
@@ -57,6 +88,7 @@ const MISC = {
 
 export const styles = {
   tokens: TOKENS,
+  hsl: HSL,
   colors: COLORS,
   font: FONT,
   spacing: SPACING,

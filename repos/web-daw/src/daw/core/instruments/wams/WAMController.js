@@ -19,8 +19,8 @@ export class WAMController extends AudioWorkletNode {
     this.port.postMessage({ type: 'sysex', data: sysex })
   }
 
-  onMidi(msg) {
-    this.port.postMessage({ type: 'midi', data: msg })
+  onMidi(msg, startTime) {
+    this.port.postMessage({ type: 'midi', data: { ...msg, startTime } })
   }
 
   set midiIn(port) {

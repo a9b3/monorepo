@@ -58,6 +58,8 @@ export class Scheduler extends EventEmitter {
     this.lookAhead = args.lookAhead || 25
     this.scheduleAheadTime = args.scheduleAheadTime || 0.1
     this.ticksPerBeat = args.ticksPerBeat || 960
+
+    this.setMaxListeners(50)
   }
 
   #advanceNote() {

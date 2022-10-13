@@ -7,6 +7,11 @@ import { EventEmitter } from 'events'
 export class Subscribable extends EventEmitter {
   static update = 'update'
 
+  constructor() {
+    super()
+    this.setMaxListeners(50)
+  }
+
   /**
    * Svelte subscribe method.
    */

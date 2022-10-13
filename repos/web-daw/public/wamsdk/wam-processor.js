@@ -123,14 +123,16 @@ if (!AudioWorkletGlobalScope.WAMProcessor) {
 
       this.port.onmessage = this.onmessage.bind(this)
       this.port.start()
+      this._scheduledEvents = []
     }
 
     onmessage(e) {
       var msg = e.data
       var data = msg.data
+      console.log('-----------------------st', data)
       switch (msg.type) {
         case 'midi':
-          this.onmidi(data[0], data[1], data[2])
+          this.onmidi(data[0], data[1], data[2], data[3])
           break
         case 'sysex':
           this.onsysex(data)
@@ -148,8 +150,16 @@ if (!AudioWorkletGlobalScope.WAMProcessor) {
       }
     }
 
-    onmidi(status, data1, data2) {
-      this.wam_onmidi(this.inst, status, data1, data2)
+    onmidi(status, data1, data2, startTime, skip) {
+      if (!startTime || skip) {
+        this.wam_onmidi(this.inst, status, data1, data2)
+      } else {
+        if (startTime > currentTime) {
+          this._scheduledEvents.push([status, data1, data2, startTime])
+        } else {
+          this.wam_onmidi(this.inst, status, data1, data2)
+        }
+      }
     }
 
     onparam(key, value) {
@@ -175,7 +185,7 @@ if (!AudioWorkletGlobalScope.WAMProcessor) {
     onpatch(data) {
       var buffer = new Uint8Array(data)
       var len = data.byteLength
-      var WAM = this.WAM
+      var WAM = th
       var buf = WAM._malloc(len)
       for (var i = 0; i < len; i++) WAM.setValue(buf + i, buffer[i], 'i8')
       this.wam_onpatch(this.inst, buf, len)
@@ -191,6 +201,17 @@ if (!AudioWorkletGlobalScope.WAMProcessor) {
     }
 
     process(inputs, outputs, params) {
+      let deleteIdx = []
+      for (let i = 0; i < this._scheduledEvents.length; i++) {
+        if (this._scheduledEvents[i][3] <= currentTime) {
+          this.onmidi(...this._scheduledEvents[i], true)
+          deleteIdx.push(i)
+        }
+      }
+      for (let i = 0; i < deleteIdx.length; i++) {
+        this._scheduledEvents.splice(deleteIdx[i], 1)
+      }
+
       var WAM = this.WAM
 
       // -- inputs

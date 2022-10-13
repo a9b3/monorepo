@@ -161,6 +161,7 @@ export class Track extends Subscribable {
     const noteEvents = Object.values(tickEvents)
 
     noteEvents.forEach(events => {
+      console.log('arg', arg)
       Object.values(events).forEach(event => {
         this.instrument.onMidi({ ...event, nextTickTime: arg.nextTickTime })
       })

@@ -6,6 +6,7 @@
   import { objectStyle } from 'src/utils'
   import { editorStore, setInFocusElement } from 'src/store'
   import StepSequencer from 'src/pages/Project/Editors/StepSequencer/StepSequencer.svelte'
+  import PianoRoll from 'src/components/PianoRoll/PianoRoll.svelte'
   import MPC from 'src/components/MPC/MPC.svelte'
 
   export let ticksPerBeat: number
@@ -53,12 +54,15 @@
     >
       {#if instrumentType === 'Sampler'}
         <MPC {instrument} />
+        <StepSequencer
+          {ticksPerBeat}
+          {clip}
+          clipIsActive={activeClipId === clip?.id}
+        />
       {/if}
-      <StepSequencer
-        {ticksPerBeat}
-        {clip}
-        clipIsActive={activeClipId === clip?.id}
-      />
+      {#if instrumentType !== 'Sampler'}
+        <PianoRoll onMidi={instrument.onMidi} />
+      {/if}
     </div>
   </Window>
   {#if clip}
