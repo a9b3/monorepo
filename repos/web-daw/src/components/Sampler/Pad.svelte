@@ -21,8 +21,11 @@
     justify-content: flex-start;
     overflow: hidden;
     padding: 5px;
+    color: var(--colors__fg);
+    background: var(--colors__neonPink);
   }
   .empty {
+    background: var(--colors__bg);
     color: var(--colors__fg2);
     justify-content: center;
     border: unset;

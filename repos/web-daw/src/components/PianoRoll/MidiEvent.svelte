@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { afterUpdate } from 'svelte'
+  import { createSelectable, selectorStore } from '../Selector/selectorStore'
   export let numberOfBeats: number
   export let midiEvent: { id: string; startTick: number; endTick: number }
   export let ticksPerBeat: number
 
   let el: HTMLElement
+
+  $: selectableDirective = createSelectable(midiEvent.id)
 
   function positionEvent(node: HTMLElement) {
     const totalLength = numberOfBeats * ticksPerBeat
@@ -35,7 +37,13 @@
 
 {#if midiEvent?.endTick}
   {#key midiEvent.id}
-    <div class="midievent" bind:this={el} use:positionEvent>
+    <div
+      class="midievent"
+      class:selected={$selectorStore.selected[midiEvent.id]}
+      bind:this={el}
+      use:positionEvent
+      use:selectableDirective
+    >
       <slot />
     </div>
   {/key}
@@ -47,5 +55,9 @@
     border-radius: 4px;
     height: 100%;
     background: var(--colors__neonPink);
+  }
+
+  .midievent.selected {
+    background: var(--colors__accent);
   }
 </style>

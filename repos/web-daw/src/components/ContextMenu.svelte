@@ -42,13 +42,12 @@
 {#if showMenu}
   <div
     bind:this={menuEl}
-    class={($$restProps.class || '') + ' main'}
-    style={($$restProps.style || '') +
-      objectStyle({
-        position: 'absolute',
-        top: `${pos.y}px`,
-        left: `${pos.x}px`,
-      })}
+    class={'main'}
+    style={objectStyle({
+      position: 'absolute',
+      top: `${pos.y}px`,
+      left: `${pos.x}px`,
+    })}
     on:click={closeMenu}
   >
     {#each menu as el}

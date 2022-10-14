@@ -8,10 +8,21 @@ export interface MidiEvent {
   /**
    * Used internally to allow O(1) read/writes
    */
-  id: string
+  id?: string
   type: 'noteOn' | 'noteOff'
   note: number
   velocity: number
+  startTick?: number
+  endTick?: number
+}
+
+export type CreateMidiEventArg = Omit<MidiEvent, 'id'>
+
+function createMidiNote(arg: CreateMidiEventArg) {
+  return {
+    ...arg,
+    id: crypto.randomUUID(),
+  }
 }
 
 export type EventsMap = {
@@ -19,6 +30,13 @@ export type EventsMap = {
 }
 
 /**
+ * eventsIndex    {[id: string]: { id: string, startTick: number, endTick: number, note: number, velocity: number }}
+ * notesIndex     {[note: string]: Set}
+ * startTickIndex {[startTick: string]: Set}
+ *
+ * Insertion({ startTick, note })
+ * 1. notesIndex[note].forEach(id => eventsIndex[id].contains(startTick])
+ *
  * Abstraction on top of MidiArrangement that includes conviences for the UI.
  */
 export class MidiClip extends Subscribable {
@@ -59,6 +77,11 @@ export class MidiClip extends Subscribable {
    * ( currentTick % ( loopLength * ticksPerbeat ) ) + offsetStartTick
    */
   beatsPerLoop: number
+
+  // -----------------
+  // New Internal Data Structure
+  // -----------------
+  eventsIndex: { [id: string]: {} }
 
   constructor(args: {
     id: string

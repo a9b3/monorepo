@@ -4,10 +4,15 @@
   The arrangement view for the piano roll.
 -->
 <script lang="ts">
-  import { beforeUpdate } from 'svelte'
   import { objectStyle } from 'src/utils'
   import CursorLine from './CursorLine/CursorLine.svelte'
-  import type { MidiClip, EventsMap } from 'daw/core/midi'
+  import Selector from '../Selector/Selector.svelte'
+  import type {
+    MidiClip,
+    EventsMap,
+    MidiEvent as MidiEventT,
+  } from 'daw/core/midi'
+  import type { Instrument } from 'daw/core'
   import {
     mouseDown,
     setMouseDown,
@@ -23,7 +28,7 @@
   export let numberOfBars: number
   export let ticksPerBeat: number
   export let barDivision: number
-  export let onMidi
+  export let onMidi: Instrument['onMidi']
   export let midiClip: MidiClip
 
   // Total ticks in current arrangement view
@@ -32,13 +37,16 @@
   function addEvent(
     evt: MouseEvent,
     { note, snapEnabled, ticksPerBeat, totalTicks },
-    onAdd
+    onAdd: (arg: MidiEventT) => void
   ) {
     const startTick =
-      (evt.target.offsetLeft / evt.target.offsetParent.offsetWidth) * totalTicks
+      ((evt.target as HTMLElement).offsetLeft /
+        ((evt.target as HTMLElement).offsetParent as HTMLElement).offsetWidth) *
+      totalTicks
     const endTick =
       startTick +
-      (evt.target.offsetWidth / evt.target.offsetParent.offsetWidth) *
+      ((evt.target as HTMLElement).offsetWidth /
+        ((evt.target as HTMLElement).offsetParent as HTMLElement).offsetWidth) *
         totalTicks
 
     onAdd({ note, startTick, endTick })
@@ -98,13 +106,14 @@
 </script>
 
 <div
-  class={($$restProps.class || '') + ' main'}
+  class={'main'}
   style={objectStyle({
     '--keyheight': `${(keyHeight * 7) / 12}px`,
     '--barwidth': `${barWidth}px`,
     '--notewidth': `${barWidth / barDivision}px`,
   })}
 >
+  <Selector />
   <CursorLine numberOfBeats={numberOfBars * 4} />
   <div class="timeline">
     {#each bars as bar}
@@ -122,26 +131,28 @@
       class:accent={[0, 5].includes(row % 12)}
       class:hover={$hoverKey === row}
       on:focus={() => {}}
-      on:mousedown|stopPropagation={evt => {
+      on:mousedown={evt => {
         onMidi({ type: 'noteOn', note: row, velocity: 67 })
         setMouseDown(true)
         window.addEventListener('mouseup', mouseup)
-        addEvent(
-          evt,
-          { note: row, snapEnabled: $snapEnabled, ticksPerBeat, totalTicks },
-          ({ note, startTick, endTick }) => {
-            $midiClip.addEvent(Math.floor(startTick), {
-              type: 'noteOn',
-              note,
-              velocity: 67,
-            })
-            $midiClip.addEvent(Math.floor(endTick) - 1, {
-              type: 'noteOff',
-              note,
-              velocity: 67,
-            })
-          }
-        )
+        if (!evt.ctrlKey) {
+          addEvent(
+            evt,
+            { note: row, snapEnabled: $snapEnabled, ticksPerBeat, totalTicks },
+            ({ note, startTick, endTick }) => {
+              $midiClip.addEvent(Math.floor(startTick), {
+                type: 'noteOn',
+                note,
+                velocity: 67,
+              })
+              $midiClip.addEvent(Math.floor(endTick) - 1, {
+                type: 'noteOff',
+                note,
+                velocity: 67,
+              })
+            }
+          )
+        }
       }}
       on:mouseover={() => {
         setHoverKey(row)
