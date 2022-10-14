@@ -7,11 +7,8 @@
   import { objectStyle } from 'src/utils'
   import CursorLine from './CursorLine/CursorLine.svelte'
   import Selector from '../Selector/Selector.svelte'
-  import type {
-    MidiClip,
-    EventsMap,
-    MidiEvent as MidiEventT,
-  } from 'daw/core/midi'
+  import { ContextMenu } from 'src/components'
+  import type { MidiClip, MidiEvent as MidiEventT } from 'daw/core/midi'
   import type { Instrument } from 'daw/core'
   import {
     mouseDown,
@@ -37,7 +34,7 @@
   function addEvent(
     evt: MouseEvent,
     { note, snapEnabled, ticksPerBeat, totalTicks },
-    onAdd: (arg: MidiEventT) => void
+    onAdd: (arg: Pick<MidiEventT, 'note' | 'startTick' | 'endTick'>) => void
   ) {
     const startTick =
       ((evt.target as HTMLElement).offsetLeft /
@@ -52,42 +49,7 @@
     onAdd({ note, startTick, endTick })
   }
 
-  function transformEventsMap(copy: EventsMap): {
-    [note: string]: [{ id: string; startTick: number; endTick: number }]
-  } {
-    const eventsMap = { ...copy }
-    let transformed = {}
-
-    const allTicks = Object.keys(eventsMap)
-    const sorted = allTicks.sort((a, b) => (Number(a) < Number(b) ? -1 : 1))
-
-    for (let i = 0; i < sorted.length; i++) {
-      const curTick = sorted[i]
-      const notes = Object.keys(eventsMap[String(curTick)])
-      for (let j = 0; j < notes.length; j++) {
-        const note = String(notes[j])
-        transformed[note] = transformed[note] || []
-        transformed = { ...transformed }
-
-        Object.values(eventsMap[String(curTick)][note]).forEach(midiEvent => {
-          if (midiEvent.type === 'noteOn') {
-            transformed[note] = [
-              ...transformed[note],
-              { id: midiEvent.id, startTick: curTick, endTick: undefined },
-            ]
-          } else if (midiEvent.type === 'noteOff') {
-            for (let k = 0; k < transformed[note].length; k++) {
-              if (transformed[note][k].endTick === undefined) {
-                transformed[note][k].endTick = curTick
-              }
-            }
-          }
-        })
-      }
-    }
-    return transformed
-  }
-  $: transformedMap = transformEventsMap($midiClip.eventsMap)
+  $: transformedMap = $midiClip.getStartIndexForUI()
 
   let rows = Array(numberOfKeys)
     .fill(1)
@@ -113,8 +75,13 @@
     '--notewidth': `${barWidth / barDivision}px`,
   })}
 >
-  <Selector />
+  <Selector
+    onDel={selected => {
+      Object.keys(selected).forEach(id => $midiClip.remove(id))
+    }}
+  />
   <CursorLine numberOfBeats={numberOfBars * 4} />
+  <ContextMenu />
   <div class="timeline">
     {#each bars as bar}
       <div class="bar" class:offset={bar % 2 === 1}>
@@ -132,23 +99,20 @@
       class:hover={$hoverKey === row}
       on:focus={() => {}}
       on:mousedown={evt => {
-        onMidi({ type: 'noteOn', note: row, velocity: 67 })
         setMouseDown(true)
         window.addEventListener('mouseup', mouseup)
-        if (!evt.ctrlKey) {
+        if (!evt.metaKey) {
+          onMidi({ type: 'noteOn', note: row, velocity: 67 })
           addEvent(
             evt,
             { note: row, snapEnabled: $snapEnabled, ticksPerBeat, totalTicks },
             ({ note, startTick, endTick }) => {
-              $midiClip.addEvent(Math.floor(startTick), {
+              $midiClip.insert({
                 type: 'noteOn',
                 note,
                 velocity: 67,
-              })
-              $midiClip.addEvent(Math.floor(endTick) - 1, {
-                type: 'noteOff',
-                note,
-                velocity: 67,
+                startTick: Math.floor(startTick),
+                endTick: Math.floor(endTick) - 1,
               })
             }
           )
@@ -157,16 +121,16 @@
       on:mouseover={() => {
         setHoverKey(row)
         if ($mouseDown) {
-          onMidi({ note: row })
+          onMidi({ note: row, type: 'noteOn', velocity: 40 })
         }
       }}
     >
       {#if transformedMap[String(row)]}
-        {#each transformedMap[String(row)] as transformedMidiEvent, idx}
-          {#key transformedMidiEvent.id}
+        {#each transformedMap[String(row)] as midiEvent}
+          {#key midiEvent.id}
             <MidiEvent
-              midiEvent={transformedMidiEvent}
-              ticksPerBeat={960}
+              {midiEvent}
+              {ticksPerBeat}
               numberOfBeats={numberOfBars * 4}
             />
           {/key}
@@ -195,7 +159,13 @@
     --border-s: var(--hsl__bg2-s);
     --border-l: var(--hsl__bg2-l);
     --bg-hsl: hsla(var(--bg-h), var(--bg-s), var(--bg-l), 0.8);
-    --offset-hsl: hsla(var(--bg-h), var(--bg-s), calc(var(--bg-l) - 5%), 0.7);
+    --bg-hover-hsl: hsla(var(--bg-h), var(--bg-s), var(--bg-l), 1);
+    --row-offset-hsl: hsla(
+      var(--bg-h),
+      var(--bg-s),
+      calc(var(--bg-l) - 20%),
+      1
+    );
     --border-hsl: hsla(var(--border-h), var(--border-s), var(--border-l), 1);
     --border-offset-hsl: hsla(
       var(--border-h),
@@ -216,6 +186,7 @@
     background: var(--bg-hsl);
     border-bottom: 1px solid var(--border-hsl);
     display: flex;
+    z-index: 1;
   }
 
   .row {
@@ -225,13 +196,13 @@
     position: relative;
   }
   .row.offset {
-    background: var(--offset-hsl);
+    background: var(--row-offset-hsl);
   }
   .row.accent {
     border-bottom: 1px solid var(--border-offset-hsl);
   }
   .row.hover {
-    opacity: 0.5;
+    background: var(--bg-hover-hsl);
   }
 
   .bar {
@@ -240,11 +211,11 @@
     align-items: center;
     font-size: 8px;
     border-right: 1px solid
-      hsl(var(--border-h), var(--border-s), calc(var(--border-l) + 10%), 1);
+      hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 30%), 1);
     background: var(--bg-hsl);
   }
   .bar.offset {
-    background: var(--offset-hsl);
+    /* background: hsla(calc(var(--bg-h) + 80), var(--bg-s), var(--bg-l), 1); */
   }
 
   .bar .note {
@@ -258,6 +229,5 @@
   .indicator {
     margin-left: 5px;
     font-weight: bold;
-    color: hsl(var(--bg-h), var(--bg-s), calc(var(--bg-l) + 20%), 1);
   }
 </style>

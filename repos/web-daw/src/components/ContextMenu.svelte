@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { objectStyle } from 'src/utils/objectToStyleStr'
+  import { objectStyle, directSubtreeOf } from 'src/utils'
 
   interface MenuT {
     type: 'item'
     onClick: () => void
     label: string
   }
-
   export let menu: MenuT[] = []
 
+  let markerEl: HTMLElement
   let parentEl: EventTarget
   let showMenu = false
   let pos = { x: 0, y: 0 }
@@ -16,6 +16,15 @@
     showMenu = false
   }
   export function handleRightClick(evt: MouseEvent) {
+    if (
+      !directSubtreeOf(
+        evt.target as HTMLElement,
+        markerEl,
+        el => el.getAttribute('data-component-type') === 'contextmenu'
+      )
+    ) {
+      return
+    }
     pos = { x: evt.clientX, y: evt.clientY }
     showMenu = true
     parentEl = evt.target
@@ -39,6 +48,7 @@
   }
 </script>
 
+<div class="hidden" bind:this={markerEl} data-component-type="contextmenu" />
 {#if showMenu}
   <div
     bind:this={menuEl}
@@ -57,10 +67,12 @@
     {/each}
   </div>
 {/if}
-
 <svelte:body on:click={onPageClick} on:mousedown={onMouseDown} />
 
 <style>
+  .hidden {
+    visibility: none;
+  }
   .main {
     display: grid;
     background: var(--colors__bg);

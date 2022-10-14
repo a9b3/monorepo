@@ -1,3 +1,5 @@
+import { Subscribable } from '../ui'
+
 type MidiNote = {
   id: string
   startTick: number
@@ -15,16 +17,16 @@ function createMidiNote(arg: CreateMidiNoteArgs) {
   }
 }
 
-export class MidiClip2 {
-  eventsIndex: { [id: string]: MidiNote }
+export class MidiClipNew extends Subscribable {
+  eventsIndex: { [id: string]: MidiNote } = {}
   /**
    * This is useful for quick UI rendering lookups.
    */
-  notesIndex: { [note: string]: string[] }
+  notesIndex: { [note: string]: string[] } = {}
   /**
    * This is useful for quick scheduling lookups.
    */
-  startTickIndex: { [startTick: string]: string[] }
+  startTickIndex: { [startTick: string]: string[] } = {}
 
   /**
    * Overlap behavior
@@ -118,6 +120,9 @@ export class MidiClip2 {
     if (!this.startTickIndex[String(mnote.startTick)].includes(mnote.id)) {
       this.startTickIndex[String(mnote.startTick)].push(mnote.id)
     }
+
+    console.log(`here`, this)
+    this.emit('update')
   }
 
   remove = (id: string) => {
@@ -131,9 +136,20 @@ export class MidiClip2 {
     this.startTickIndex[String[pnote.startTick]] = this.startTickIndex[
       String[pnote.startTick]
     ].filter(_id => _id !== pnote.id)
+
+    this.emit('update')
   }
 
   getTickEvent(tick: number) {
-    this.startTickIndex[]
+    // this.startTickIndex[]
+  }
+
+  getStartIndexForUI() {
+    console.log(`called`)
+    return Object.fromEntries(
+      Object.entries(this.startTickIndex).map(([key, val]) => {
+        return [key, val.map(id => this.eventsIndex[id])]
+      })
+    )
   }
 }

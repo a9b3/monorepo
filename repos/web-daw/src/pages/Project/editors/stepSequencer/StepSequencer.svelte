@@ -28,21 +28,19 @@
     // Middle C
     const note = 60 + row
     const startTick = col * (ticksPerBeat / beatDivision)
-    return Object.values($clip.eventsMap[startTick]?.[note] || {}).find(
-      midiEvent => midiEvent.type === 'noteOn'
-    )
+    return $clip.getEvents(startTick, note)
   }
 
   function toggleNote(row: number, col: number) {
     // Middle C
     const note = 60 + row
     const startTick = col * (ticksPerBeat / beatDivision)
-    const midiEvent = getNote(row, col)
-    if (midiEvent) {
-      $clip.removeEvent(startTick, String(note), midiEvent.id)
+    const foundNotes = getNote(row, col)
+    if (foundNotes) {
+      foundNotes.forEach(n => $clip.remove(n.id))
     } else {
       // TODO add a noteOff event too
-      $clip.addEvent(startTick, { note, type: 'noteOn', velocity: 67 })
+      $clip.insert({ note, type: 'noteOn', velocity: 67, startTick })
     }
   }
 

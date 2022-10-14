@@ -13,7 +13,7 @@
   export let ticksPerBeat: number
   export let onMidi
 
-  let keyHeight = 25
+  let keyHeight = 40
   let barWidth = 400
 </script>
 

@@ -143,6 +143,7 @@ export class Track extends Subscribable {
     this.emit('update')
   }
 
+  #noteOffs = {}
   /**
    * Handler for scheduler
    */
@@ -153,17 +154,27 @@ export class Track extends Subscribable {
     }
     const offsetTick =
       arg.currentTick % (midiClip.beatsPerLoop * arg.ticksPerBeat)
-    const tickEvents = midiClip?.eventsMap[offsetTick]
+    const tickEvents = midiClip?.getTickEvents(offsetTick)
 
     if (!tickEvents) {
       return
     }
-    const noteEvents = Object.values(tickEvents)
 
-    noteEvents.forEach(events => {
-      Object.values(events).forEach(event => {
-        this.instrument.onMidi({ ...event, nextTickTime: arg.nextTickTime })
-      })
+    let appendEvents = []
+    if (this.#noteOffs[offsetTick]) {
+      appendEvents = this.#noteOffs[offsetTick]
+      delete this.#noteOffs[offsetTick]
+    }
+    const noteEvents = [...Object.values(tickEvents), ...appendEvents]
+
+    noteEvents.forEach(event => {
+      this.instrument.onMidi({ ...event, nextTickTime: arg.nextTickTime })
+      if (event.type === 'noteOn' && event.endTick) {
+        this.#noteOffs[event.endTick] = [
+          ...(this.#noteOffs[event.endTick] || []),
+          { ...event, type: 'noteOff' },
+        ]
+      }
     })
   }
 

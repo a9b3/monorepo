@@ -4,6 +4,7 @@
   import { ContextMenu } from 'src/components'
   import { editorStore, setSelectedProject, fetchProject } from 'src/store'
   import { trackMousePosition, untrackMousePosition } from 'src/utils'
+  import Selector from 'src/components/Selector/Selector.svelte'
 
   import AutoSave from './AutoSave.svelte'
   import LeftPanel from './LeftPanel.svelte'
@@ -49,6 +50,7 @@
       class="main"
       on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
     >
+      <Selector requireModKey={false} />
       <ContextMenu
         bind:this={contextMenuRef}
         menu={[

@@ -1,8 +1,11 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
+  import { directSubtreeOf } from 'src/utils'
   import { selectorStore, setSelecting } from './selectorStore'
+  import { keyboard } from 'src/store/keyboard'
 
   export let requireModKey = true
+  export let onDel = (selected: {}) => {}
 
   let el: HTMLElement
   let parentEl: HTMLElement
@@ -48,23 +51,44 @@
     }
   }
 
+  const collisonBounds = {
+    originX: 0,
+    originY: 0,
+    deltaX: 0,
+    deltaY: 0,
+  }
+
   function onmousedown(evt: MouseEvent) {
+    console.log(evt, parentEl, el)
+    if (
+      !directSubtreeOf(
+        evt.target as HTMLElement,
+        el,
+        compEl => compEl.getAttribute('data-component-type') === 'selector'
+      )
+    ) {
+      console.log(`jerer`)
+      return
+    }
     selectorStore.selected = {}
     selectorStore.emit('update')
-    if (requireModKey && !evt.ctrlKey) {
+    if (requireModKey && !evt.metaKey) {
       return
     }
     setSelecting(true)
 
     const bound = parentEl.getBoundingClientRect()
-    originX = evt.clientX - bound.left
-    originY = evt.clientY - bound.top
+    collisonBounds.originX = evt.clientX - bound.left
+    collisonBounds.originY = evt.clientY - bound.top
+    originX = evt.clientX
+    originY = evt.clientY
 
     maxTop = bound.top - evt.clientY
     maxLeft = bound.left - evt.clientX
     maxRight = bound.right - evt.clientX
     maxBottom = bound.bottom - evt.clientY
 
+    // parentEl.style.position = 'relative'
     el.style.display = 'inline'
     el.style.left = `${originX}px`
     el.style.top = `${originY}px`
@@ -80,10 +104,25 @@
     window.requestAnimationFrame(() => {
       const bound = parentEl.getBoundingClientRect()
 
-      let deltaX = evt.clientX - bound.left - originX
+      collisonBounds.deltaX = evt.clientX - bound.left - originX
+      collisonBounds.deltaX =
+        collisonBounds.deltaX < maxLeft
+          ? maxLeft
+          : collisonBounds.deltaX > maxRight
+          ? maxRight
+          : collisonBounds.deltaX
+      collisonBounds.deltaY = evt.clientY - bound.top - collisonBounds.originY
+      collisonBounds.deltaY =
+        collisonBounds.deltaY < maxTop
+          ? maxTop
+          : collisonBounds.deltaY > maxBottom
+          ? maxBottom
+          : collisonBounds.deltaY
+
+      let deltaX = evt.clientX - originX
       deltaX =
         deltaX < maxLeft ? maxLeft : deltaX > maxRight ? maxRight : deltaX
-      let deltaY = evt.clientY - bound.top - originY
+      let deltaY = evt.clientY - originY
       deltaY =
         deltaY < maxTop ? maxTop : deltaY > maxBottom ? maxBottom : deltaY
 
@@ -93,8 +132,14 @@
       el.style.width = `${Math.abs(deltaX)}px`
       el.style.height = `${Math.abs(deltaY)}px`
 
-      const r1 = getSeletionBoxCoords(deltaX, deltaY, originX, originY)
+      const r1 = getSeletionBoxCoords(
+        collisonBounds.deltaX,
+        collisonBounds.deltaY,
+        collisonBounds.originX,
+        collisonBounds.originY
+      )
       selectorStore.selectable.forEach(({ el, id }) => {
+        console.log(el)
         const r2Bound = el.getBoundingClientRect()
         const r2 = {
           top: r2Bound.top - bound.top,
@@ -108,7 +153,7 @@
         if (intersectRect(r1, r2)) {
           selectorStore.selected[id] = true
         } else {
-          selectorStore.selected[id] = false
+          delete selectorStore.selected[id]
         }
       })
       selectorStore.emit('update')
@@ -116,29 +161,41 @@
   }
 
   function onmouseup() {
-    el.style.display = 'none'
-    setSelecting(false)
     document.removeEventListener('mousemove', onmousemove)
     document.removeEventListener('mouseup', onmouseup)
+    el.style.display = 'none'
+    setSelecting(false)
+  }
+
+  function delHandler(evt: KeyboardEvent) {
+    switch (evt.key) {
+      case 'Backspace':
+        onDel(selectorStore.selected)
+        break
+      default:
+        return
+    }
   }
 
   onMount(() => {
     parentEl = el.parentElement
     parentEl.addEventListener('mousedown', onmousedown)
+    keyboard.attach(delHandler)
   })
   onDestroy(() => {
     parentEl.removeEventListener('mousedown', onmousedown)
-    document.addEventListener('mousemove', onmousemove)
-    document.addEventListener('mouseup', onmouseup)
+    document.removeEventListener('mousemove', onmousemove)
+    document.removeEventListener('mouseup', onmouseup)
+    keyboard.detach(delHandler)
   })
 </script>
 
-<div bind:this={el} class={'main'} />
+<div bind:this={el} class={'main'} data-component-type="selector" />
 
 <style>
   .main {
     display: none;
-    position: absolute;
+    position: fixed;
     background: hsl(var(--hsl__bg-h), var(--hsl__bg-s), var(--hsl__bg-l), 0.5);
     z-index: 10;
     border: 1px solid var(--colors__accent);

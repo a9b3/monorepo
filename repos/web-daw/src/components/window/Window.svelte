@@ -48,6 +48,9 @@
       if (moving) {
         left += e.movementX
         top += e.movementY
+        if (top < 0) {
+          top = 0
+        }
         node.style.top = `${top}px`
         node.style.left = `${left}px`
       }

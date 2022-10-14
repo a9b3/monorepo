@@ -1,5 +1,6 @@
 import { Subscribable } from '../ui'
 import type { MidiArrangement } from './MidiArrangement'
+import { MidiClipNew } from './MidiClipNew'
 
 // TODO need to capture all possible midi event types. Currently just dealing
 // with noteOn and noteOff
@@ -16,11 +17,21 @@ export interface MidiEvent {
   endTick?: number
 }
 
-export type CreateMidiEventArg = Omit<MidiEvent, 'id'>
+type MidiNote = {
+  id?: string
+  type: 'noteOn'
+  startTick: number
+  endTick?: number
+  note: number
+  velocity?: number
+}
 
-function createMidiNote(arg: CreateMidiEventArg) {
+type CreateMidiNoteArgs = Omit<MidiNote, 'id'>
+
+function createMidiNote(arg: CreateMidiNoteArgs) {
   return {
     ...arg,
+    type: 'noteOn',
     id: crypto.randomUUID(),
   }
 }
@@ -81,7 +92,15 @@ export class MidiClip extends Subscribable {
   // -----------------
   // New Internal Data Structure
   // -----------------
-  eventsIndex: { [id: string]: {} }
+  eventsIndex: { [id: string]: MidiNote }
+  /**
+   * This is useful for quick UI rendering lookups.
+   */
+  notesIndex: { [note: string]: string[] }
+  /**
+   * This is useful for quick scheduling lookups.
+   */
+  startTickIndex: { [startTick: string]: string[] }
 
   constructor(args: {
     id: string
@@ -90,6 +109,9 @@ export class MidiClip extends Subscribable {
     eventsMap?: EventsMap
     offsetStartTick?: number
     beatsPerLoop?: number
+    eventsIndex?: { [id: string]: MidiNote }
+    notesIndex?: { [note: string]: string[] }
+    startTickIndex?: { [startTick: string]: string[] }
   }) {
     super()
 
@@ -104,6 +126,10 @@ export class MidiClip extends Subscribable {
     this.eventsMap = args.eventsMap || {}
     this.offsetStartTick = args.offsetStartTick || 0
     this.beatsPerLoop = args.beatsPerLoop || 8
+
+    this.eventsIndex = args.eventsIndex || {}
+    this.notesIndex = args.notesIndex || {}
+    this.startTickIndex = args.startTickIndex || {}
   }
 
   /**
@@ -148,6 +174,138 @@ export class MidiClip extends Subscribable {
   }
 
   getEvents(tick: number, note: number) {
-    return Object.values(this.eventsMap[String(tick)]?.[note])
+    const res = (this.startTickIndex[tick] || [])
+      .filter(id => this.eventsIndex[id].note === note)
+      .map(id => this.eventsIndex[id])
+    return res.length === 0 ? undefined : res
+  }
+
+  /**
+   * Overlap behavior
+   */
+  insert = (
+    arg: CreateMidiNoteArgs,
+    opts: {
+      /**
+       * replace:
+       *    Remove prexisting note(s) and replace with new one
+       * splice:
+       *    Adjust prexisting note(s) endTick/startTick
+       * deny:
+       *    Do not allow overwriting preexisting note(s) new note is not
+       *    inserted.
+       */
+      overlapType?: 'replace' | 'splice' | 'deny'
+    } = {}
+  ) => {
+    // Default options
+    opts.overlapType = opts.overlapType || 'deny'
+
+    const mnote = createMidiNote(arg)
+
+    const toRemove = new Set<string>()
+    const prevNoteIds = this.notesIndex[String(mnote.note)] || []
+    // TODO I wonder if there's a more elegant way to do this using some set
+    // logic.
+    for (let i = 0; i < prevNoteIds.length; i += 1) {
+      const prevId = prevNoteIds[i]
+      const pnote = this.eventsIndex[prevId]
+
+      // no overlap
+      if (pnote.startTick > mnote.endTick || mnote.startTick > pnote.endTick) {
+        break
+      }
+
+      // new note starts in the middle of preexsting note
+      if (
+        mnote.startTick > pnote.startTick &&
+        mnote.startTick < pnote.endTick
+      ) {
+        if (opts.overlapType === 'replace') {
+          toRemove.add(pnote.id)
+        } else if (opts.overlapType === 'splice') {
+          pnote.endTick = mnote.startTick - 1
+        } else {
+          // can early exit since this is the deny case and an overlap was found
+          return
+        }
+      }
+      // new note ends in the middle of the preexisting note
+      if (mnote.endTick < pnote.endTick && mnote.endTick < pnote.startTick) {
+        if (opts.overlapType === 'replace') {
+          toRemove.add(pnote.id)
+        } else if (opts.overlapType === 'splice') {
+          pnote.startTick = mnote.endTick + 1
+        } else {
+          // can early exit since this is the deny case and an overlap was found
+          return
+        }
+      }
+
+      // new note encompasses the preexisting note
+      if (pnote.startTick < mnote.startTick && pnote.endTick > mnote.endTick) {
+        if (opts.overlapType === 'replace') {
+          toRemove.add(pnote.id)
+        } else if (opts.overlapType === 'splice') {
+          mnote.endTick = mnote.startTick - 1
+        } else {
+          // can early exit since this is the deny case and an overlap was found
+          return
+        }
+      }
+    }
+
+    // above loop should be responsible for early return if opt is set to deny
+    // so this should be safe to run
+    toRemove.forEach(id => {
+      this.remove(id)
+    })
+
+    this.eventsIndex[mnote.id] = mnote
+    this.notesIndex[String(mnote.note)] =
+      this.notesIndex[String(mnote.note)] || []
+    if (!this.notesIndex[String(mnote.note)].includes(mnote.id)) {
+      this.notesIndex[String(mnote.note)].push(mnote.id)
+    }
+    this.startTickIndex[String(mnote.startTick)] =
+      this.startTickIndex[String(mnote.startTick)] || []
+    if (!this.startTickIndex[String(mnote.startTick)].includes(mnote.id)) {
+      this.startTickIndex[String(mnote.startTick)].push(mnote.id)
+    }
+
+    this.emit('update')
+  }
+
+  remove = (id: string) => {
+    const pnote = this.eventsIndex[id]
+    if (!pnote) {
+      return
+    }
+    this.notesIndex[String(pnote.note)] = this.notesIndex[
+      String(pnote.note)
+    ].filter(_id => _id !== pnote.id)
+    this.startTickIndex[String(pnote.startTick)] = this.startTickIndex[
+      String(pnote.startTick)
+    ].filter(_id => _id !== pnote.id)
+
+    this.emit('update')
+  }
+
+  // getTickEvent(tick: number) {
+  //   // this.startTickIndex[]
+  // }
+
+  getStartIndexForUI() {
+    return Object.fromEntries(
+      Object.entries(this.notesIndex).map(([key, val]) => {
+        return [key, val.map(id => this.eventsIndex[id])]
+      })
+    )
+  }
+
+  getTickEvents(tick: number) {
+    return (this.startTickIndex[String(tick)] || []).map(
+      id => this.eventsIndex[id]
+    )
   }
 }
