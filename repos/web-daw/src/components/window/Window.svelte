@@ -24,7 +24,9 @@
 
 <div bind:this={mainWindowEl} class={'main'}>
   <div class="top" bind:this={topbarEl}>
-    <TopBar {title} {onClose} />
+    <TopBar {title} {onClose}>
+      <slot name="left" slot="left" />
+    </TopBar>
   </div>
   <div class="content">
     <slot />

@@ -24,11 +24,23 @@ export class DX7 extends IONode implements Instrument {
   }
 
   onMidi: Instrument['onMidi'] = e => {
+    e.velocity = e.velocity || 60
+
     const type =
       e.type === 'noteOn'
         ? MidiEventTypeInteger.NoteOn
         : MidiEventTypeInteger.NoteOff
     this.dx7.onMidi([type, e.note, e.velocity, e.nextTickTime])
+
+    // Convenience
+    if (e.type === 'noteOn' && e.endTick) {
+      this.dx7.onMidi([
+        MidiEventTypeInteger.NoteOff,
+        e.note,
+        e.velocity,
+        this.audioContext.currentTime + e.endTick,
+      ])
+    }
 
     this.emit('update')
   }

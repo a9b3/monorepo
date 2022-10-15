@@ -12,7 +12,7 @@ export interface MidiEvent {
   id?: string
   type: 'noteOn' | 'noteOff'
   note: number
-  velocity: number
+  velocity?: number
   startTick?: number
   endTick?: number
 }

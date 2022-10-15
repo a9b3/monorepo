@@ -66,6 +66,7 @@
       title={getWindowTitle(trackLabel, clip?.name)}
       onClose={() => (showWindow = false)}
     >
+      <div slot="left">Edit</div>
       <div
         style={objectStyle({
           display: 'flex',

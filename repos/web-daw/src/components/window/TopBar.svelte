@@ -6,7 +6,9 @@
 </script>
 
 <div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
-  <div class="left" />
+  <div class="left">
+    <slot name="left" />
+  </div>
   <div class="middle">{title}</div>
   <div class="right">
     <div class="item" on:click={onClose}>

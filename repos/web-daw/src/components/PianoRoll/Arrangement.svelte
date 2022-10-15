@@ -10,13 +10,7 @@
   import { ContextMenu } from 'src/components'
   import type { MidiClip, MidiEvent as MidiEventT } from 'daw/core/midi'
   import type { Instrument } from 'daw/core'
-  import {
-    mouseDown,
-    setMouseDown,
-    hoverKey,
-    setHoverKey,
-    snapEnabled,
-  } from './pianoRollStore'
+  import { hoverKey, setHoverKey, snapEnabled } from './pianoRollStore'
   import MidiEvent from './MidiEvent.svelte'
 
   export let numberOfKeys: number
@@ -61,10 +55,6 @@
   let notesPerBar = Array(barDivision)
     .fill(1)
     .map((_, i) => i)
-
-  function mouseup() {
-    setMouseDown(false)
-  }
 </script>
 
 <div
@@ -99,10 +89,9 @@
       class:hover={$hoverKey === row}
       on:focus={() => {}}
       on:mousedown={evt => {
-        setMouseDown(true)
-        window.addEventListener('mouseup', mouseup)
         if (!evt.metaKey) {
-          onMidi({ type: 'noteOn', note: row, velocity: 67 })
+          onMidi({ type: 'noteOn', note: row, velocity: 67, endTick: 0.5 })
+
           addEvent(
             evt,
             { note: row, snapEnabled: $snapEnabled, ticksPerBeat, totalTicks },
@@ -118,10 +107,10 @@
           )
         }
       }}
-      on:mouseover={() => {
+      on:mouseover={evt => {
         setHoverKey(row)
-        if ($mouseDown) {
-          onMidi({ note: row, type: 'noteOn', velocity: 40 })
+        if (evt.buttons) {
+          onMidi({ note: row, type: 'noteOn', velocity: 40, endTick: 0.5 })
         }
       }}
     >

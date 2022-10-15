@@ -2,8 +2,7 @@
   import Keyboard from './Keyboard.svelte'
   import Arrangement from './Arrangement.svelte'
   import ResizerY from './Controls/ResizerY.svelte'
-  import type { MidiClip } from 'daw/core/midi'
-  import { objectStyle } from 'src/utils'
+  import type { MidiClip, Instrument } from 'daw/core'
 
   export let numberOfKeys = 120
   export let numberOfBars = 4
@@ -11,7 +10,7 @@
   export let startingKey = 60
   export let midiClip: MidiClip
   export let ticksPerBeat: number
-  export let onMidi
+  export let onMidi: Instrument['onMidi']
 
   let keyHeight = 40
   let barWidth = 400

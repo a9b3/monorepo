@@ -1,15 +1,12 @@
 <script lang="ts">
-  import {
-    mouseDown,
-    setMouseDown,
-    hoverKey,
-    setHoverKey,
-  } from './pianoRollStore'
+  import { hoverKey, setHoverKey } from './pianoRollStore'
+  import type { Instrument } from 'daw/core'
   import { objectStyle } from 'src/utils'
+  import { audioContext } from 'daw/audioContext'
 
   export let key: number
   export let keyHeight: number = 20
-  export let onMidi
+  export let onMidi: Instrument['onMidi']
 
   function isBlackKey(key: number) {
     const note = key % 12
@@ -18,10 +15,6 @@
 
   function getOctave(key: number) {
     return Math.floor(key / 12) + 1
-  }
-
-  function mouseup() {
-    setMouseDown(false)
   }
 </script>
 
@@ -34,14 +27,12 @@
   })}
   on:focus={() => {}}
   on:mousedown|stopPropagation={() => {
-    onMidi({ type: 'noteOn', note: key, velocity: 67 })
-    setMouseDown(true)
-    window.addEventListener('mouseup', mouseup)
+    onMidi({ type: 'noteOn', note: key, velocity: 67, endTick: 0.5 })
   }}
-  on:mouseover={() => {
+  on:mouseover={evt => {
     setHoverKey(key)
-    if ($mouseDown) {
-      onMidi({ type: 'noteOn', note: key, velocity: 67 })
+    if (evt.buttons) {
+      onMidi({ type: 'noteOn', note: key, velocity: 67, endTick: 0.5 })
     }
   }}
 >
