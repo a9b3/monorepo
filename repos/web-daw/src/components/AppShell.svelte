@@ -1,19 +1,24 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, onDestroy } from 'svelte'
   import { Router, Route } from 'svelte-routing'
   import Project from 'src/pages/Project/Project.svelte'
   import Dashboard from 'src/pages/Dashboard/Dashboard.svelte'
   import { Theme, TabBar, Loader } from 'src/components'
   import userStore from 'src/store/user'
   import { fetchEditor } from 'src/store/editor'
+  import { mousePosition } from 'src/ui'
 
   export let url = ''
 
   let ready = false
 
   onMount(async () => {
+    mousePosition.observeMousePosition()
     await fetchEditor($userStore.id)
     ready = true
+  })
+  onDestroy(() => {
+    mousePosition.unobserveMousePosition()
   })
 </script>
 

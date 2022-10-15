@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import { directSubtreeOf } from 'src/utils'
+  import { directSubtreeOf, getScrollParent } from 'src/utils'
   import { selectorStore, setSelecting } from './selectorStore'
   import { keyboard } from 'src/store/keyboard'
 
@@ -51,15 +51,7 @@
     }
   }
 
-  const collisonBounds = {
-    originX: 0,
-    originY: 0,
-    deltaX: 0,
-    deltaY: 0,
-  }
-
   function onmousedown(evt: MouseEvent) {
-    console.log(evt, parentEl, el)
     if (
       !directSubtreeOf(
         evt.target as HTMLElement,
@@ -77,16 +69,15 @@
     }
     setSelecting(true)
 
-    const bound = parentEl.getBoundingClientRect()
-    collisonBounds.originX = evt.clientX - bound.left
-    collisonBounds.originY = evt.clientY - bound.top
+    const closetRelative = getScrollParent(parentEl, true)
+    const bound = (closetRelative || parentEl).getClientRects()
     originX = evt.clientX
     originY = evt.clientY
 
-    maxTop = bound.top - evt.clientY
-    maxLeft = bound.left - evt.clientX
-    maxRight = bound.right - evt.clientX
-    maxBottom = bound.bottom - evt.clientY
+    maxTop = bound[0].top - evt.clientY
+    maxLeft = bound[0].left - evt.clientX
+    maxRight = bound[0].right - evt.clientX
+    maxBottom = bound[0].bottom - evt.clientY
 
     // parentEl.style.position = 'relative'
     el.style.display = 'inline'
@@ -104,21 +95,6 @@
     window.requestAnimationFrame(() => {
       const bound = parentEl.getBoundingClientRect()
 
-      collisonBounds.deltaX = evt.clientX - bound.left - originX
-      collisonBounds.deltaX =
-        collisonBounds.deltaX < maxLeft
-          ? maxLeft
-          : collisonBounds.deltaX > maxRight
-          ? maxRight
-          : collisonBounds.deltaX
-      collisonBounds.deltaY = evt.clientY - bound.top - collisonBounds.originY
-      collisonBounds.deltaY =
-        collisonBounds.deltaY < maxTop
-          ? maxTop
-          : collisonBounds.deltaY > maxBottom
-          ? maxBottom
-          : collisonBounds.deltaY
-
       let deltaX = evt.clientX - originX
       deltaX =
         deltaX < maxLeft ? maxLeft : deltaX > maxRight ? maxRight : deltaX
@@ -132,23 +108,15 @@
       el.style.width = `${Math.abs(deltaX)}px`
       el.style.height = `${Math.abs(deltaY)}px`
 
-      const r1 = getSeletionBoxCoords(
-        collisonBounds.deltaX,
-        collisonBounds.deltaY,
-        collisonBounds.originX,
-        collisonBounds.originY
-      )
+      const r1 = getSeletionBoxCoords(deltaX, deltaY, originX, originY)
       selectorStore.selectable.forEach(({ el, id }) => {
-        console.log(el)
-        const r2Bound = el.getBoundingClientRect()
+        const r2Bound = el.getClientRects()
         const r2 = {
-          top: r2Bound.top - bound.top,
-          left: r2Bound.left - bound.left,
-          right: 0,
-          bottom: 0,
+          top: r2Bound[0].top,
+          left: r2Bound[0].left,
+          right: r2Bound[0].right,
+          bottom: r2Bound[0].bottom,
         }
-        r2.right = r2.left + el.offsetWidth
-        r2.bottom = r2.top + el.offsetHeight
 
         if (intersectRect(r1, r2)) {
           selectorStore.selected[id] = true

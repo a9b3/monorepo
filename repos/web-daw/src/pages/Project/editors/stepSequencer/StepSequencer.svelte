@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte'
   import { objectStyle } from 'src/utils'
   import type { MidiClip, TickHandler } from 'daw/core'
-  import { currentProject } from 'src/store/editor'
+  import { editorStore, currentProject } from 'src/store/editor'
 
   export let beatsPerLoop: number
   // TODO use this later to handle time signature change
@@ -58,8 +58,12 @@
   }
 
   onMount(() => {
-    $currentProject.controller.on('tick', handleTick)
-    $currentProject.controller.on('stop', handleStop)
+    const curProj = $editorStore.openedProjects.find(
+      proj => proj.id === $editorStore.selectedProjectId
+    )
+
+    curProj.controller.on('tick', handleTick)
+    curProj.controller.on('stop', handleStop)
   })
   onDestroy(() => {
     if ($currentProject) {

@@ -31,3 +31,37 @@ export function directSubtreeOf(
   }
   return directSubtreeOf(node.parentElement, target, predicate)
 }
+
+export function findFirstAncestor(
+  node: HTMLElement,
+  predicate: (el: Element) => boolean
+) {
+  if (node === window.document.body) {
+    return false
+  }
+  if (predicate(node.parentElement)) {
+    return node.parentElement
+  }
+  return findFirstAncestor(node.parentElement, predicate)
+}
+
+export function getScrollParent(element: HTMLElement, includeHidden?: boolean) {
+  let style = getComputedStyle(element)
+  let excludeStaticParent = style.position === 'absolute'
+  let overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/
+
+  if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX))
+    return element
+
+  if (style.position === 'fixed') return document.body
+  for (let parent = element; (parent = parent.parentElement); ) {
+    style = getComputedStyle(parent)
+    if (excludeStaticParent && style.position === 'static') {
+      continue
+    }
+    if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX))
+      return parent
+  }
+
+  return document.body
+}

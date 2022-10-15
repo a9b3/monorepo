@@ -1,31 +1,51 @@
 import { EventEmitter } from 'events'
 
-class WindowState extends EventEmitter {
-  stack = []
+/**
+ * Window Manager
+ */
+class WindowManager extends EventEmitter {
+  // top of stack is back
+  stack: HTMLElement[] = []
+  zStart = 50
 
-  getZIndex(item: any) {
-    const idx = this.stack.indexOf(item)
-    return (idx + 1) * 10
+  constructor() {
+    super()
+    this.on('update', this.#onupdate)
+  }
+
+  #onupdate = () => {
+    this.stack.forEach((el, idx) => {
+      el.style.zIndex = String(idx + this.zStart)
+    })
+  }
+
+  getZIndex(el: HTMLElement) {
+    const idx = this.stack.indexOf(el)
+    return this.zStart + idx
   }
 
   /**
    * Adds item to the top of the stack. Finds in stack if it already exists else
    * it creates it.
    */
-  focus(item: any) {
+  upsert = (el: HTMLElement) => {
     // it exists so move it to the front of the stack
-    this.remove(item)
-    this.stack.push(item)
-    this.emit('change')
-    return this.stack.length * 10
-  }
+    this.remove(el)
+    this.stack.push(el)
 
-  remove(item: any) {
-    const prevIdx = this.stack.indexOf(item)
+    this.emit('update')
+  }
+  // alias
+  focus = this.upsert
+
+  remove(el: HTMLElement) {
+    const prevIdx = this.stack.indexOf(el)
     if (prevIdx > -1) {
       this.stack.splice(prevIdx, 1)
     }
+
+    this.emit('update')
   }
 }
 
-export default new WindowState()
+export default new WindowManager()

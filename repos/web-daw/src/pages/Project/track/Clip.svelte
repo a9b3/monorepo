@@ -61,32 +61,37 @@
     setInFocusElement(clipId)
   }}
 >
-  <Window bind:showWindow title={getWindowTitle(trackLabel, clip?.name)}>
-    <div
-      style={objectStyle({
-        display: 'flex',
-        flexDirection: 'row',
-      })}
+  {#if showWindow}
+    <Window
+      title={getWindowTitle(trackLabel, clip?.name)}
+      onClose={() => (showWindow = false)}
     >
-      {#if instrumentType === 'Sampler'}
-        <Sampler {instrument} />
-        <StepSequencer
-          beatsPerLoop={clip.beatsPerLoop}
-          {ticksPerBeat}
-          {clip}
-          clipIsActive={activeClipId === clip?.id}
-        />
-      {/if}
-      {#if instrumentType !== 'Sampler' && clip}
-        <PianoRoll
-          numberOfBars={clip.beatsPerLoop / 4}
-          onMidi={instrument.onMidi}
-          {ticksPerBeat}
-          midiClip={clip}
-        />
-      {/if}
-    </div>
-  </Window>
+      <div
+        style={objectStyle({
+          display: 'flex',
+          flexDirection: 'row',
+        })}
+      >
+        {#if instrumentType === 'Sampler'}
+          <Sampler {instrument} />
+          <StepSequencer
+            beatsPerLoop={clip.beatsPerLoop}
+            {ticksPerBeat}
+            {clip}
+            clipIsActive={activeClipId === clip?.id}
+          />
+        {/if}
+        {#if instrumentType !== 'Sampler' && clip}
+          <PianoRoll
+            numberOfBars={clip.beatsPerLoop / 4}
+            onMidi={instrument.onMidi}
+            {ticksPerBeat}
+            midiClip={clip}
+          />
+        {/if}
+      </div>
+    </Window>
+  {/if}
   {#if clip}
     <ContextMenu
       bind:this={contextMenuRef}
