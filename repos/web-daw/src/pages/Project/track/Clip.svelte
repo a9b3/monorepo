@@ -14,6 +14,7 @@
   import { selection } from '../stores/selection'
   import { pianoRollSelection } from '../stores/pianoRollSelection'
   import CursorLine from 'src/components/PianoRoll/CursorLine/CursorLine.svelte'
+  import MidiClipPreview from 'src/components/PianoRoll/MidiClipPreview.svelte'
 
   export let trackLabel: string
   export let ticksPerBeat: number
@@ -30,7 +31,6 @@
   let contextMenuRef: ContextMenu
   let showWindow = false
   let prevClipId: string | undefined
-  $: clipId = clip?.id || crypto.randomUUID()
 
   function handleNameChange(evt: Event) {
     clip?.setName((evt.target as HTMLInputElement).value)
@@ -55,12 +55,12 @@
 <div
   bind:this={el}
   class="clip"
-  class:occupied={clip && clip?.id}
-  class:active={activeClipId !== undefined && activeClipId === clip?.id}
-  class:selected={$editorStore.inFocusElement === clipId ||
-    Boolean(clip?.id !== undefined && $selection.selected[clip?.id])}
+  class:occupied={clip.id}
+  class:active={activeClipId !== undefined && activeClipId === clip.id}
+  class:selected={$editorStore.inFocusElement === clip.id ||
+    $selection.selected[clip.id]}
   on:mousedown={() => {
-    setInFocusElement(clipId)
+    setInFocusElement(clip.id)
   }}
   on:dblclick={() => {
     if (!instrument) {
@@ -75,10 +75,19 @@
     if (clip) {
       contextMenuRef.openMenu(e)
     }
-    setInFocusElement(clipId)
+    setInFocusElement(clip.id)
   }}
 >
-  {#if activeClipId !== undefined && activeClipId === clip?.id}
+  <div
+    class="midipreview"
+    class:occupied={clip.id}
+    class:active={activeClipId !== undefined && activeClipId === clip.id}
+    class:selected={$editorStore.inFocusElement === clip.id ||
+      $selection.selected[clip.id]}
+  >
+    <MidiClipPreview midiClip={clip} />
+  </div>
+  {#if activeClipId !== undefined && activeClipId === clip.id && instrument}
     <CursorLine numberOfBeats={clip?.beatsPerLoop} />
   {/if}
   {#if showWindow}
@@ -114,31 +123,29 @@
       </div>
     </Window>
   {/if}
-  {#if clip}
-    <ContextMenu
-      bind:this={contextMenuRef}
-      menu={clip
-        ? [
-            {
-              label: 'Delete Clip',
-              onClick: () => {
-                removeClip(idx)
-                showWindow = false
-              },
-              type: 'item',
+  <ContextMenu
+    bind:this={contextMenuRef}
+    menu={clip
+      ? [
+          {
+            label: 'Delete Clip',
+            onClick: () => {
+              removeClip(idx)
+              showWindow = false
             },
-          ]
-        : []}
-    />
-  {/if}
+            type: 'item',
+          },
+        ]
+      : []}
+  />
   <div
     class="icon"
     on:click={() => {
-      setActiveClip(clip?.id)
+      setActiveClip(activeClipId === clip.id ? undefined : clip.id)
     }}
   >
     <Icon
-      type={!clip ? 'stop' : 'play'}
+      type={activeClipId === clip.id ? 'stop' : 'play'}
       style={objectStyle({
         transform: 'scale(1.2)',
       })}
@@ -165,12 +172,12 @@
   }
 
   .clip.occupied {
-    background: var(--colors__bg);
+    /* background: var(--colors__bg); */
     border-bottom: 1px solid var(--colors__bg2);
   }
 
   .clip.active {
-    background: var(--colors__neonPink);
+    /* background: var(--colors__neonPink); */
   }
 
   .icon {
@@ -191,5 +198,26 @@
     align-items: center;
     margin-left: 10px;
     font-size: 10px;
+  }
+
+  .midipreview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .midipreview.selected {
+    outline: 2px solid var(--colors__accent);
+    outline-offset: -2px;
+  }
+
+  .midipreview.occupied {
+    background: var(--colors__bg);
+    border-bottom: 1px solid var(--colors__bg2);
+  }
+
+  .midipreview.active {
+    background: var(--colors__neonPink);
   }
 </style>

@@ -46,7 +46,7 @@
 <style>
   .cursor {
     position: absolute;
-    width: 1px;
+    width: 2px;
     height: 100%;
     background: var(--colors__accent);
     z-index: 4;

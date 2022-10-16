@@ -14,7 +14,9 @@
   import { editorStore, setInFocusElement, setInFocusTrack } from 'src/store'
   import { objectStyle } from 'src/utils'
 
+  import ClipEmpty from './ClipEmpty.svelte'
   import Clip from './Clip.svelte'
+  import ChannelControls from './ChannelControls.svelte'
 
   export let project: Project
   export let track: Track
@@ -37,7 +39,9 @@
   })}
   on:contextmenu|preventDefault={evt => {
     setInFocusElement(track.id)
-    contextMenuRef.openMenu(evt)
+    if (contextMenuRef) {
+      contextMenuRef.openMenu(evt)
+    }
   }}
   on:mousedown={() => {
     setInFocusTrack(track.id)
@@ -67,20 +71,30 @@
       handleInput={evt => track.setLabel(evt.target.value)}
     />
   </div>
-  {#each clips as _, idx}
-    <Clip
-      {idx}
-      trackLabel={$currentTrack.label}
-      ticksPerBeat={project.controller.scheduler.ticksPerBeat}
-      activeClipId={$currentTrack.activeMidiClip}
-      addClip={$currentTrack.addMidiClip}
-      clip={currentMidiClips[$currentTrack.midiClipOrder[idx]]}
-      instrumentType={$currentTrack.instrumentType}
-      instrument={$currentTrack.instrument}
-      removeClip={$currentTrack.removeMidiClip}
-      setActiveClip={$currentTrack.setActiveMidiClip}
-    />
-  {/each}
+  <div>
+    {#each clips as _, idx}
+      {#if currentMidiClips[$currentTrack.midiClipOrder[idx]]}
+        <Clip
+          {idx}
+          trackLabel={$currentTrack.label}
+          ticksPerBeat={project.controller.scheduler.ticksPerBeat}
+          activeClipId={$currentTrack.activeMidiClip}
+          addClip={$currentTrack.addMidiClip}
+          clip={currentMidiClips[$currentTrack.midiClipOrder[idx]]}
+          instrumentType={$currentTrack.instrumentType}
+          instrument={$currentTrack.instrument}
+          removeClip={$currentTrack.removeMidiClip}
+          setActiveClip={$currentTrack.setActiveMidiClip}
+        />
+      {:else}
+        <ClipEmpty
+          {idx}
+          addClip={$currentTrack.addMidiClip}
+          setActiveClip={$currentTrack.setActiveMidiClip}
+        />
+      {/if}
+    {/each}
+  </div>
 
   <Layout class="bottom" type="col" padding="var(--spacing__padding)">
     <div class="instrumentSelect">
@@ -109,34 +123,7 @@
       <Pill align="left" compact />
     </Layout>
 
-    <div
-      style={objectStyle({
-        height: '100px',
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-      })}
-    >
-      <div
-        style={objectStyle({
-          width: '15px',
-          display: 'flex',
-          flexDirection: 'row',
-        })}
-      >
-        <StereoMeter analyser={currentChannel.analyser} />
-      </div>
-      <div style={objectStyle({ width: '5px' })} />
-      <Slider
-        value={currentChannel.gain}
-        onChange={val => currentChannel.setGain(val)}
-      />
-      <Knob
-        value={currentChannel.panPosition}
-        setValue={val => currentChannel.setPanPosition(val)}
-      />
-    </div>
+    <ChannelControls channel={currentChannel} />
   </Layout>
 </div>
 

@@ -1,6 +1,6 @@
 import { Subscribable } from '../ui'
 import type { MidiArrangement } from './MidiArrangement'
-import { MidiClipNew } from './MidiClipNew'
+import { TicksPerBeat } from '../constants'
 
 // TODO need to capture all possible midi event types. Currently just dealing
 // with noteOn and noteOff
@@ -130,6 +130,26 @@ export class MidiClip extends Subscribable {
     this.eventsIndex = args.eventsIndex || {}
     this.notesIndex = args.notesIndex || {}
     this.startTickIndex = args.startTickIndex || {}
+  }
+
+  get totalLoopTicks() {
+    return this.beatsPerLoop * TicksPerBeat
+  }
+
+  get offsetEndTick() {
+    return this.offsetStartTick + this.totalLoopTicks
+  }
+
+  get noteRange() {
+    let max = Number.NEGATIVE_INFINITY
+    let min = Number.POSITIVE_INFINITY
+    const notes = Object.keys(this.notesIndex)
+    for (let i = 0; i < notes.length; i += 1) {
+      const n = Number(notes[i])
+      max = Math.max(n, max)
+      min = Math.min(n, min)
+    }
+    return { max, min }
   }
 
   /**
@@ -295,10 +315,26 @@ export class MidiClip extends Subscribable {
   //   // this.startTickIndex[]
   // }
 
-  getStartIndexForUI() {
+  /**
+   * returnTotal = false will return only events within the loop range and after
+   * the offsetStartTick
+   */
+  getStartIndexForUI(opt?: { onlyLoopEvents?: boolean }) {
+    opt = opt || {}
+    opt.onlyLoopEvents = opt.onlyLoopEvents || false
+
+    let entries = Object.entries(this.notesIndex)
+    if (opt.onlyLoopEvents) {
+      entries = entries.filter(
+        ([tick]) =>
+          Number(tick) > this.offsetStartTick &&
+          Number(tick) < this.offsetEndTick
+      )
+    }
+
     return Object.fromEntries(
-      Object.entries(this.notesIndex).map(([key, val]) => {
-        return [key, val.map(id => this.eventsIndex[id])]
+      entries.map(([key, ids]) => {
+        return [key, ids.map(id => this.eventsIndex[id])]
       })
     )
   }

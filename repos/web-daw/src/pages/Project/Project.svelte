@@ -42,54 +42,61 @@
 <AutoSave id={params.id} />
 <div class="app-shell">
   {#if $project}
-    <div class="top">
-      <Toolbar project={$project} />
-    </div>
-    <div class="left">
-      <LeftPanel />
-    </div>
-    <div
-      class="main"
-      bind:this={main}
-      on:contextmenu|preventDefault={contextMenuRef.openMenu}
-    >
-      {#if main}
-        <Selection selectionManager={selection} container={main} />
-      {/if}
-      <ContextMenu
-        bind:this={contextMenuRef}
-        menu={[
-          {
-            label: 'Add Track',
-            onClick: () => {
-              $project.addTrack({ label: 'Untitled', id: crypto.randomUUID() })
-            },
-            type: 'item',
-          },
-        ]}
-      />
-      {#each $project.tracks as track}
-        <div class="track">
-          <Track {track} project={$project} />
-        </div>
-      {/each}
-      <NewTrackHelper
-        onNewMidi={() =>
-          $project.addTrack({ label: 'MIDI', id: crypto.randomUUID() })}
-      />
-    </div>
-    <div class="sends">
-      <!-- TODO add sends -->
-      <!-- <div class="track"> -->
-      <!--   <Send trackId={send.id} /> -->
-      <!-- </div> -->
-    </div>
-    <div class="master">
-      <div class="track">
-        <Master channel={$project.mixer.master} />
+    {#key $project.id}
+      <div class="top">
+        <Toolbar project={$project} />
       </div>
-    </div>
-    <div class="bottom-panel" />
+      <div class="left">
+        <LeftPanel />
+      </div>
+      <div
+        class="main"
+        bind:this={main}
+        on:contextmenu|preventDefault={contextMenuRef.openMenu}
+      >
+        {#if main}
+          <Selection selectionManager={selection} container={main} />
+        {/if}
+        <ContextMenu
+          bind:this={contextMenuRef}
+          menu={[
+            {
+              label: 'Add Track',
+              onClick: () => {
+                $project.addTrack({
+                  label: 'Untitled',
+                  id: crypto.randomUUID(),
+                })
+              },
+              type: 'item',
+            },
+          ]}
+        />
+        {#each $project.tracks as track}
+          {#key track.id}
+            <div class="track">
+              <Track {track} project={$project} />
+            </div>
+          {/key}
+        {/each}
+        <NewTrackHelper
+          onNewMidi={() =>
+            $project.addTrack({ label: 'MIDI', id: crypto.randomUUID() })}
+        />
+      </div>
+      <div class="sends">
+        <!-- TODO add sends -->
+        <!-- <div class="track"> -->
+        <!--   <Send trackId={send.id} /> -->
+        <!-- </div> -->
+      </div>
+      <div class="master">
+        <div class="track">
+          <Master channel={$project.mixer.master} />
+        </div>
+      </div>
+      <div class="bottom-panel" />
+    {/key}
   {/if}
 </div>
 

@@ -15,7 +15,7 @@
 -->
 <script lang="ts">
   import type { MenuItem } from './types'
-  import { directSubtreeOf } from 'src/utils'
+  import { directSubtreeOf, objectStyle } from 'src/utils'
 
   // Configure the context menu through this prop
   export let menu: MenuItem[] = []
@@ -30,18 +30,25 @@
     ) {
       return
     }
-    menuEl.style.display = 'grid'
-    menuEl.style.top = `${evt.clientY}px`
-    menuEl.style.left = `${evt.clientX}px`
-
+    showMenu = true
+    menuPos = {
+      top: `${evt.clientY}px`,
+      left: `${evt.clientX}px`,
+    }
     window.addEventListener('mousedown', onmousedown)
   }
   export function closeMenu() {
+    showMenu = false
     menuEl.style.display = 'none'
   }
 
+  let showMenu = false
   let anchor: HTMLElement
   let menuEl: HTMLDivElement
+  let menuPos = {
+    top: '',
+    left: '',
+  }
 
   // Close context menu on any click outside of context menu
   function onmousedown(e: MouseEvent) {
@@ -59,20 +66,27 @@
 </script>
 
 <div class="hidden" bind:this={anchor} data-component-type="contextmenu" />
-<div bind:this={menuEl} class={'main'} on:click={closeMenu}>
-  {#each menu as el}
-    <div class="row" on:click={el.onClick}>
-      {el.label}
-    </div>
-  {/each}
-</div>
+{#if showMenu}
+  <div
+    bind:this={menuEl}
+    class={'main'}
+    on:click={closeMenu}
+    style={objectStyle(menuPos)}
+  >
+    {#each menu as el}
+      <div class="row" on:click={el.onClick}>
+        {el.label}
+      </div>
+    {/each}
+  </div>
+{/if}
 
 <style>
   .hidden {
     visibility: none;
   }
   .main {
-    display: none;
+    display: grid;
     position: fixed;
     background: var(--colors__bg);
     outline: 1px solid var(--colors__fg2);
