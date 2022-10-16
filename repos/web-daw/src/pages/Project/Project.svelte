@@ -4,7 +4,8 @@
   import { ContextMenu } from 'src/components'
   import { editorStore, setSelectedProject, fetchProject } from 'src/store'
   import { trackMousePosition, untrackMousePosition } from 'src/utils'
-  import Selector from 'src/components/Selector/Selector.svelte'
+  import Selection from 'src/components/Selector/Selection.svelte'
+  import { selection } from './stores/selection'
 
   import AutoSave from './AutoSave.svelte'
   import LeftPanel from './LeftPanel.svelte'
@@ -14,6 +15,8 @@
   import Track from './Track/Track.svelte'
 
   export let params: { id: string }
+
+  let main: HTMLElement
 
   $: project = $editorStore.openedProjects.find(proj => {
     return proj.id === params.id
@@ -48,9 +51,12 @@
     </div>
     <div
       class="main"
+      bind:this={main}
       on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
     >
-      <Selector requireModKey={false} />
+      {#if main}
+        <Selection selectionManager={selection} container={main} />
+      {/if}
       <ContextMenu
         bind:this={contextMenuRef}
         menu={[
@@ -124,6 +130,7 @@
     height: 100%;
     padding: var(--spacing__paddingSm);
     overflow: auto;
+    position: relative;
   }
 
   .track {

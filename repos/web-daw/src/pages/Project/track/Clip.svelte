@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte'
   import type { Track, MidiClip, Instrument, InstrumentType } from 'daw/core'
   import {
     ClearEditableText,
@@ -11,6 +12,8 @@
   import { objectStyle } from 'src/utils'
   import { editorStore, setInFocusElement } from 'src/store'
   import StepSequencer from '../Editors/StepSequencer/StepSequencer.svelte'
+  import { selection } from '../stores/selection'
+  import CursorLine from 'src/components/PianoRoll/CursorLine/CursorLine.svelte'
 
   export let trackLabel: string
   export let ticksPerBeat: number
@@ -23,6 +26,7 @@
   export let setActiveClip: InstanceType<typeof Track>['setActiveMidiClip']
   export let removeClip: InstanceType<typeof Track>['removeMidiClip']
 
+  let el: HTMLElement
   let contextMenuRef: ContextMenu
   let showWindow = false
   $: clipId = clip?.id || crypto.randomUUID()
@@ -38,13 +42,22 @@
   ) {
     return [trackLabel, clipName, customText].filter(Boolean).join(' :: ')
   }
+
+  onMount(() => {
+    selection.registerSelectable(clip?.id, el)
+  })
+  onDestroy(() => {
+    selection.unregisterSelectable(clip?.id)
+  })
 </script>
 
 <div
+  bind:this={el}
   class="clip"
   class:occupied={clip && clip?.id}
   class:active={activeClipId !== undefined && activeClipId === clip?.id}
-  class:selected={$editorStore.inFocusElement === clipId}
+  class:selected={$editorStore.inFocusElement === clipId ||
+    Boolean(clip?.id !== undefined && $selection.selected[clip?.id])}
   on:mousedown={() => {
     setInFocusElement(clipId)
   }}
@@ -61,6 +74,9 @@
     setInFocusElement(clipId)
   }}
 >
+  {#if activeClipId !== undefined && activeClipId === clip?.id}
+    <CursorLine numberOfBeats={clip?.beatsPerLoop} />
+  {/if}
   {#if showWindow}
     <Window
       title={getWindowTitle(trackLabel, clip?.name)}
@@ -135,6 +151,7 @@
     border-bottom: 1px dashed var(--colors__bg);
     height: 22px;
     display: flex;
+    position: relative;
   }
 
   .clip.selected {

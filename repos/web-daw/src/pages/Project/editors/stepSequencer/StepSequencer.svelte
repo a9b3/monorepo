@@ -110,6 +110,7 @@
     border-radius: 4px;
     margin: 3px;
     background: var(--colors__bg3);
+    transition: all 0.1s ease;
   }
   .cell:hover {
     filter: brightness(0.8);

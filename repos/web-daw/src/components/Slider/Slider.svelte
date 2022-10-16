@@ -1,37 +1,58 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte'
   import { objectStyle } from 'src/utils/objectToStyleStr'
   import { useSlider } from './useSlider'
 
+  // range 0 - 1
   export let value: number
   export let onChange: (arg0: number) => void
 
-  let el: HTMLElement
+  let container: HTMLElement
+  let knob: HTMLElement
 
-  let currentValue = value
-  const slider = useSlider(v => {
-    currentValue = v
-    onChange(1 - currentValue)
-  })
-
-  function calcStyle(calcValue: number) {
-    if (!el) {
-      return ``
-    }
-    const top = calcValue * el.offsetHeight
-    return objectStyle({
-      top: `${top}px`,
-    })
+  function getValue(evt: MouseEvent) {
+    let newValue =
+      (container.offsetHeight -
+        (evt.clientY - container.getBoundingClientRect().top)) /
+      container.offsetHeight
+    newValue = newValue > 1 ? 1 : newValue
+    newValue = newValue < 0 ? 0 : newValue
+    return newValue
   }
+
+  function setKnob(container: HTMLElement, knob: HTMLElement, value: number) {
+    const pxValue = Math.floor(container.offsetHeight * value)
+    knob.style.transform = `translateY(${container.offsetHeight - pxValue}px)`
+    onChange(value)
+  }
+
+  function onmousemove(evt: MouseEvent) {
+    setKnob(container, knob, getValue(evt))
+  }
+
+  function onmouseup(evt: MouseEvent) {
+    window.removeEventListener('mousemove', onmousemove)
+    window.removeEventListener('mouseup', onmouseup)
+  }
+
+  function onmousedown(evt: MouseEvent) {
+    setKnob(container, knob, getValue(evt))
+    window.addEventListener('mousemove', onmousemove)
+    window.addEventListener('mouseup', onmouseup)
+  }
+
+  onMount(() => {
+    setKnob(container, knob, value ?? 1)
+    container.addEventListener('mousedown', onmousedown)
+  })
+  onDestroy(() => {
+    container.removeEventListener('mousedown', onmousedown)
+  })
 </script>
 
-<div
-  bind:this={el}
-  use:slider
-  class={($$restProps.class || '') + ' main'}
-  style={$$restProps.style}
->
+<div bind:this={container} class={'main'}>
   <div class="bg" />
-  <div class="slider" style={calcStyle(currentValue)} />
+  <div class="knob" bind:this={knob} />
 </div>
 
 <style>
@@ -41,7 +62,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     width: 20px;
   }
 
@@ -52,7 +73,7 @@
     background: var(--colors__bg);
   }
 
-  .slider {
+  .knob {
     position: absolute;
     height: 10px;
     width: 20px;

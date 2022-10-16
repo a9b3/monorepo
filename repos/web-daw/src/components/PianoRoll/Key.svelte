@@ -27,12 +27,12 @@
   })}
   on:focus={() => {}}
   on:mousedown|stopPropagation={() => {
-    onMidi({ type: 'noteOn', note: key, velocity: 67, endTick: 0.5 })
+    onMidi({ type: 'noteOn', note: key, velocity: 100, endTick: 0.5 })
   }}
   on:mouseover={evt => {
     setHoverKey(key)
     if (evt.buttons) {
-      onMidi({ type: 'noteOn', note: key, velocity: 67, endTick: 0.5 })
+      onMidi({ type: 'noteOn', note: key, velocity: 100, endTick: 0.5 })
     }
   }}
 >
@@ -49,6 +49,7 @@
     --blackheight: calc(var(--whiteheight) / 2);
 
     box-sizing: border-box;
+    transition: background 0.1s ease;
   }
   .key:not(.black) {
     height: var(--whiteheight);

@@ -18,7 +18,7 @@
         const currentPosPercentage = (currentTick % loopLength) / loopLength
 
         const cursorLeft = node.parentElement.offsetWidth * currentPosPercentage
-        node.style.left = `${cursorLeft}px`
+        node.style.transform = `translateX(${cursorLeft}px)`
       }
 
       function onstop() {
@@ -29,8 +29,10 @@
 
       return {
         destroy() {
-          $currentProject.controller.removeListener('tick', tickHandler)
-          $currentProject.controller.removeListener('stop', onstop)
+          if ($currentProject) {
+            $currentProject.controller.removeListener('tick', tickHandler)
+            $currentProject.controller.removeListener('stop', onstop)
+          }
         },
       }
     }
@@ -48,5 +50,7 @@
     height: 100%;
     background: var(--colors__accent);
     z-index: 4;
+
+    box-shadow: 0 -2px 6px 0px #fff;
   }
 </style>

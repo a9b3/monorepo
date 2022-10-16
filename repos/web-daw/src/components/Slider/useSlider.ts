@@ -5,10 +5,7 @@
  * const slider = useSlider(delta => console.log(delta))
  * <div use:slider style={{height: 100px}} />
  */
-export function useSlider(
-  setValue: (percent: number) => void,
-  opts?: { height: number }
-) {
+export function useSlider(setValue: (percent: number) => void) {
   return function handler(node: HTMLElement) {
     let currValue: number
     let currentY: number
@@ -37,10 +34,9 @@ export function useSlider(
       if (!node.contains(evt.target)) {
         return
       }
-      currentY = evt.clientY
-      nodeHeight = opts?.height || node.offsetHeight
 
-      currValue = (currentY - node.offsetTop) / nodeHeight
+      currValue =
+        (node.offsetHeight - (evt.clientY - node.offsetTop)) / node.offsetHeight
       setValue(currValue)
 
       document.addEventListener('mousemove', mousemove)

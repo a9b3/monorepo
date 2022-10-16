@@ -59,7 +59,6 @@
         compEl => compEl.getAttribute('data-component-type') === 'selector'
       )
     ) {
-      console.log(`jerer`)
       return
     }
     selectorStore.selected = {}

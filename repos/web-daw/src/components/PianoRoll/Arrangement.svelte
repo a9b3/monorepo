@@ -22,6 +22,8 @@
   export let onMidi: Instrument['onMidi']
   export let midiClip: MidiClip
 
+  let mouseOverNotes = false
+
   // Total ticks in current arrangement view
   $: totalTicks = numberOfBars * 4 * ticksPerBeat
 
@@ -55,6 +57,10 @@
   let notesPerBar = Array(barDivision)
     .fill(1)
     .map((_, i) => i)
+
+  window.addEventListener('mouseup', () => {
+    mouseOverNotes = false
+  })
 </script>
 
 <div
@@ -90,6 +96,7 @@
       on:focus={() => {}}
       on:mousedown={evt => {
         if (!evt.metaKey) {
+          mouseOverNotes = true
           onMidi({ type: 'noteOn', note: row, velocity: 67, endTick: 0.5 })
 
           addEvent(
@@ -109,6 +116,9 @@
       }}
       on:mouseover={evt => {
         setHoverKey(row)
+        if (!mouseOverNotes) {
+          return
+        }
         if (evt.buttons) {
           onMidi({ note: row, type: 'noteOn', velocity: 40, endTick: 0.5 })
         }

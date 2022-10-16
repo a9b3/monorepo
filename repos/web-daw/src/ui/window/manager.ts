@@ -45,6 +45,19 @@ function renderInitialWindow(
   node.style.userSelect = 'none'
 }
 
+function parseCSSTransform(transform: string): number[] {
+  let xy = [0, 0]
+  if (transform) {
+    let str = transform.replace('translate(', '')
+    str = str.replace(')', '')
+    xy = str
+      .split(',')
+      .map(a => a.trim())
+      .map(parseFloat)
+  }
+  return xy
+}
+
 /**
  * Attach listeners to the grip element to drag the node.
  */
@@ -59,17 +72,20 @@ function attachMouseHandlers(
   opt.marginTop = opt.marginTop || 0
 
   function onmousemove(evt: MouseEvent) {
-    const left = parseFloat(node.style.left) + evt.movementX
-    const top = Math.max(
-      parseFloat(node.style.top) + evt.movementY,
-      opt.marginTop
-    )
-
-    node.style.top = `${top}px`
-    node.style.left = `${left}px`
+    let xy = parseCSSTransform(node.style.transform)
+    xy = [(xy[0] || 0) + evt.movementX, (xy[1] || 0) + evt.movementY]
+    node.style.transform = `translate(${xy[0]}px, ${xy[1]}px)`
   }
 
   function onmouseup() {
+    const xy = parseCSSTransform(node.style.transform)
+    node.style.transform = `unset`
+    node.style.top = `${Math.max(
+      parseFloat(node.style.top) + xy[1],
+      opt.marginTop
+    )}px`
+    node.style.left = `${parseFloat(node.style.left) + xy[0]}px`
+
     window.removeEventListener('mousemove', onmousemove)
     window.removeEventListener('mouseup', onmouseup)
   }
