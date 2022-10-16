@@ -2,6 +2,13 @@ import { EventEmitter } from 'events'
 import { getScrollParent } from 'src/utils'
 import { zindex } from '../zindex'
 
+export enum ModKeys {
+  Ctrl = 'ctrlKey',
+  Shift = 'shiftKey',
+  Meta = 'metaKey',
+  Alt = 'altKey',
+}
+
 type Rect = {
   top: number
   left: number
@@ -77,13 +84,24 @@ export class SelectionManager extends EventEmitter {
     x: 0,
     y: 0,
   }
+  modKey: ModKeys | undefined
+  multiSelectModKey: ModKeys
 
   constructor() {
     super()
     this.setMaxListeners(200)
   }
 
-  registerContainer(container: HTMLElement) {
+  registerContainer(
+    container: HTMLElement,
+    opt?: { modKey?: ModKeys; multiSelectModKey?: ModKeys }
+  ) {
+    opt = opt || {}
+    opt.multiSelectModKey = opt.multiSelectModKey || ModKeys.Shift
+
+    this.modKey = opt.modKey
+    this.multiSelectModKey = opt.multiSelectModKey
+
     this.container = container
     // This is used to scan up the tree for a given element to see which
     // container evt originated from.
@@ -92,6 +110,7 @@ export class SelectionManager extends EventEmitter {
     this.container.setAttribute(this.#attrKey, this.#attrVal)
     this.container.addEventListener('mousedown', this.#onmousedown)
     this.scrollParent = getScrollParent(this.container)
+    window.addEventListener('mousedown', this.#windowmousedown)
   }
   checkContainer() {
     if (!this.container) {
@@ -103,6 +122,7 @@ export class SelectionManager extends EventEmitter {
     this.checkContainer()
     this.container.removeEventListener('mousedown', this.#onmousedown)
     window.removeEventListener('mousemove', this.#onmousemove)
+    window.removeEventListener('mousedown', this.#windowmousedown)
     window.removeEventListener('mouseup', this.#onmouseup)
   }
 
@@ -117,6 +137,19 @@ export class SelectionManager extends EventEmitter {
 
   setSelectionBox(el: HTMLElement) {
     this.sbox = el
+  }
+
+  setModKey(modKey?: ModKeys) {
+    this.modKey = modKey
+  }
+
+  #windowmousedown = (evt: MouseEvent) => {
+    if (this.multiSelectModKey && evt[this.multiSelectModKey]) {
+      return
+    }
+    this.selected = {}
+
+    this.emit('update')
   }
 
   /**
@@ -167,6 +200,13 @@ export class SelectionManager extends EventEmitter {
     if (!this.#containerExclusive(evt.target as HTMLElement)) {
       return
     }
+    if (this.modKey && !evt[this.modKey]) {
+      return
+    }
+    if (this.multiSelectModKey && !evt[this.multiSelectModKey]) {
+      this.selected = {}
+      this.emit('update')
+    }
 
     const containerBound = this.container.getBoundingClientRect()
     this.#origin = {
@@ -187,12 +227,12 @@ export class SelectionManager extends EventEmitter {
     window.addEventListener('mouseup', this.#onmouseup)
   }
 
-  #detectSelectableIntersections = (r1: Rect) => {
+  #detectSelectableIntersections = (r1: Rect, multiSelect?: boolean) => {
     Object.values(this.selectable).forEach(({ el, id }) => {
       const r2 = getElementRect(el, this.container)
       if (intersectRect(r1, r2)) {
         this.selected[id] = el
-      } else {
+      } else if (!multiSelect) {
         delete this.selected[id]
       }
     })
@@ -203,6 +243,10 @@ export class SelectionManager extends EventEmitter {
   #onmousemove = (evt: MouseEvent) => {
     window.requestAnimationFrame(() => {
       this.checkContainer()
+
+      if (this.modKey && !evt[this.modKey]) {
+        return
+      }
 
       const pos = this.#getMouseXY(evt)
 
@@ -235,12 +279,15 @@ export class SelectionManager extends EventEmitter {
       const x = transformxy.pop()
       const offsetY = parseFloat(computedStyle.top) + y
       const offsetX = parseFloat(computedStyle.left) + x
-      this.#detectSelectableIntersections({
-        top: offsetY,
-        left: offsetX,
-        right: offsetX + parseFloat(computedStyle.width),
-        bottom: offsetY + parseFloat(computedStyle.height),
-      })
+      this.#detectSelectableIntersections(
+        {
+          top: offsetY,
+          left: offsetX,
+          right: offsetX + parseFloat(computedStyle.width),
+          bottom: offsetY + parseFloat(computedStyle.height),
+        },
+        this.multiSelectModKey && evt[this.multiSelectModKey]
+      )
     })
   }
 

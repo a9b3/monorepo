@@ -84,7 +84,7 @@
   })}
 >
   {#if container}
-    <Selection {selectionManager} {container} />
+    <Selection {selectionManager} {container} modKey={'metaKey'} />
   {/if}
   <CursorLine numberOfBeats={numberOfBars * 4} />
   <ContextMenu />

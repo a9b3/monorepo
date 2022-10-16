@@ -1,14 +1,19 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import type { SelectionManager } from 'src/ui'
+  import type { ModKeys, SelectionManager } from 'src/ui'
 
   export let container: HTMLElement
   export let selectionManager: SelectionManager
+  export let modKey: ModKeys
 
   let sbox: HTMLElement
 
+  $: {
+    selectionManager.setModKey(modKey)
+  }
+
   onMount(() => {
-    selectionManager.registerContainer(container)
+    selectionManager.registerContainer(container, { modKey })
     selectionManager.setSelectionBox(sbox)
   })
   onDestroy(() => {
