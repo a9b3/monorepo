@@ -222,6 +222,7 @@ export class MidiClip extends Subscribable {
     opts.overlapType = opts.overlapType || 'deny'
 
     const mnote = createMidiNote(arg)
+    console.log('midi clip created', arg, mnote)
 
     const toRemove = new Set<string>()
     const prevNoteIds = this.notesIndex[String(mnote.note)] || []
@@ -238,8 +239,8 @@ export class MidiClip extends Subscribable {
 
       // new note starts in the middle of preexsting note
       if (
-        mnote.startTick > pnote.startTick &&
-        mnote.startTick < pnote.endTick
+        mnote.startTick >= pnote.startTick &&
+        mnote.startTick <= pnote.endTick
       ) {
         if (opts.overlapType === 'replace') {
           toRemove.add(pnote.id)
@@ -251,7 +252,7 @@ export class MidiClip extends Subscribable {
         }
       }
       // new note ends in the middle of the preexisting note
-      if (mnote.endTick < pnote.endTick && mnote.endTick < pnote.startTick) {
+      if (mnote.endTick <= pnote.endTick && mnote.endTick <= pnote.startTick) {
         if (opts.overlapType === 'replace') {
           toRemove.add(pnote.id)
         } else if (opts.overlapType === 'splice') {
@@ -263,7 +264,10 @@ export class MidiClip extends Subscribable {
       }
 
       // new note encompasses the preexisting note
-      if (pnote.startTick < mnote.startTick && pnote.endTick > mnote.endTick) {
+      if (
+        pnote.startTick <= mnote.startTick &&
+        pnote.endTick >= mnote.endTick
+      ) {
         if (opts.overlapType === 'replace') {
           toRemove.add(pnote.id)
         } else if (opts.overlapType === 'splice') {
@@ -323,20 +327,21 @@ export class MidiClip extends Subscribable {
     opt = opt || {}
     opt.onlyLoopEvents = opt.onlyLoopEvents || false
 
-    let entries = Object.entries(this.notesIndex)
+    let entries = Object.entries(this.startTickIndex)
     if (opt.onlyLoopEvents) {
       entries = entries.filter(
         ([tick]) =>
-          Number(tick) > this.offsetStartTick &&
-          Number(tick) < this.offsetEndTick
+          Number(tick) >= this.offsetStartTick &&
+          Number(tick) <= this.offsetEndTick
       )
     }
 
-    return Object.fromEntries(
+    const produced = Object.fromEntries(
       entries.map(([key, ids]) => {
-        return [key, ids.map(id => this.eventsIndex[id])]
+        return [String(key), ids.map(id => this.eventsIndex[id])]
       })
     )
+    return produced
   }
 
   getTickEvents(tick: number) {

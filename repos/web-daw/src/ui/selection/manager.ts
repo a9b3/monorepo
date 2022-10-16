@@ -214,13 +214,13 @@ export class SelectionManager extends EventEmitter {
       y: this.container.scrollTop + evt.clientY - containerBound.top,
     }
 
-    this.sbox.style.display = 'block'
     this.sbox.style.position = 'absolute'
     this.sbox.style.left = `${this.#origin.x}px`
     this.sbox.style.top = `${this.#origin.y}px`
     this.sbox.style.width = `0px`
     this.sbox.style.height = `0px`
     this.sbox.style.transform = `translate(0px, 0px)`
+    this.sbox.style.border = `1px solid hsl(var(--hsl__accent-h), var(--hsl__accent-s), var(--hsl__accent-l), 1)`
     this.sbox.style.zIndex = zindex.selection
 
     window.addEventListener('mousemove', this.#onmousemove)
@@ -247,6 +247,9 @@ export class SelectionManager extends EventEmitter {
       if (this.modKey && !evt[this.modKey]) {
         return
       }
+
+      // Calculate style
+      this.sbox.style.display = 'block'
 
       const pos = this.#getMouseXY(evt)
 

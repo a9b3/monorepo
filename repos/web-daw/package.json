@@ -20,11 +20,13 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
+    "@types/big.js": "^6.1.6",
     "@types/events": "^3.0.0",
     "@types/lodash": "^4.14.186",
     "@types/pouchdb": "^6.4.0",
     "@types/pouchdb-find": "^6.3.7",
     "@types/webmidi": "^2.0.6",
+    "big.js": "^6.2.1",
     "events": "^3.3.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",

@@ -31,7 +31,5 @@
       var(--hsl__accent-l),
       0.2
     );
-    border: 1px solid
-      hsl(var(--hsl__accent-h), var(--hsl__accent-s), var(--hsl__accent-l), 1);
   }
 </style>

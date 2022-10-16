@@ -4,15 +4,17 @@
   export let idx: number
   export let addClip: InstanceType<typeof Track>['addMidiClip']
   export let setActiveClip: InstanceType<typeof Track>['setActiveMidiClip']
+
+  console.log(`here`)
 </script>
 
-<div class="clip">
-  <div
-    class="icon"
-    on:click={() => {
-      setActiveClip(addClip(idx).id)
-    }}
-  />
+<div
+  class="clip"
+  on:click={() => {
+    setActiveClip(addClip(idx).id)
+  }}
+>
+  <div class="icon" />
 </div>
 
 <style>

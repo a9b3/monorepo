@@ -14,6 +14,7 @@
   import { hoverKey, setHoverKey, snapEnabled } from './pianoRollStore'
   import MidiEvent from './MidiEvent.svelte'
   import Selection from '../Selection/Selection.svelte'
+  import MidiClipPreview from './MidiClipPreview.svelte'
 
   export let numberOfKeys: number
   export let keyHeight: number
@@ -32,6 +33,7 @@
   $: totalTicks = numberOfBars * 4 * ticksPerBeat
   // Datastructure for displaying midi events in this component
   $: transformedMap = $midiClip.getStartIndexForUI()
+  let selectionModKey = 'metaKey'
 
   function addEvent(
     evt: MouseEvent,
@@ -84,7 +86,7 @@
   })}
 >
   {#if container}
-    <Selection {selectionManager} {container} modKey={'metaKey'} />
+    <Selection {selectionManager} {container} modKey={selectionModKey} />
   {/if}
   <CursorLine numberOfBeats={numberOfBars * 4} />
   <ContextMenu />
@@ -97,15 +99,26 @@
       </div>
     {/each}
   </div>
-  {#each rows as row}
-    <div
-      class="row"
-      class:offset={row % 2 === 0}
-      class:accent={[0, 5].includes(row % 12)}
-      class:hover={$hoverKey === row}
-      on:focus={() => {}}
-      on:mousedown={evt => {
-        if (!evt.metaKey) {
+  <div class="rows">
+    <div class="test">
+      <MidiClipPreview
+        {midiClip}
+        displayNoteRange={{ min: 0, max: numberOfKeys - 1 }}
+        {selectionManager}
+      />
+    </div>
+    {#each rows as row}
+      <div
+        class="row"
+        class:offset={row % 2 === 0}
+        class:accent={[0, 5].includes(row % 12)}
+        class:hover={$hoverKey === row}
+        on:focus={() => {}}
+        on:mousedown={evt => {
+          if (selectionModKey && evt[selectionModKey]) {
+            return
+          }
+
           mouseOverNotes = true
           onMidi({ type: 'noteOn', note: row, velocity: 67, endTick: 0.5 })
 
@@ -116,45 +129,45 @@
               $midiClip.insert({
                 type: 'noteOn',
                 note,
-                velocity: 67,
+                velocity: 70,
                 startTick: Math.floor(startTick),
                 endTick: Math.floor(endTick) - 1,
               })
             }
           )
-        }
-      }}
-      on:mouseover={evt => {
-        setHoverKey(row)
-        if (!mouseOverNotes) {
-          return
-        }
-        if (evt.buttons) {
-          onMidi({ note: row, type: 'noteOn', velocity: 40, endTick: 0.5 })
-        }
-      }}
-    >
-      {#if transformedMap[String(row)]}
-        {#each transformedMap[String(row)] as midiEvent}
-          {#key midiEvent.id}
-            <MidiEvent
-              {selectionManager}
-              {midiEvent}
-              {ticksPerBeat}
-              numberOfBeats={numberOfBars * 4}
-            />
-          {/key}
-        {/each}
-      {/if}
-      {#each bars as bar}
-        <div class="bar" class:offset={bar % 2 === 1}>
-          {#each notesPerBar as _}
-            <div class="note" />
+        }}
+        on:mouseover={evt => {
+          setHoverKey(row)
+          if (!mouseOverNotes) {
+            return
+          }
+          if (evt.buttons) {
+            onMidi({ note: row, type: 'noteOn', velocity: 40, endTick: 0.5 })
+          }
+        }}
+      >
+        {#if transformedMap[String(row)]}
+          {#each transformedMap[String(row)] as midiEvent}
+            {#key midiEvent.id}
+              <!-- <MidiEvent -->
+              <!--   {selectionManager} -->
+              <!--   {midiEvent} -->
+              <!--   {ticksPerBeat} -->
+              <!--   numberOfBeats={numberOfBars * 4} -->
+              <!-- /> -->
+            {/key}
           {/each}
-        </div>
-      {/each}
-    </div>
-  {/each}
+        {/if}
+        {#each bars as bar}
+          <div class="bar" class:offset={bar % 2 === 1}>
+            {#each notesPerBar as _}
+              <div class="note" />
+            {/each}
+          </div>
+        {/each}
+      </div>
+    {/each}
+  </div>
 </div>
 
 <style>
@@ -199,6 +212,10 @@
     z-index: 1;
   }
 
+  .rows {
+    position: relative;
+    box-sizing: border-box;
+  }
   .row {
     height: var(--keyheight);
     border-bottom: 1px solid var(--border-hsl);
@@ -216,6 +233,7 @@
   }
 
   .bar {
+    box-sizing: border-box;
     width: var(--barwidth);
     display: flex;
     align-items: center;
@@ -225,11 +243,12 @@
     background: var(--bg-hsl);
   }
   .bar.offset {
-    /* background: hsla(calc(var(--bg-h) + 80), var(--bg-s), var(--bg-l), 1); */
+    background: hsla(calc(var(--bg-h) + 80), var(--bg-s), var(--bg-l), 1);
   }
 
   .bar .note {
     flex: 1;
+    box-sizing: border-box;
     border-right: 1px solid var(--border-hsl);
     height: 100%;
   }
@@ -239,5 +258,13 @@
   .indicator {
     margin-left: 5px;
     font-weight: bold;
+  }
+
+  .test {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 </style>
