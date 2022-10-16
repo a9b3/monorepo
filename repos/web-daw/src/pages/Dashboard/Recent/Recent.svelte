@@ -39,10 +39,7 @@
   }
 </script>
 
-<div
-  class="content"
-  on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
->
+<div class="content" on:contextmenu|preventDefault={contextMenuRef.openMenu}>
   {#if $projectFetching}
     <Loader />
   {/if}

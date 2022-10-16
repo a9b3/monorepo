@@ -1,10 +1,9 @@
 <script lang="ts">
   import { onMount, onDestroy, beforeUpdate } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { ContextMenu } from 'src/components'
+  import { ContextMenu, Selection } from 'src/components'
   import { editorStore, setSelectedProject, fetchProject } from 'src/store'
   import { trackMousePosition, untrackMousePosition } from 'src/utils'
-  import Selection from 'src/components/Selector/Selection.svelte'
   import { selection } from './stores/selection'
 
   import AutoSave from './AutoSave.svelte'
@@ -52,7 +51,7 @@
     <div
       class="main"
       bind:this={main}
-      on:contextmenu|preventDefault={contextMenuRef.handleRightClick}
+      on:contextmenu|preventDefault={contextMenuRef.openMenu}
     >
       {#if main}
         <Selection selectionManager={selection} container={main} />

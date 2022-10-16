@@ -1,8 +1,9 @@
 import { Sampler, DX7 } from 'daw/core/instruments'
 import type { Instrument } from 'daw/core/instruments'
 import { MidiClip } from 'daw/core/midi'
-import { Subscribable } from './Subscribable'
 import type { SchedulerHandler } from 'daw/core/scheduler'
+import { Subscribable } from './Subscribable'
+import type { InstrumentType } from '../instruments'
 
 export class Track extends Subscribable {
   #audioContext: AudioContext
@@ -26,7 +27,7 @@ export class Track extends Subscribable {
   midiClipOrder: { [idx: string]: string }
 
   // TODO need to create a instrument service which contains these enums
-  instrumentType: 'Sampler' | 'DX7'
+  instrumentType: InstrumentType
   instrument: Instrument | undefined
   /**
    * The channel that this track is connected to.
@@ -44,7 +45,7 @@ export class Track extends Subscribable {
     activeMidiClip?: string
     midiClipOrder?: { [idx: string]: string }
 
-    instrumentType?: 'Sampler' | 'DX7'
+    instrumentType?: InstrumentType
     instrument?: any
     channelId?: string
     player?: string
@@ -74,7 +75,7 @@ export class Track extends Subscribable {
     }
   }
 
-  addInstrument = (instrumentType: string, instrument?: any) => {
+  addInstrument = (instrumentType: InstrumentType, instrument?: any) => {
     if (this.instrument) {
       this.instrument.disconnect()
     }

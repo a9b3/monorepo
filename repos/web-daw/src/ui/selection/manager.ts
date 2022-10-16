@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events'
 import { getScrollParent } from 'src/utils'
+import { zindex } from '../zindex'
 
 type Rect = {
   top: number
@@ -180,7 +181,7 @@ export class SelectionManager extends EventEmitter {
     this.sbox.style.width = `0px`
     this.sbox.style.height = `0px`
     this.sbox.style.transform = `translate(0px, 0px)`
-    this.sbox.style.zIndex = '99999'
+    this.sbox.style.zIndex = zindex.selection
 
     window.addEventListener('mousemove', this.#onmousemove)
     window.addEventListener('mouseup', this.#onmouseup)

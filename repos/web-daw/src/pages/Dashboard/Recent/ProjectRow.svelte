@@ -26,7 +26,7 @@
   }}
   on:contextmenu|preventDefault={evt => {
     setInFocusElement(project.id)
-    contextMenuRef.handleRightClick(evt)
+    contextMenuRef.openMenu(evt)
   }}
   on:dblclick={() => {
     addOpenedProject(project)

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
   import type { Track, MidiClip, Instrument, InstrumentType } from 'daw/core'
   import {
     ClearEditableText,
@@ -30,7 +29,7 @@
   let el: HTMLElement
   let contextMenuRef: ContextMenu
   let showWindow = false
-  let prevClipId
+  let prevClipId: string | undefined
   $: clipId = clip?.id || crypto.randomUUID()
 
   function handleNameChange(evt: Event) {
@@ -64,6 +63,9 @@
     setInFocusElement(clipId)
   }}
   on:dblclick={() => {
+    if (!instrument) {
+      return
+    }
     if (!clip) {
       setActiveClip(addClip(idx).id)
     }
@@ -71,7 +73,7 @@
   }}
   on:contextmenu|preventDefault|stopPropagation={e => {
     if (clip) {
-      contextMenuRef.handleRightClick(e)
+      contextMenuRef.openMenu(e)
     }
     setInFocusElement(clipId)
   }}

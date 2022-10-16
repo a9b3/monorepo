@@ -3,8 +3,8 @@ import { writable, derived } from 'svelte/store'
 import { projectDb } from 'src/db'
 import type { ProjectDoc } from 'src/db'
 
-import editorStore from './editor'
-import dashboardStore from './dashboard'
+import { editorStore } from './editor'
+import { dashboardStore } from './dashboard'
 
 // ***********************************
 // Store

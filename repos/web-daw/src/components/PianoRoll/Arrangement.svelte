@@ -4,6 +4,7 @@
   The arrangement view for the piano roll.
 -->
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte'
   import { objectStyle } from 'src/utils'
   import CursorLine from './CursorLine/CursorLine.svelte'
   import type { SelectionManager } from 'src/ui'
@@ -12,7 +13,7 @@
   import type { Instrument } from 'daw/core'
   import { hoverKey, setHoverKey, snapEnabled } from './pianoRollStore'
   import MidiEvent from './MidiEvent.svelte'
-  import Selection from '../Selector/Selection.svelte'
+  import Selection from '../Selection/Selection.svelte'
 
   export let numberOfKeys: number
   export let keyHeight: number
@@ -29,6 +30,8 @@
 
   // Total ticks in current arrangement view
   $: totalTicks = numberOfBars * 4 * ticksPerBeat
+  // Datastructure for displaying midi events in this component
+  $: transformedMap = $midiClip.getStartIndexForUI()
 
   function addEvent(
     evt: MouseEvent,
@@ -48,8 +51,7 @@
     onAdd({ note, startTick, endTick })
   }
 
-  $: transformedMap = $midiClip.getStartIndexForUI()
-
+  // Initialize the grid
   let rows = Array(numberOfKeys)
     .fill(1)
     .map((_, i) => i)
@@ -61,8 +63,14 @@
     .fill(1)
     .map((_, i) => i)
 
-  window.addEventListener('mouseup', () => {
+  function onmouseup() {
     mouseOverNotes = false
+  }
+  onMount(() => {
+    window.addEventListener('mouseup', onmouseup)
+  })
+  onDestroy(() => {
+    window.addEventListener('mouseup', onmouseup)
   })
 </script>
 

@@ -7,7 +7,6 @@
     ContextMenu,
     ClearEditableText,
     StereoMeter,
-    Player,
     Slider,
     Knob,
   } from 'src/components'
@@ -38,9 +37,9 @@
   })}
   on:contextmenu|preventDefault={evt => {
     setInFocusElement(track.id)
-    contextMenuRef.handleRightClick(evt)
+    contextMenuRef.openMenu(evt)
   }}
-  on:mousedown={evt => {
+  on:mousedown={() => {
     setInFocusTrack(track.id)
   }}
 >

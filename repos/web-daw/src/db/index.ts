@@ -49,6 +49,6 @@ export const editorDb = (() => {
 
 export type ProjectDoc = Omit<
   ConstructorParameters<typeof Project>[0],
-  'id' | 'audioContext'
->
+  'audioContext'
+> & { id?: string }
 export const projectDb = dbFactory<ProjectDoc>('project')

@@ -37,7 +37,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px dashed var(--colors__fg2);
+    border: 1px dashed
+      hsla(var(--hsl__fg2-h), var(--hsl__fg2-s), var(--hsl__fg2-l), 0.3);
     border-radius: 4px;
   }
 
@@ -46,7 +47,7 @@
   }
 
   .empty {
-    color: var(--colors__fg2);
+    color: hsla(var(--hsl__fg2-h), var(--hsl__fg2-s), var(--hsl__fg2-l), 0.3);
   }
 
   .player {
