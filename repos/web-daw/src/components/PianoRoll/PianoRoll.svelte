@@ -3,6 +3,7 @@
   import Arrangement from './Arrangement.svelte'
   import ResizerY from './Controls/ResizerY.svelte'
   import type { MidiClip, Instrument } from 'daw/core'
+  import type { SelectionManager } from 'src/ui'
 
   export let numberOfKeys = 120
   export let numberOfBars = 4
@@ -11,6 +12,7 @@
   export let midiClip: MidiClip
   export let ticksPerBeat: number
   export let onMidi: Instrument['onMidi']
+  export let selectionManager: SelectionManager
 
   let keyHeight = 40
   let barWidth = 400
@@ -38,6 +40,7 @@
         {numberOfKeys}
         {midiClip}
         {ticksPerBeat}
+        {selectionManager}
       />
     </div>
   </div>

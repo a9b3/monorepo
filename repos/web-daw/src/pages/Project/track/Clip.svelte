@@ -13,6 +13,7 @@
   import { editorStore, setInFocusElement } from 'src/store'
   import StepSequencer from '../Editors/StepSequencer/StepSequencer.svelte'
   import { selection } from '../stores/selection'
+  import { pianoRollSelection } from '../stores/pianoRollSelection'
   import CursorLine from 'src/components/PianoRoll/CursorLine/CursorLine.svelte'
 
   export let trackLabel: string
@@ -29,6 +30,7 @@
   let el: HTMLElement
   let contextMenuRef: ContextMenu
   let showWindow = false
+  let prevClipId
   $: clipId = clip?.id || crypto.randomUUID()
 
   function handleNameChange(evt: Event) {
@@ -43,12 +45,12 @@
     return [trackLabel, clipName, customText].filter(Boolean).join(' :: ')
   }
 
-  onMount(() => {
-    selection.registerSelectable(clip?.id, el)
-  })
-  onDestroy(() => {
-    selection.unregisterSelectable(clip?.id)
-  })
+  $: {
+    if (prevClipId !== clip?.id) {
+      selection.unregisterSelectable(clip?.id)
+      selection.registerSelectable(clip?.id, el)
+    }
+  }
 </script>
 
 <div
@@ -104,6 +106,7 @@
             onMidi={instrument.onMidi}
             {ticksPerBeat}
             midiClip={clip}
+            selectionManager={pianoRollSelection}
           />
         {/if}
       </div>

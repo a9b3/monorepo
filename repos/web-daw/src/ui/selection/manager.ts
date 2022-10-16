@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events'
+import { getScrollParent } from 'src/utils'
 
 type Rect = {
   top: number
@@ -16,33 +17,33 @@ function intersectRect(r1: Rect, r2: Rect) {
   )
 }
 
-// Get the top left right bottom values of the selection box.
-function getSeletionBoxCoords(
-  deltaX: number,
-  deltaY: number,
-  originX: number,
-  originY: number
-) {
-  const calcX = deltaX + originX
-  const calcY = deltaY + originY
+function getElementRect(el: HTMLElement, container: HTMLElement) {
+  const containerBound = container.getBoundingClientRect()
+  const elBound = el.getBoundingClientRect()
+
+  const offsetTop = elBound.top - containerBound.top
+  const offsetLeft = elBound.left - containerBound.left
 
   return {
-    top: calcY > originY ? originY : calcY,
-    left: calcX > originX ? originX : calcX,
-    right: calcX > originX ? calcX : originX,
-    bottom: calcY > originY ? calcY : originY,
+    top: offsetTop,
+    left: offsetLeft,
+    right: offsetLeft + el.offsetWidth,
+    bottom: offsetTop + el.offsetHeight,
   }
 }
 
-function getElementRect(el: HTMLElement) {
-  return {
-    top: el.offsetTop,
-    left: el.offsetLeft,
-    right: el.offsetLeft + el.offsetWidth,
-    bottom: el.offsetTop + el.offsetHeight,
+function parseCSSTransform(transform: string): number[] {
+  let xy = [0, 0, 0, 0, 0, 0]
+  if (transform) {
+    let str = transform.replace('matrix(', '')
+    str = str.replace(')', '')
+    xy = str
+      .split(',')
+      .map(a => a.trim())
+      .map(parseFloat)
   }
+  return xy
 }
-
 /**
  * Selection Manager
  *
@@ -59,6 +60,7 @@ export class SelectionManager extends EventEmitter {
    * relative.
    */
   container: HTMLElement
+  scrollParent: HTMLElement
   /**
    * The selectable elements within the container.
    */
@@ -88,6 +90,7 @@ export class SelectionManager extends EventEmitter {
     // container reference
     this.container.setAttribute(this.#attrKey, this.#attrVal)
     this.container.addEventListener('mousedown', this.#onmousedown)
+    this.scrollParent = getScrollParent(this.container)
   }
   checkContainer() {
     if (!this.container) {
@@ -150,9 +153,10 @@ export class SelectionManager extends EventEmitter {
   }
 
   #getMouseXY(evt: MouseEvent) {
+    const containerBound = this.container.getBoundingClientRect()
     return {
-      x: this.container.scrollLeft + evt.clientX - this.container.offsetLeft,
-      y: this.container.scrollTop + evt.clientY - this.container.offsetTop,
+      x: this.container.scrollLeft + evt.clientX - containerBound.left,
+      y: this.container.scrollTop + evt.clientY - containerBound.top,
     }
   }
 
@@ -160,12 +164,13 @@ export class SelectionManager extends EventEmitter {
     this.checkContainer()
     // Only process event if it is inside the container.
     if (!this.#containerExclusive(evt.target as HTMLElement)) {
-      return undefined
+      return
     }
 
+    const containerBound = this.container.getBoundingClientRect()
     this.#origin = {
-      x: this.container.scrollLeft + evt.clientX - this.container.offsetLeft,
-      y: this.container.scrollTop + evt.clientY - this.container.offsetTop,
+      x: this.container.scrollLeft + evt.clientX - containerBound.left,
+      y: this.container.scrollTop + evt.clientY - containerBound.top,
     }
 
     this.sbox.style.display = 'block'
@@ -175,6 +180,7 @@ export class SelectionManager extends EventEmitter {
     this.sbox.style.width = `0px`
     this.sbox.style.height = `0px`
     this.sbox.style.transform = `translate(0px, 0px)`
+    this.sbox.style.zIndex = '99999'
 
     window.addEventListener('mousemove', this.#onmousemove)
     window.addEventListener('mouseup', this.#onmouseup)
@@ -182,7 +188,7 @@ export class SelectionManager extends EventEmitter {
 
   #detectSelectableIntersections = (r1: Rect) => {
     Object.values(this.selectable).forEach(({ el, id }) => {
-      const r2 = getElementRect(el)
+      const r2 = getElementRect(el, this.container)
       if (intersectRect(r1, r2)) {
         this.selected[id] = el
       } else {
@@ -194,32 +200,50 @@ export class SelectionManager extends EventEmitter {
   }
 
   #onmousemove = (evt: MouseEvent) => {
-    this.checkContainer()
+    window.requestAnimationFrame(() => {
+      this.checkContainer()
 
-    const pos = this.#getMouseXY(evt)
-    let deltaX = pos.x - this.#origin.x
-    deltaX = this.#origin.x + deltaX < 0 ? -this.#origin.x : deltaX
-    deltaX =
-      deltaX > this.container.offsetWidth ? this.container.offsetWidth : deltaX
-    let deltaY = pos.y - this.#origin.y
-    deltaY = this.#origin.y + deltaY < 0 ? -this.#origin.y : deltaY
-    deltaY =
-      deltaY > this.container.offsetHeight
-        ? this.container.offsetHeight
-        : deltaY
+      const pos = this.#getMouseXY(evt)
 
-    this.sbox.style.transform = `translate(${deltaX < 0 ? deltaX : 0}px, ${
-      deltaY < 0 ? deltaY : 0
-    }px)`
-    this.sbox.style.width = `${Math.abs(deltaX)}px`
-    this.sbox.style.height = `${Math.abs(deltaY)}px`
+      let deltaX = pos.x - this.#origin.x
+      deltaX = this.#origin.x + deltaX < 0 ? -this.#origin.x : deltaX
+      deltaX =
+        this.#origin.x + deltaX >
+        this.container.offsetWidth + (this.scrollParent.scrollLeft || 0)
+          ? this.container.offsetWidth +
+            (this.scrollParent.scrollLeft || 0) -
+            this.#origin.x
+          : deltaX
 
-    this.#detectSelectableIntersections(
-      getSeletionBoxCoords(deltaX, deltaY, this.#origin.x, this.#origin.y)
-    )
+      let deltaY = pos.y - this.#origin.y
+      deltaY = this.#origin.y + deltaY < 0 ? -this.#origin.y : deltaY
+      deltaY =
+        this.#origin.y + deltaY > this.container.offsetHeight
+          ? this.container.offsetHeight - this.#origin.y
+          : deltaY
+
+      this.sbox.style.transform = `translate(${deltaX < 0 ? deltaX : 0}px, ${
+        deltaY < 0 ? deltaY : 0
+      }px)`
+      this.sbox.style.width = `${Math.abs(deltaX)}px`
+      this.sbox.style.height = `${Math.abs(deltaY)}px`
+
+      const computedStyle = getComputedStyle(this.sbox)
+      const transformxy = parseCSSTransform(computedStyle.transform)
+      const y = transformxy.pop()
+      const x = transformxy.pop()
+      const offsetY = parseFloat(computedStyle.top) + y
+      const offsetX = parseFloat(computedStyle.left) + x
+      this.#detectSelectableIntersections({
+        top: offsetY,
+        left: offsetX,
+        right: offsetX + parseFloat(computedStyle.width),
+        bottom: offsetY + parseFloat(computedStyle.height),
+      })
+    })
   }
 
-  #onmouseup = (evt: MouseEvent) => {
+  #onmouseup = () => {
     this.checkContainer()
     this.sbox.style.display = 'none'
 

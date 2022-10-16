@@ -6,12 +6,13 @@
 <script lang="ts">
   import { objectStyle } from 'src/utils'
   import CursorLine from './CursorLine/CursorLine.svelte'
-  import Selector from '../Selector/Selector.svelte'
+  import type { SelectionManager } from 'src/ui'
   import { ContextMenu } from 'src/components'
   import type { MidiClip, MidiEvent as MidiEventT } from 'daw/core/midi'
   import type { Instrument } from 'daw/core'
   import { hoverKey, setHoverKey, snapEnabled } from './pianoRollStore'
   import MidiEvent from './MidiEvent.svelte'
+  import Selection from '../Selector/Selection.svelte'
 
   export let numberOfKeys: number
   export let keyHeight: number
@@ -21,7 +22,9 @@
   export let barDivision: number
   export let onMidi: Instrument['onMidi']
   export let midiClip: MidiClip
+  export let selectionManager: SelectionManager
 
+  let container: HTMLElement
   let mouseOverNotes = false
 
   // Total ticks in current arrangement view
@@ -64,6 +67,7 @@
 </script>
 
 <div
+  bind:this={container}
   class={'main'}
   style={objectStyle({
     '--keyheight': `${(keyHeight * 7) / 12}px`,
@@ -71,11 +75,9 @@
     '--notewidth': `${barWidth / barDivision}px`,
   })}
 >
-  <Selector
-    onDel={selected => {
-      Object.keys(selected).forEach(id => $midiClip.remove(id))
-    }}
-  />
+  {#if container}
+    <Selection {selectionManager} {container} />
+  {/if}
   <CursorLine numberOfBeats={numberOfBars * 4} />
   <ContextMenu />
   <div class="timeline">
@@ -128,6 +130,7 @@
         {#each transformedMap[String(row)] as midiEvent}
           {#key midiEvent.id}
             <MidiEvent
+              {selectionManager}
               {midiEvent}
               {ticksPerBeat}
               numberOfBeats={numberOfBars * 4}

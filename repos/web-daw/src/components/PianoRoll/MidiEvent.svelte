@@ -1,12 +1,21 @@
 <script lang="ts">
-  import { createSelectable, selectorStore } from '../Selector/selectorStore'
+  import type { SelectionManager } from 'src/ui'
   export let numberOfBeats: number
   export let midiEvent: { id: string; startTick: number; endTick: number }
   export let ticksPerBeat: number
+  export let selectionManager: SelectionManager
 
   let el: HTMLElement
 
-  $: selectableDirective = createSelectable(midiEvent.id)
+  const selectable = (node: HTMLElement) => {
+    selectionManager.registerSelectable(midiEvent.id, node)
+
+    return {
+      destroy() {
+        selectionManager.unregisterSelectable(midiEvent.id)
+      },
+    }
+  }
 
   function positionEvent(node: HTMLElement) {
     const totalLength = numberOfBeats * ticksPerBeat
@@ -39,10 +48,10 @@
   {#key midiEvent.id}
     <div
       class="midievent"
-      class:selected={$selectorStore.selected[midiEvent.id]}
+      class:selected={Boolean($selectionManager.selected[midiEvent.id])}
       bind:this={el}
       use:positionEvent
-      use:selectableDirective
+      use:selectable
     >
       <slot />
     </div>
