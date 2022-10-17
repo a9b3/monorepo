@@ -8,11 +8,11 @@
   import { objectStyle } from 'src/utils'
   import CursorLine from './CursorLine/CursorLine.svelte'
   import type { SelectionManager } from 'src/ui'
+  import { ModKeys } from 'src/ui'
   import { ContextMenu } from 'src/components'
   import type { MidiClip, MidiEvent as MidiEventT } from 'daw/core/midi'
   import type { Instrument } from 'daw/core'
   import { hoverKey, setHoverKey, snapEnabled } from './pianoRollStore'
-  import MidiEvent from './MidiEvent.svelte'
   import Selection from '../Selection/Selection.svelte'
   import MidiClipPreview from './MidiClipPreview.svelte'
 
@@ -31,9 +31,8 @@
 
   // Total ticks in current arrangement view
   $: totalTicks = numberOfBars * 4 * ticksPerBeat
-  // Datastructure for displaying midi events in this component
-  $: transformedMap = $midiClip.getStartIndexForUI()
-  let selectionModKey = 'metaKey'
+  let selectionModKey = ModKeys.Meta
+  let midiClipPreviewRef
 
   function addEvent(
     evt: MouseEvent,
@@ -85,8 +84,13 @@
     '--notewidth': `${barWidth / barDivision}px`,
   })}
 >
-  {#if container}
-    <Selection {selectionManager} {container} modKey={selectionModKey} />
+  {#if container && midiClipPreviewRef}
+    <Selection
+      {selectionManager}
+      {container}
+      modKey={selectionModKey}
+      onMove={midiClipPreviewRef.onMove}
+    />
   {/if}
   <CursorLine numberOfBeats={numberOfBars * 4} />
   <ContextMenu />
@@ -101,11 +105,14 @@
   </div>
   <div class="rows">
     <div class="test">
-      <MidiClipPreview
-        {midiClip}
-        displayNoteRange={{ min: 0, max: numberOfKeys - 1 }}
-        {selectionManager}
-      />
+      {#key keyHeight}
+        <MidiClipPreview
+          bind:this={midiClipPreviewRef}
+          {midiClip}
+          displayNoteRange={{ min: 0, max: numberOfKeys - 1 }}
+          {selectionManager}
+        />
+      {/key}
     </div>
     {#each rows as row}
       <div
@@ -146,18 +153,6 @@
           }
         }}
       >
-        {#if transformedMap[String(row)]}
-          {#each transformedMap[String(row)] as midiEvent}
-            {#key midiEvent.id}
-              <!-- <MidiEvent -->
-              <!--   {selectionManager} -->
-              <!--   {midiEvent} -->
-              <!--   {ticksPerBeat} -->
-              <!--   numberOfBeats={numberOfBars * 4} -->
-              <!-- /> -->
-            {/key}
-          {/each}
-        {/if}
         {#each bars as bar}
           <div class="bar" class:offset={bar % 2 === 1}>
             {#each notesPerBar as _}

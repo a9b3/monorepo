@@ -5,6 +5,7 @@
   export let container: HTMLElement
   export let selectionManager: SelectionManager
   export let modKey: ModKeys
+  export let onMove: any
 
   let sbox: HTMLElement
 
@@ -15,9 +16,15 @@
   onMount(() => {
     selectionManager.registerContainer(container, { modKey })
     selectionManager.setSelectionBox(sbox)
+    if (onMove) {
+      selectionManager.setOnMove(onMove)
+    }
   })
   onDestroy(() => {
     selectionManager.unregisterContainer()
+    if (onMove) {
+      selectionManager.removeOnMove()
+    }
   })
 </script>
 

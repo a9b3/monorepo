@@ -42,13 +42,23 @@ function getElementRect(el: HTMLElement, container: HTMLElement) {
 
 function parseCSSTransform(transform: string): number[] {
   let xy = [0, 0, 0, 0, 0, 0]
-  if (transform) {
+  if (transform.startsWith('matrix')) {
     let str = transform.replace('matrix(', '')
     str = str.replace(')', '')
     xy = str
       .split(',')
       .map(a => a.trim())
       .map(parseFloat)
+    return xy
+  }
+  if (transform.startsWith('translate(')) {
+    let str = transform.replace('translate(', '')
+    str = str.replace(')', '')
+    xy = str
+      .split(',')
+      .map(a => a.trim())
+      .map(parseFloat)
+    return xy
   }
   return xy
 }
@@ -59,32 +69,51 @@ function parseCSSTransform(transform: string): number[] {
  */
 export class SelectionManager extends EventEmitter {
   /**
-   * Attr to identify a dom node as a selection container.
+   * Attr to identify a dom node as a selection container. Used internally to
+   * detect whether events originated from direct subtree of a Selection
+   * container.
    */
   #attrKey = 'data-selection-component-type'
   #attrVal = 'selector'
+
   /**
    * The container in which selection can occur. This container must be position
    * relative.
    */
   container: HTMLElement
+  /**
+   * The scroll parent that this container belongs to or this container by
+   * default.
+   */
   scrollParent: HTMLElement
   /**
-   * The selectable elements within the container.
+   * The selectable elements within the container. Set by calling
+   * registerSelectable.
    */
   selectable: { [id: string]: { el: HTMLElement; id: string } } = {}
+  /**
+   * Reference to currently selected elements.
+   */
   selected: { [id: string]: HTMLElement } = {}
   /**
    * Reference to the HTMLElement created to display the selection box.
    */
   sbox: HTMLElement
 
-  // onmousedown tracking of mouse position origin
+  /**
+   * onmousedown tracking of mouse position origin
+   */
   #origin = {
     x: 0,
     y: 0,
   }
+  /**
+   * If set requires mod key to activate selection.
+   */
   modKey: ModKeys | undefined
+  /**
+   * mod + mousedown will activate multi select.
+   */
   multiSelectModKey: ModKeys
 
   constructor() {
@@ -112,14 +141,14 @@ export class SelectionManager extends EventEmitter {
     this.scrollParent = getScrollParent(this.container)
     window.addEventListener('mousedown', this.#windowmousedown)
   }
-  checkContainer() {
+  ensureContainerRegistered() {
     if (!this.container) {
       throw new Error(`Must register a html with 'registerContainer' first.`)
     }
   }
 
   unregisterContainer() {
-    this.checkContainer()
+    this.ensureContainerRegistered()
     this.container.removeEventListener('mousedown', this.#onmousedown)
     window.removeEventListener('mousemove', this.#onmousemove)
     window.removeEventListener('mousedown', this.#windowmousedown)
@@ -143,24 +172,86 @@ export class SelectionManager extends EventEmitter {
     this.modKey = modKey
   }
 
-  #windowmousedown = (evt: MouseEvent) => {
-    if (this.multiSelectModKey && evt[this.multiSelectModKey]) {
-      return
-    }
-    this.selected = {}
+  // -------------------------------------------------------------------------
+  // Internals
+  // -------------------------------------------------------------------------
 
-    this.emit('update')
+  /**
+   * Calculate against the scroll parent and container parent. Attemps to get
+   * the x y position relative to the container element's origin x y.
+   */
+  #containerMouseXY(evt: MouseEvent) {
+    const containerBound = this.container.getBoundingClientRect()
+    return {
+      x: this.container.scrollLeft + evt.clientX - containerBound.left,
+      y: this.container.scrollTop + evt.clientY - containerBound.top,
+    }
+  }
+
+  /**
+   * Calculate the delta of the given mouse event against the origin mouse
+   * event.
+   */
+  #containerDeltaMouseXY(evt: MouseEvent) {
+    const pos = this.#containerMouseXY(evt)
+    let deltaX = pos.x - this.#origin.x
+    deltaX = this.#origin.x + deltaX < 0 ? -this.#origin.x : deltaX
+    deltaX =
+      this.#origin.x + deltaX >
+      this.container.offsetWidth + (this.scrollParent.scrollLeft || 0)
+        ? this.container.offsetWidth +
+          (this.scrollParent.scrollLeft || 0) -
+          this.#origin.x
+        : deltaX
+
+    let deltaY = pos.y - this.#origin.y
+    deltaY = this.#origin.y + deltaY < 0 ? -this.#origin.y : deltaY
+    deltaY =
+      this.#origin.y + deltaY > this.container.offsetHeight
+        ? this.container.offsetHeight - this.#origin.y
+        : deltaY
+
+    return {
+      deltaX,
+      deltaY,
+    }
+  }
+
+  /**
+   * Get the rect coords of the current selection box.
+   */
+  #selectionBoxRect() {
+    const computedStyle = getComputedStyle(this.sbox)
+    const transformxy = parseCSSTransform(computedStyle.transform)
+    const y = transformxy.pop()
+    const x = transformxy.pop()
+    const offsetY = parseFloat(computedStyle.top) + y
+    const offsetX = parseFloat(computedStyle.left) + x
+
+    return {
+      top: offsetY,
+      left: offsetX,
+      right: offsetX + parseFloat(computedStyle.width),
+      bottom: offsetY + parseFloat(computedStyle.height),
+    }
   }
 
   /**
    * Check if element is within the context of the current container.
    * Useful for detecting events within nested containers. You would only want
    * to allow selection in the most immediate container.
+   *
+   * ex.
+   *
+   * [container a]
+   * [a] [b] [c] [container b]
+   *             [d]  <--- only handled by container b not a
+   *
    */
   #containerExclusive = (el: HTMLElement): boolean => {
-    this.checkContainer()
+    this.ensureContainerRegistered()
 
-    if (['fixed', 'absolute'].includes(getComputedStyle(el).position)) {
+    if (['fixed'].includes(getComputedStyle(el).position)) {
       return false
     }
     if (!el.parentElement) {
@@ -186,34 +277,149 @@ export class SelectionManager extends EventEmitter {
     return this.#containerExclusive(el.parentElement)
   }
 
-  #getMouseXY(evt: MouseEvent) {
-    const containerBound = this.container.getBoundingClientRect()
+  /**
+   * Detects if selectables are within the selection box. Updates this.selected
+   * map.
+   */
+  #detectSelectableIntersections = (
+    selectionBoxRect: Rect,
+    multiSelect?: boolean
+  ) => {
+    Object.values(this.selectable).forEach(({ el, id }) => {
+      const r2 = getElementRect(el, this.container)
+      if (intersectRect(selectionBoxRect, r2)) {
+        this.selected[id] = el
+      } else if (!multiSelect) {
+        delete this.selected[id]
+      }
+    })
+
+    this.emit('update')
+  }
+
+  // TODO need to figure out how to maintain reference so this returns true
+  #isSelectable(el: HTMLElement) {
+    const id = el.getAttribute('data-midi-clip-id')
+    return Object.keys(this.selectable).indexOf(id) > -1 ? id : false
+  }
+  // TODO need to figure out how to maintain reference so this returns true
+  #isSelected(el: HTMLElement) {
+    const id = el.getAttribute('data-midi-clip-id')
+    return Object.keys(this.selected).indexOf(id) > -1
+  }
+
+  #calcTransformTranslate({ x, y }) {
+    return `translate(${x}px, ${y}px)`
+  }
+
+  setOnMove(onMove) {
+    this.#onMove = onMove
+  }
+
+  removeOnMove() {
+    this.#onMove = undefined
+  }
+
+  #movingOrigin = {}
+  #onMove = ({ el, originX, originY, deltaX, deltaY }) => {
     return {
-      x: this.container.scrollLeft + evt.clientX - containerBound.left,
-      y: this.container.scrollTop + evt.clientY - containerBound.top,
+      x: originX + deltaX,
+      y: originY + deltaY,
+    }
+  }
+  #moving = false
+  #movingHandler = (evt: MouseEvent) => {
+    const { deltaX, deltaY } = this.#containerDeltaMouseXY(evt)
+
+    Object.keys(this.selected)
+      .map(id => {
+        return this.selectable[id]
+      })
+      .forEach(({ id, el }) => {
+        const [originX, originY] = this.#movingOrigin[id]
+
+        el.style.transform = this.#calcTransformTranslate(
+          this.#onMove({ id, el, originX, originY, deltaX, deltaY })
+        )
+      })
+  }
+  #movingHandlerUp = (evt: MouseEvent) => {
+    this.#movingOrigin = {}
+    this.#moving = false
+
+    window.removeEventListener('mousemove', this.#movingHandler)
+    window.removeEventListener('mouseup', this.#movingHandlerUp)
+  }
+  #startMoving = (evt: MouseEvent) => {
+    if (this.#isSelected(evt.target)) {
+      this.#moving = true
+      Object.keys(this.selected)
+        .map(id => {
+          return this.selectable[id]
+        })
+        .forEach(({ id, el }) => {
+          this.#movingOrigin[id] = parseCSSTransform(el.style.transform)
+        })
+
+      window.addEventListener('mousemove', this.#movingHandler)
+      window.addEventListener('mouseup', this.#movingHandlerUp)
+      return true
     }
   }
 
+  // -------------------------------------------------------------------------
+  // Handlers
+  // -------------------------------------------------------------------------
+
+  /**
+   * Clicking anywhere else should clear selection unless multi select is
+   * active.
+   */
+  #windowmousedown = (evt: MouseEvent) => {
+    this.ensureContainerRegistered()
+    // Do not clear selected if trying to multi select
+    if (this.multiSelectModKey && evt[this.multiSelectModKey]) {
+      return
+    }
+    if (this.#moving) {
+      return
+    }
+    // Clear selected
+    this.selected = {}
+
+    this.emit('update')
+  }
+
+  /**
+   * Sets initial selection box styles.
+   *
+   * This will always fire before windowmousedown since it's deeper in the tree.
+   */
   #onmousedown = (evt: MouseEvent) => {
-    this.checkContainer()
-    // Only process event if it is inside the container.
+    this.ensureContainerRegistered()
+    // Only process event if originated inside the container subtree.
     if (!this.#containerExclusive(evt.target as HTMLElement)) {
       return
     }
+    // If mod key is required and not pressed then do nothing
     if (this.modKey && !evt[this.modKey]) {
       return
     }
-    if (this.multiSelectModKey && !evt[this.multiSelectModKey]) {
-      this.selected = {}
+
+    // Set the origin
+    this.#origin = this.#containerMouseXY(evt)
+
+    const id = this.#isSelectable(evt.target)
+    if (id) {
+      this.selected[id] = evt.target
       this.emit('update')
     }
-
-    const containerBound = this.container.getBoundingClientRect()
-    this.#origin = {
-      x: this.container.scrollLeft + evt.clientX - containerBound.left,
-      y: this.container.scrollTop + evt.clientY - containerBound.top,
+    if (Object.keys(this.selected).length > 0 && this.#startMoving(evt)) {
+      evt.stopPropagation()
+      return
     }
 
+    // Set selection box styles
     this.sbox.style.position = 'absolute'
     this.sbox.style.left = `${this.#origin.x}px`
     this.sbox.style.top = `${this.#origin.y}px`
@@ -227,78 +433,43 @@ export class SelectionManager extends EventEmitter {
     window.addEventListener('mouseup', this.#onmouseup)
   }
 
-  #detectSelectableIntersections = (r1: Rect, multiSelect?: boolean) => {
-    Object.values(this.selectable).forEach(({ el, id }) => {
-      const r2 = getElementRect(el, this.container)
-      if (intersectRect(r1, r2)) {
-        this.selected[id] = el
-      } else if (!multiSelect) {
-        delete this.selected[id]
-      }
-    })
-
-    this.emit('update')
-  }
-
+  /**
+   * Update selection box styles and detect selectable intersections.
+   */
   #onmousemove = (evt: MouseEvent) => {
-    window.requestAnimationFrame(() => {
-      this.checkContainer()
+    this.ensureContainerRegistered()
 
-      if (this.modKey && !evt[this.modKey]) {
-        return
-      }
+    // If no longer holding down mod key then do nothing
+    if (this.modKey && !evt[this.modKey]) {
+      return
+    }
 
-      // Calculate style
-      this.sbox.style.display = 'block'
+    const { deltaX, deltaY } = this.#containerDeltaMouseXY(evt)
 
-      const pos = this.#getMouseXY(evt)
+    // Set updated styles
+    this.sbox.style.display = 'block'
+    this.sbox.style.transform = `translate(${deltaX < 0 ? deltaX : 0}px, ${
+      deltaY < 0 ? deltaY : 0
+    }px)`
+    this.sbox.style.width = `${Math.abs(deltaX)}px`
+    this.sbox.style.height = `${Math.abs(deltaY)}px`
 
-      let deltaX = pos.x - this.#origin.x
-      deltaX = this.#origin.x + deltaX < 0 ? -this.#origin.x : deltaX
-      deltaX =
-        this.#origin.x + deltaX >
-        this.container.offsetWidth + (this.scrollParent.scrollLeft || 0)
-          ? this.container.offsetWidth +
-            (this.scrollParent.scrollLeft || 0) -
-            this.#origin.x
-          : deltaX
-
-      let deltaY = pos.y - this.#origin.y
-      deltaY = this.#origin.y + deltaY < 0 ? -this.#origin.y : deltaY
-      deltaY =
-        this.#origin.y + deltaY > this.container.offsetHeight
-          ? this.container.offsetHeight - this.#origin.y
-          : deltaY
-
-      this.sbox.style.transform = `translate(${deltaX < 0 ? deltaX : 0}px, ${
-        deltaY < 0 ? deltaY : 0
-      }px)`
-      this.sbox.style.width = `${Math.abs(deltaX)}px`
-      this.sbox.style.height = `${Math.abs(deltaY)}px`
-
-      const computedStyle = getComputedStyle(this.sbox)
-      const transformxy = parseCSSTransform(computedStyle.transform)
-      const y = transformxy.pop()
-      const x = transformxy.pop()
-      const offsetY = parseFloat(computedStyle.top) + y
-      const offsetX = parseFloat(computedStyle.left) + x
-      this.#detectSelectableIntersections(
-        {
-          top: offsetY,
-          left: offsetX,
-          right: offsetX + parseFloat(computedStyle.width),
-          bottom: offsetY + parseFloat(computedStyle.height),
-        },
-        this.multiSelectModKey && evt[this.multiSelectModKey]
-      )
-    })
+    // Set selectables
+    this.#detectSelectableIntersections(
+      this.#selectionBoxRect(),
+      this.multiSelectModKey && evt[this.multiSelectModKey]
+    )
   }
 
+  /**
+   * Remove selection box.
+   */
   #onmouseup = () => {
-    this.checkContainer()
+    this.ensureContainerRegistered()
     this.sbox.style.display = 'none'
 
     window.removeEventListener('mousemove', this.#onmousemove)
+    window.removeEventListener('mousemove', this.#movingHandler)
     window.removeEventListener('mouseup', this.#onmouseup)
   }
 
