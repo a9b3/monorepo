@@ -15,6 +15,7 @@
   import { hoverKey, setHoverKey, snapEnabled } from './pianoRollStore'
   import Selection from '../Selection/Selection.svelte'
   import MidiClipPreview from './MidiClipPreview.svelte'
+  import { singlePointToMidiEvent, containerMouseXY } from './midiGuiUtils'
 
   export let numberOfKeys: number
   export let keyHeight: number
@@ -27,30 +28,13 @@
   export let selectionManager: SelectionManager
 
   let container: HTMLElement
+  let selectionContainer: HTMLElement
   let mouseOverNotes = false
 
   // Total ticks in current arrangement view
   $: totalTicks = numberOfBars * 4 * ticksPerBeat
   let selectionModKey = ModKeys.Meta
-  let midiClipPreviewRef
-
-  function addEvent(
-    evt: MouseEvent,
-    { note, snapEnabled, ticksPerBeat, totalTicks },
-    onAdd: (arg: Pick<MidiEventT, 'note' | 'startTick' | 'endTick'>) => void
-  ) {
-    const startTick =
-      ((evt.target as HTMLElement).offsetLeft /
-        ((evt.target as HTMLElement).offsetParent as HTMLElement).offsetWidth) *
-      totalTicks
-    const endTick =
-      startTick +
-      ((evt.target as HTMLElement).offsetWidth /
-        ((evt.target as HTMLElement).offsetParent as HTMLElement).offsetWidth) *
-        totalTicks
-
-    onAdd({ note, startTick, endTick })
-  }
+  let midiClipPreviewRef: MidiClipPreview
 
   // Initialize the grid
   let rows = Array(numberOfKeys)
@@ -84,14 +68,6 @@
     '--notewidth': `${barWidth / barDivision}px`,
   })}
 >
-  {#if container && midiClipPreviewRef}
-    <Selection
-      {selectionManager}
-      {container}
-      modKey={selectionModKey}
-      onMove={midiClipPreviewRef.onMove}
-    />
-  {/if}
   <CursorLine numberOfBeats={numberOfBars * 4} />
   <ContextMenu />
   <div class="timeline">
@@ -103,7 +79,15 @@
       </div>
     {/each}
   </div>
-  <div class="rows">
+  <div class="rows" bind:this={selectionContainer}>
+    {#if selectionContainer && midiClipPreviewRef}
+      <Selection
+        {selectionManager}
+        container={selectionContainer}
+        modKey={selectionModKey}
+        onMove={midiClipPreviewRef.onMove}
+      />
+    {/if}
     <div class="test">
       {#key keyHeight}
         <MidiClipPreview
@@ -129,19 +113,26 @@
           mouseOverNotes = true
           onMidi({ type: 'noteOn', note: row, velocity: 67, endTick: 0.5 })
 
-          addEvent(
-            evt,
-            { note: row, snapEnabled: $snapEnabled, ticksPerBeat, totalTicks },
-            ({ note, startTick, endTick }) => {
-              $midiClip.insert({
-                type: 'noteOn',
-                note,
-                velocity: 70,
-                startTick: Math.floor(startTick),
-                endTick: Math.floor(endTick) - 1,
-              })
+          const mouseXY = containerMouseXY(evt, selectionContainer)
+          const { note, startTick } = singlePointToMidiEvent(
+            mouseXY.x,
+            mouseXY.y,
+            selectionContainer,
+            {
+              totalNotes: numberOfKeys,
+              totalTicks,
+              tickDivision: (ticksPerBeat * 4) / barDivision,
             }
           )
+
+          midiClip.insert({
+            type: 'noteOn',
+            note,
+            velocity: 70,
+            startTick: startTick,
+            endTick:
+              Math.floor(startTick + (ticksPerBeat * 4) / barDivision) - 1,
+          })
         }}
         on:mouseover={evt => {
           setHoverKey(row)

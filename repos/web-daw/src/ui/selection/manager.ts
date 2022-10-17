@@ -312,6 +312,29 @@ export class SelectionManager extends EventEmitter {
     return `translate(${x}px, ${y}px)`
   }
 
+  // -------------------------------------------------------------------------
+  // Move Selection Logic
+  // TODO move this to an separate class
+  // -------------------------------------------------------------------------
+
+  #moving = false
+  #movingOrigin = {}
+  #moveFinish = () => {}
+  #onMove = ({ el, originX, originY, deltaX, deltaY }) => {
+    return {
+      x: originX + deltaX,
+      y: originY + deltaY,
+    }
+  }
+
+  setMoveFinish(moveFinish) {
+    this.#moveFinish = moveFinish
+  }
+
+  removeMoveFinish() {
+    this.#moveFinish = undefined
+  }
+
   setOnMove(onMove) {
     this.#onMove = onMove
   }
@@ -320,14 +343,6 @@ export class SelectionManager extends EventEmitter {
     this.#onMove = undefined
   }
 
-  #movingOrigin = {}
-  #onMove = ({ el, originX, originY, deltaX, deltaY }) => {
-    return {
-      x: originX + deltaX,
-      y: originY + deltaY,
-    }
-  }
-  #moving = false
   #movingHandler = (evt: MouseEvent) => {
     const { deltaX, deltaY } = this.#containerDeltaMouseXY(evt)
 
@@ -343,6 +358,7 @@ export class SelectionManager extends EventEmitter {
         )
       })
   }
+
   #movingHandlerUp = (evt: MouseEvent) => {
     this.#movingOrigin = {}
     this.#moving = false
@@ -350,6 +366,7 @@ export class SelectionManager extends EventEmitter {
     window.removeEventListener('mousemove', this.#movingHandler)
     window.removeEventListener('mouseup', this.#movingHandlerUp)
   }
+
   #startMoving = (evt: MouseEvent) => {
     if (this.#isSelected(evt.target)) {
       this.#moving = true

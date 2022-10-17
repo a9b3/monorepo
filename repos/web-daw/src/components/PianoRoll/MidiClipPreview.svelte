@@ -2,91 +2,16 @@
   import { onMount, onDestroy } from 'svelte'
   import type { MidiClip, MidiEvent } from 'daw/core'
   import Big from 'big.js'
+  import type { SelectionManager } from 'src/ui'
+  import { hslString, getNoteRect, snapToGrid } from './midiGuiUtils'
 
   export let midiClip: MidiClip
   export let displayNoteRange: { max: number; min: number }
   export let selectionManager: SelectionManager
 
   let container: HTMLElement
-
-  function hslString(color: string) {
-    return `hsla(var(--hsl__${color}-h), var(--hsl__${color}-s), calc(var(--hsl__${color}-l)), 1)`
-  }
-
-  function getNoteWidthHeight(
-    midiEvent: MidiEvent,
-    container: HTMLElement,
-    totalNotes: number,
-    totalTicks: number
-  ) {
-    const offsetWidth = container.offsetWidth
-    const offsetHeight = container.offsetHeight
-    const widthPercent = Big(
-      Big(midiEvent.endTick).minus(midiEvent.startTick)
-    ).div(totalTicks)
-    const heightPercent = Big(1).div(totalNotes)
-
-    const pxNoteHeight = heightPercent.times(offsetHeight).minus(0)
-    const pxNoteWidth = widthPercent.times(offsetWidth)
-
-    return {
-      height: pxNoteHeight,
-      width: pxNoteWidth,
-    }
-  }
-
-  function getNoteLeftTop(
-    midiEvent: MidiEvent,
-    container: HTMLElement,
-    pxNoteHeight: Big,
-    totalTicks: number
-  ) {
-    const offsetWidth = container.offsetWidth
-    const offsetHeight = container.offsetHeight
-
-    const leftPercent = Big(Big(midiEvent.startTick)).div(totalTicks)
-
-    const translateTop = Big(offsetHeight)
-      .minus(pxNoteHeight.times(midiEvent.note))
-      .minus(pxNoteHeight)
-    const translateLeft = leftPercent.times(offsetWidth)
-
-    return {
-      top: translateTop,
-      left: translateLeft,
-    }
-  }
-
-  /**
-   * The note rect is calculated relative to the container. The container's
-   * offsetWidth represents the total ticks and the containers offsetHeight
-   * represents the total notes displayed.
-   */
-  function getNoteRect(
-    midiEvent: MidiEvent,
-    container: HTMLElement,
-    totalNotes: number,
-    totalTicks: number
-  ) {
-    const { height, width } = getNoteWidthHeight(
-      midiEvent,
-      container,
-      totalNotes,
-      totalTicks
-    )
-    const { top, left } = getNoteLeftTop(
-      midiEvent,
-      container,
-      height,
-      totalTicks
-    )
-    return {
-      top,
-      left,
-      height,
-      width,
-    }
-  }
+  let noteRange = displayNoteRange || midiClip.noteRange
+  let noteLength = noteRange.max - noteRange.min + 1
 
   function smallPreview(midiDiv: HTMLElement, noteLength: number) {
     const offsetHeight = container.offsetHeight
@@ -102,9 +27,6 @@
    * The container render method. Paints the midi events into the container.
    */
   function render() {
-    console.log(`render called`)
-    const noteRange = displayNoteRange || midiClip.noteRange
-    const noteLength = noteRange.max - noteRange.min + 1
     const startIndexMap = midiClip.getStartIndexForUI({
       onlyLoopEvents: true,
     })
@@ -138,9 +60,9 @@
         midiDiv.style.position = 'absolute'
         midiDiv.style.borderRadius = '4px'
         midiDiv.style.zIndex = '1'
-        midiDiv.style.transform = `translate(${noteRect.left.toString()}px, ${noteRect.top.toString()}px)`
-        midiDiv.style.height = `${noteRect.height.toString()}px`
-        midiDiv.style.width = `${noteRect.width.toString()}px`
+        midiDiv.style.transform = `translate(${noteRect.left}px, ${noteRect.top}px)`
+        midiDiv.style.height = `${noteRect.height}px`
+        midiDiv.style.width = `${noteRect.width}px`
         if (!selectionManager) {
           smallPreview(midiDiv, noteLength)
         }
@@ -152,7 +74,10 @@
         container.appendChild(midiDiv)
 
         if (selectionManager) {
-          selectionManager.registerSelectable(midiEvent.id, container.lastChild)
+          selectionManager.registerSelectable(
+            midiEvent.id,
+            container.lastChild as HTMLElement
+          )
         }
       })
     })
@@ -165,8 +90,6 @@
    */
   export function onMove({ originX, originY, deltaX, deltaY, id, el }) {
     const midiEvent = midiClip.eventsIndex[id]
-    const noteRange = displayNoteRange || midiClip.noteRange
-    const noteLength = noteRange.max - noteRange.min + 1
 
     const rect = getNoteRect(
       midiEvent,
@@ -175,16 +98,9 @@
       midiClip.totalLoopTicks
     )
 
-    function snap(delta, desired, tolerance) {
-      return Math.round(delta / desired) * desired
-    }
-
-    const newY = originY + snap(deltaY, rect.height.toNumber(), 0)
-    const newX = originX + snap(deltaX, rect.width.toNumber(), 0.4)
-
     return {
-      x: newX,
-      y: newY,
+      x: originX + snapToGrid(deltaX, rect.width),
+      y: originY + snapToGrid(deltaY, rect.height),
     }
   }
 
