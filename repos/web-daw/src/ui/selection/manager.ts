@@ -277,6 +277,22 @@ export class SelectionManager extends EventEmitter {
     return this.#containerExclusive(el.parentElement)
   }
 
+  #calcTransformTranslate({ x, y }) {
+    return `translate(${x}px, ${y}px)`
+  }
+
+  // -------------------------------------------------------------------------
+  // Selection Logic
+  // TODO move this to an separate class
+  // -------------------------------------------------------------------------
+
+  #selectedBound = {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  }
+
   /**
    * Detects if selectables are within the selection box. Updates this.selected
    * map.
@@ -292,6 +308,7 @@ export class SelectionManager extends EventEmitter {
       } else if (!multiSelect) {
         delete this.selected[id]
       }
+      this.#calcSelectedBound()
     })
 
     this.emit('update')
@@ -308,8 +325,28 @@ export class SelectionManager extends EventEmitter {
     return Object.keys(this.selected).indexOf(id) > -1
   }
 
-  #calcTransformTranslate({ x, y }) {
-    return `translate(${x}px, ${y}px)`
+  #resetSelectedBound() {
+    this.#selectedBound = {
+      top: Number.POSITIVE_INFINITY,
+      left: Number.POSITIVE_INFINITY,
+      right: Number.NEGATIVE_INFINITY,
+      bottom: Number.NEGATIVE_INFINITY,
+    }
+  }
+
+  #calcSelectedBound() {
+    this.#resetSelectedBound()
+    Object.keys(this.selected).forEach(id => {
+      const selected = this.selectable[id]
+      const r1 = getElementRect(selected.el, this.container)
+      this.#selectedBound.top = Math.min(r1.top, this.#selectedBound.top)
+      this.#selectedBound.left = Math.min(r1.left, this.#selectedBound.left)
+      this.#selectedBound.right = Math.max(r1.right, this.#selectedBound.right)
+      this.#selectedBound.bottom = Math.max(
+        r1.bottom,
+        this.#selectedBound.bottom
+      )
+    })
   }
 
   // -------------------------------------------------------------------------
@@ -317,13 +354,50 @@ export class SelectionManager extends EventEmitter {
   // TODO move this to an separate class
   // -------------------------------------------------------------------------
 
+  allowOutOfBounds = false
+
   #moving = false
   #movingOrigin = {}
+  #movingOriginTarget: HTMLElement
   #moveFinish = () => {}
   #onMove = ({ el, originX, originY, deltaX, deltaY }) => {
     return {
       x: originX + deltaX,
       y: originY + deltaY,
+    }
+  }
+
+  #transformDelta = (arg0: {
+    originRect: Rect
+    selectedBound: Rect
+    deltaX: number
+    deltaY: number
+  }): { deltaX: number; deltaY: number } => {
+    // Calculate keep in bound deltas
+    if (!this.allowOutOfBounds) {
+      const bound = this.container.getBoundingClientRect()
+
+      arg0.deltaY =
+        arg0.selectedBound.top + arg0.deltaY < 0
+          ? 0 - arg0.selectedBound.top
+          : arg0.deltaY
+      arg0.deltaY =
+        arg0.selectedBound.bottom + arg0.deltaY > bound.height
+          ? bound.height - arg0.selectedBound.bottom
+          : arg0.deltaY
+      arg0.deltaX =
+        arg0.selectedBound.left + arg0.deltaX < 0
+          ? 0 - arg0.selectedBound.left
+          : arg0.deltaX
+      arg0.deltaX =
+        arg0.selectedBound.right + arg0.deltaX > bound.width
+          ? bound.width - arg0.selectedBound.right
+          : arg0.deltaX
+    }
+
+    return {
+      deltaX: arg0.deltaX,
+      deltaY: arg0.deltaY,
     }
   }
 
@@ -346,6 +420,16 @@ export class SelectionManager extends EventEmitter {
   #movingHandler = (evt: MouseEvent) => {
     const { deltaX, deltaY } = this.#containerDeltaMouseXY(evt)
 
+    // Custom transform delta
+    const { deltaX: transformedDeltaX, deltaY: transformedDeltaY } =
+      this.#transformDelta({
+        originRect: getElementRect(this.#movingOriginTarget, this.container),
+        selectedBound: this.#selectedBound,
+        deltaX,
+        deltaY,
+      })
+
+    // Apply delta to all selected
     Object.keys(this.selected)
       .map(id => {
         return this.selectable[id]
@@ -353,13 +437,14 @@ export class SelectionManager extends EventEmitter {
       .forEach(({ id, el }) => {
         const [originX, originY] = this.#movingOrigin[id]
 
-        el.style.transform = this.#calcTransformTranslate(
-          this.#onMove({ id, el, originX, originY, deltaX, deltaY })
-        )
+        el.style.transform = this.#calcTransformTranslate({
+          x: originX + transformedDeltaX,
+          y: originY + transformedDeltaY,
+        })
       })
   }
 
-  #movingHandlerUp = (evt: MouseEvent) => {
+  #movingHandlerUp = () => {
     this.#movingOrigin = {}
     this.#moving = false
 
@@ -367,9 +452,12 @@ export class SelectionManager extends EventEmitter {
     window.removeEventListener('mouseup', this.#movingHandlerUp)
   }
 
-  #startMoving = (evt: MouseEvent) => {
-    if (this.#isSelected(evt.target)) {
+  #startMoving = (target: HTMLElement) => {
+    if (this.#isSelected(target)) {
       this.#moving = true
+      this.#movingOriginTarget = target
+
+      // Set this.#movingOrigin origin xy for each selected item
       Object.keys(this.selected)
         .map(id => {
           return this.selectable[id]
@@ -403,6 +491,7 @@ export class SelectionManager extends EventEmitter {
     }
     // Clear selected
     this.selected = {}
+    this.#resetSelectedBound()
 
     this.emit('update')
   }
@@ -426,12 +515,15 @@ export class SelectionManager extends EventEmitter {
     // Set the origin
     this.#origin = this.#containerMouseXY(evt)
 
-    const id = this.#isSelectable(evt.target)
+    const id = this.#isSelectable(evt.target as HTMLElement)
     if (id) {
-      this.selected[id] = evt.target
+      this.selected[id] = evt.target as HTMLElement
       this.emit('update')
     }
-    if (Object.keys(this.selected).length > 0 && this.#startMoving(evt)) {
+    if (
+      Object.keys(this.selected).length > 0 &&
+      this.#startMoving(evt.target as HTMLElement)
+    ) {
       evt.stopPropagation()
       return
     }
