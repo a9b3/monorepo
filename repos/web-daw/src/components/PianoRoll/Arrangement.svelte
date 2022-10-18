@@ -40,7 +40,6 @@
   // Total ticks in current arrangement view
   $: totalTicks = numberOfBars * 4 * ticksPerBeat
   let selectionModKey = ModKeys.Meta
-  let midiClipPreviewRef: MidiClipPreview
 
   // Initialize the grid
   let rows = Array(numberOfKeys)
@@ -95,12 +94,11 @@
     {/each}
   </div>
   <div class="rows" bind:this={selectionContainer}>
-    {#if selectionContainer && midiClipPreviewRef}
+    {#if selectionContainer}
       <Selection
         {selectionManager}
         container={selectionContainer}
         modKey={selectionModKey}
-        onMove={midiClipPreviewRef.onMove}
         snapRow={noteHeight(numberOfKeys, selectionContainer.offsetHeight)}
         snapColumn={selectionContainer.offsetWidth / numberOfBars / barDivision}
         onMoveFinish={selected => {
@@ -130,7 +128,6 @@
     <div class="test">
       {#key keyHeight}
         <MidiClipPreview
-          bind:this={midiClipPreviewRef}
           {midiClip}
           displayNoteRange={{ min: 0, max: numberOfKeys - 1 }}
           {selectionManager}

@@ -46,6 +46,7 @@
   on:mousedown={() => {
     setInFocusTrack(track.id)
   }}
+  draggable
 >
   <ContextMenu
     bind:this={contextMenuRef}

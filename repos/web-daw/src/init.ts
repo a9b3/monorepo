@@ -7,4 +7,14 @@ PouchDB.plugin(PouchDbFind)
 
 export async function init() {
   await AWPF.polyfill(audioContext, [])
+  try {
+    // TODO REMOVE, super hack until database stablizes
+    if (window.location.host === 'lllllllll.link"') {
+      await new Promise(resolve => {
+        setTimeout(resolve, 1000)
+      })
+    }
+  } catch (err) {
+    console.error(`err`, err)
+  }
 }

@@ -12,8 +12,8 @@
   let cancelRafInterval: () => void
 
   function update() {
-    rms = analyser.getRms().map(rms => rms * 50)
-    peak = analyser.getPeaks().map(peak => peak * 25)
+    rms = analyser.getRms().map(rms => rms * 80)
+    peak = analyser.getPeaks().map(peak => peak * 50)
   }
 
   onMount(() => {

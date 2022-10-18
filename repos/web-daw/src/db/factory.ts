@@ -10,7 +10,20 @@ export interface DBManagedFields {
 }
 
 export function dbFactory<T>(database: string) {
-  const docDb = new PouchDB<T & DBManagedFields>(database)
+  let docDb = new PouchDB<T & DBManagedFields>(database)
+  function getDb() {
+    return docDb
+  }
+
+  try {
+    if (window.location.host === 'lllllllll.link') {
+      docDb.destroy().then(() => {
+        docDb = new PouchDB(database)
+      })
+    }
+  } catch (err) {
+    console.error(`err`, err)
+  }
 
   async function getById(
     id: string
@@ -99,6 +112,7 @@ export function dbFactory<T>(database: string) {
 
   return {
     docDb,
+    getDb,
     create,
     get,
     getById,

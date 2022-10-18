@@ -86,27 +86,6 @@
     })
   }
 
-  /**
-   * TODO refactor midiclippreview, should put everything in a class
-   # need to also move the midieventnote div to a svelte component so it
-   # maintains a reference to the dom element inside selection manager.
-   */
-  export function onMove({ originX, originY, deltaX, deltaY, id, el }) {
-    const midiEvent = midiClip.eventsIndex[id]
-
-    const rect = getNoteRect(
-      midiEvent,
-      container,
-      noteLength,
-      midiClip.totalLoopTicks
-    )
-
-    return {
-      x: originX + snapToGrid(deltaX, rect.width),
-      y: originY + snapToGrid(deltaY, rect.height),
-    }
-  }
-
   onMount(() => {
     render()
     midiClip.on('update', render)

@@ -27,7 +27,7 @@ export const editorDb = (() => {
     getByUserId: async (
       userId: string
     ): Promise<EditorDoc & DBManagedFields> => {
-      const { docs } = await factory.docDb.find({
+      const { docs } = await factory.getDb().find({
         selector: {
           user: userId,
         },
