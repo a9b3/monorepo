@@ -24,6 +24,12 @@ export const projectStore = writable<{
   projects: {},
 })
 
+export const resetProjectStore = () => {
+  projectStore.set({
+    projects: {},
+  })
+}
+
 // ***********************************
 // Actions
 // ***********************************

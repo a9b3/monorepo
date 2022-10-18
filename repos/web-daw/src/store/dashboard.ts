@@ -10,4 +10,11 @@ export const dashboardStore = writable<DashboardDoc>({
   sortBy: 'lastModified',
 })
 
+export const resetDashboardStore = () => {
+  dashboardStore.set({
+    selectedView: 'grid',
+    sortBy: 'lastModified',
+  })
+}
+
 export default dashboardStore

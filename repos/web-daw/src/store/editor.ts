@@ -19,6 +19,17 @@ export const editorStore = writable<EditorDoc>({
   user: undefined,
 })
 
+export const resetEditorStore = () => {
+  editorStore.set({
+    id: '',
+    openedProjects: [],
+    selectedProjectId: undefined,
+    inFocusElement: undefined,
+    inFocusTrack: undefined,
+    user: undefined,
+  })
+}
+
 // ***********************************
 // Actions
 // ***********************************

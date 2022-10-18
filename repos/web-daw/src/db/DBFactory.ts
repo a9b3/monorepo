@@ -20,6 +20,11 @@ export class DBFactory<T> {
     this.ready = true
   }
 
+  async DANGEROUSLY_RESET() {
+    await this.db.destroy()
+    this.db = new PouchDB(this.database)
+  }
+
   async getById(id: string): Promise<(T & DBManagedFields) | undefined> {
     try {
       return this.db.get(id)

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte'
   import { hoverKey, setHoverKey } from './pianoRollStore'
   import type { Instrument } from 'daw/core'
   import { objectStyle } from 'src/utils'
@@ -8,6 +9,7 @@
   export let keyHeight: number = 20
   export let onMidi: Instrument['onMidi']
   export let horizontal = false
+  export let pressed = false
 
   function isBlackKey(key: number) {
     const note = key % 12
@@ -17,11 +19,17 @@
   function getOctave(key: number) {
     return Math.floor(key / 12) + 1
   }
+
+  onMount(() => {})
+  onDestroy(() => {
+    onMidi({ type: 'noteOff', note: key, velocity: 0 })
+  })
 </script>
 
 <div
   class="key"
   class:horizontal
+  class:pressed
   class:hover={$hoverKey === key}
   class:black={isBlackKey(key)}
   style={objectStyle({
@@ -29,14 +37,24 @@
   })}
   on:focus={() => {}}
   on:mousedown|stopPropagation={() => {
-    onMidi({ type: 'noteOn', note: key, velocity: 100, endTick: 0.5 })
+    pressed = true
+    onMidi({ type: 'noteOn', note: key, velocity: 100 })
   }}
   on:mouseover={evt => {
-    setHoverKey(key)
     if (evt.buttons) {
-      onMidi({ type: 'noteOn', note: key, velocity: 100, endTick: 0.5 })
+      pressed = true
+      onMidi({ type: 'noteOn', note: key, velocity: 100 })
     }
   }}
+  on:mouseout={() => {
+    pressed = false
+    onMidi({ type: 'noteOff', note: key, velocity: 0 })
+  }}
+  on:mouseup={() => {
+    pressed = false
+    onMidi({ type: 'noteOff', note: key, velocity: 0 })
+  }}
+  on:blur={() => {}}
 >
   {#if key % 12 === 0}
     <div class="text">
@@ -120,5 +138,18 @@
     padding-right: 5px;
     font-size: 8px;
     font-weight: bold;
+  }
+
+  .key.pressed {
+    transform: scale(1.1);
+    background: var(--colors__neonPink);
+  }
+  .key.pressed.black:after {
+    transform: scale(1.1);
+    background: var(--colors__neonPink);
+  }
+  .key.pressed.horizontal {
+    transform: scale(1.1);
+    background: var(--colors__neonPink);
   }
 </style>
