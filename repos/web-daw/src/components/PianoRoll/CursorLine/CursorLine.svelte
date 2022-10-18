@@ -13,7 +13,6 @@
 
   function createPositionSelf(numberOfBeats: number) {
     return function positionSelf(node: HTMLElement) {
-      console.log(`should reisge again`)
       const tickHandler: TickHandler = ({ currentTick, ticksPerBeat }) => {
         const loopLength = numberOfBeats * ticksPerBeat
         const currentPosPercentage = (currentTick % loopLength) / loopLength
@@ -33,7 +32,6 @@
 
       return {
         destroy() {
-          console.log(`notbeing invoked`)
           if ($currentProject) {
             $currentProject.controller.removeListener('tick', tickHandler)
             $currentProject.controller.removeListener('stop', onstop)
