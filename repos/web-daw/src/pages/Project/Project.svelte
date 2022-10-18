@@ -108,8 +108,18 @@
           {/key}
         {/each}
         <NewTrackHelper
-          onNewMidi={() =>
-            $project.addTrack({ label: 'MIDI', id: crypto.randomUUID() })}
+          onNewMidi={instrumentType => {
+            if (instrumentType) {
+              $project.addTrack({
+                label: instrumentType,
+                id: crypto.randomUUID(),
+                instrumentType,
+                instrument: {},
+              })
+            } else {
+              $project.addTrack({ label: 'MIDI', id: crypto.randomUUID() })
+            }
+          }}
         />
       </div>
       <div class="sends">
