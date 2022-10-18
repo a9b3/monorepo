@@ -13,6 +13,7 @@
   import type { MidiClip, MidiEvent as MidiEventT } from 'daw/core/midi'
   import type { Instrument } from 'daw/core'
   import { hoverKey, setHoverKey, snapEnabled } from './pianoRollStore'
+  import { keyboardStore } from 'src/store/keyboard'
   import Selection from '../Selection/Selection.svelte'
   import MidiClipPreview from './MidiClipPreview.svelte'
   import {
@@ -57,9 +58,18 @@
     mouseOverNotes = false
   }
   onMount(() => {
+    keyboardStore.attach('Backspace', {
+      key: 'arrangementDelete',
+      handler: () => {
+        Object.keys(selectionManager.selected).forEach(id => {
+          midiClip.remove(id)
+        })
+      },
+    })
     window.addEventListener('mouseup', onmouseup)
   })
   onDestroy(() => {
+    keyboardStore.detach('Backspace', 'arrangementDelete')
     window.addEventListener('mouseup', onmouseup)
   })
 </script>

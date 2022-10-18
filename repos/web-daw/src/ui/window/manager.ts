@@ -172,7 +172,7 @@ export class WindowManager extends EventEmitter {
    */
   upsert = (
     el: HTMLElement,
-    grip: HTMLElement,
+    grip?: HTMLElement,
     opt?: {
       /**
        * Control where to position the window upon creation.
@@ -193,6 +193,9 @@ export class WindowManager extends EventEmitter {
       this.remove(found[0])
       this.stack.push(found)
     } else {
+      if (!grip) {
+        throw new Error('Must supply a grip element on initial create')
+      }
       renderInitialWindow(el, opt)
       const teardown = attachMouseHandlers(el, grip, opt)
       this.stack.push([el, teardown])
@@ -200,8 +203,16 @@ export class WindowManager extends EventEmitter {
 
     this.emit('update')
   }
-  // alias
-  focus = this.upsert
+
+  focus = (el: HTMLElement) => {
+    const found = this.stack.find(arg => arg[0] === el)
+    const idx = this.stack.findIndex(arg => arg[0] === el)
+    if (idx > -1) {
+      this.stack.splice(idx, 1)
+    }
+    this.stack.push(found)
+    this.emit('update')
+  }
 
   remove(el: HTMLElement) {
     const idx = this.stack.findIndex(arg => arg[0] === el)

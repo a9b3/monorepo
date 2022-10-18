@@ -126,6 +126,23 @@ export class Track extends Subscribable {
     this.emit('update')
   }
 
+  removeMidiClipById = (id: string) => {
+    let toDelete: string
+    Object.keys(this.midiClipOrder).forEach(idx => {
+      if (this.midiClipOrder[idx] === id) {
+        toDelete = idx
+      }
+    })
+    if (toDelete) {
+      delete this.midiClipOrder[toDelete]
+    }
+    if (this.activeMidiClip === id) {
+      this.activeMidiClip = undefined
+    }
+
+    this.emit('update')
+  }
+
   setActiveMidiClip = (id?: string) => {
     this.activeMidiClip = id
 

@@ -15,14 +15,20 @@
   let mainWindowEl: HTMLElement
 
   onMount(() => {
-    windowManager.focus(mainWindowEl, topbarEl)
+    windowManager.upsert(mainWindowEl, topbarEl)
   })
   onDestroy(() => {
     windowManager.remove(mainWindowEl)
   })
 </script>
 
-<div bind:this={mainWindowEl} class={'main'}>
+<div
+  bind:this={mainWindowEl}
+  class={'main'}
+  on:mousedown={() => {
+    windowManager.focus(mainWindowEl)
+  }}
+>
   <div class="top" bind:this={topbarEl}>
     <TopBar {title} {onClose}>
       <slot name="left" slot="left" />

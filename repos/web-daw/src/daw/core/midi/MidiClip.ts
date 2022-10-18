@@ -219,7 +219,7 @@ export class MidiClip extends Subscribable {
     } = {}
   ) => {
     // Default options
-    opts.overlapType = opts.overlapType || 'deny'
+    opts.overlapType = opts.overlapType || 'replace'
 
     if (arg.id) {
       this.remove(arg.id)
@@ -234,16 +234,24 @@ export class MidiClip extends Subscribable {
       const prevId = prevNoteIds[i]
       const pnote = this.eventsIndex[prevId]
 
+      console.log('oninsert')
+
       // no overlap
       if (pnote.startTick > mnote.endTick || mnote.startTick > pnote.endTick) {
+        console.log(`no overlap`)
         break
       }
 
       // new note starts in the middle of preexsting note
+      //
+      // mnote[------]
+      //  [-----]pnote
+      //  [ppp[mmmmmm]
       if (
         mnote.startTick >= pnote.startTick &&
         mnote.startTick <= pnote.endTick
       ) {
+        console.log(`new note starts in middle`)
         if (opts.overlapType === 'replace') {
           toRemove.add(pnote.id)
         } else if (opts.overlapType === 'splice') {
@@ -253,8 +261,12 @@ export class MidiClip extends Subscribable {
           return
         }
       }
+
       // new note ends in the middle of the preexisting note
-      if (mnote.endTick <= pnote.endTick && mnote.endTick <= pnote.startTick) {
+      // mnote [-----------]
+      // pnote         [             ]
+      if (mnote.endTick <= pnote.endTick && mnote.endTick >= pnote.startTick) {
+        console.log(`new note starts in middle 2`)
         if (opts.overlapType === 'replace') {
           toRemove.add(pnote.id)
         } else if (opts.overlapType === 'splice') {
@@ -270,6 +282,7 @@ export class MidiClip extends Subscribable {
         pnote.startTick <= mnote.startTick &&
         pnote.endTick >= mnote.endTick
       ) {
+        console.log(`middle 3`)
         if (opts.overlapType === 'replace') {
           toRemove.add(pnote.id)
         } else if (opts.overlapType === 'splice') {

@@ -1,34 +1,31 @@
-import { debounce } from 'lodash'
+export type ComboHandler = {
+  handler: () => void
+  key: string
+  description?: string
+}
 
 function keyEventToComboKey(evt: KeyboardEvent) {
+  const modKeys = {
+    Alt: true,
+    Ctrl: true,
+    Meta: true,
+    Shift: true,
+  }
   return [
     evt.altKey ? 'Alt' : undefined,
     evt.ctrlKey ? 'Ctrl' : undefined,
     evt.metaKey ? 'Meta' : undefined,
     evt.shiftKey ? 'Shift' : undefined,
-    evt.code === 'Space' ? 'Space' : evt.key,
+    evt.code === 'Space' ? 'Space' : modKeys[evt.key] ? undefined : evt.key,
   ]
     .filter(Boolean)
     .join('+')
 }
 
 export class KeyboardManager {
-  /**
-   * Maximum time between key presses to be considered a combo
-   */
-  maxInterval = 100
   started = false
-  pressedKeys = []
-  #interval = undefined
 
-  combos = {
-    'Shift+?': () => {
-      console.log(`test`)
-    },
-    Space: () => {
-      console.log(`pressed space`)
-    },
-  }
+  combos: { [key: string]: ComboHandler[] } = {}
 
   start() {
     if (!this.started) {
@@ -44,42 +41,23 @@ export class KeyboardManager {
     }
   }
 
-  #onkeydown = evt => {
-    const comboKey = keyEventToComboKey(evt)
-    console.log(`comboKey`, comboKey)
-    this.pressedKeys.push(comboKey)
-
-    let curNode = this.combos
-    for (let i = 0; i < this.pressedKeys.length; i += 1) {
-      const curKey = this.pressedKeys[i]
-      curNode = curNode[curKey]
-      if (!curNode) {
-        break
-      }
-    }
-    if (typeof curNode === 'function') {
-      curNode()
-      this.pressedKeys = []
-    } else {
-      this.pressedKeys.push(comboKey)
-      if (this.#interval) clearInterval(this.#interval)
-      this.#interval = setInterval(() => {
-        this.pressedKeys = []
-      }, this.maxInterval)
-    }
+  attach(comboKey: string, handler: ComboHandler) {
+    this.combos[comboKey] = this.combos[comboKey] || []
+    this.combos[comboKey].push(handler)
   }
 
-  // attach(handler: KeyboardHandler) {
-  //   const idx = this.#handlers.findIndex(x => x === handler)
-  //   if (idx === -1) {
-  //     this.#handlers.push(handler)
-  //   }
-  // }
-  //
-  // detach(handler: KeyboardHandler) {
-  //   const idx = this.#handlers.findIndex(x => x === handler)
-  //   if (idx !== -1) {
-  //     this.#handlers.splice(idx, 1)
-  //   }
-  // }
+  detach(comboKey: string, key: string) {
+    this.combos[comboKey] = this.combos[comboKey].filter(
+      comboHandler => comboHandler.key !== key
+    )
+  }
+
+  #onkeydown = (evt: KeyboardEvent) => {
+    const comboKey = keyEventToComboKey(evt)
+
+    const callbacks = this.combos[comboKey]
+    if (callbacks) {
+      callbacks.forEach(({ handler }) => handler())
+    }
+  }
 }

@@ -4,13 +4,14 @@
   Project toolbar, display the project metadata like bpm and play controls.
 -->
 <script lang="ts">
-  import { onDestroy, beforeUpdate } from 'svelte'
+  import { onMount, onDestroy, beforeUpdate } from 'svelte'
 
   import type { Project, Controller } from 'daw/core/ui'
   import { Pill, Layout, Icon } from 'src/components'
   import { objectStyle } from 'src/utils'
   import { audioContext } from 'daw/audioContext'
   import { useDelta } from 'src/components/Knob/useDelta'
+  import { keyboardStore } from 'src/store'
 
   export let project: Project
 
@@ -65,7 +66,20 @@
     }
   }
 
+  onMount(() => {
+    keyboardStore.attach('Space', {
+      key: 'play',
+      handler: () => {
+        if (project.controller.isPlaying) {
+          project.controller.stop()
+        } else {
+          project.controller.play()
+        }
+      },
+    })
+  })
   onDestroy(() => {
+    keyboardStore.detach('Space', 'play')
     controller.removeListener('stop', handleStop)
     controller.scheduler.removeListener('tick', handleTick)
   })

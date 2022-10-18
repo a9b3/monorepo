@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import Keyboard from './Keyboard.svelte'
   import Arrangement from './Arrangement.svelte'
   import ResizerY from './Controls/ResizerY.svelte'
@@ -14,8 +15,14 @@
   export let onMidi: Instrument['onMidi']
   export let selectionManager: SelectionManager
 
+  let scrollParent: HTMLElement
+
   let keyHeight = 40
   let barWidth = 400
+
+  onMount(() => {
+    scrollParent.scrollTo(0, (keyHeight / 1.5) * startingKey)
+  })
 </script>
 
 <div>
@@ -26,7 +33,7 @@
       }}
     />
   </div>
-  <div class={'main'}>
+  <div class={'main'} bind:this={scrollParent}>
     <div class="keyboard">
       <Keyboard {onMidi} {numberOfKeys} {keyHeight} />
     </div>

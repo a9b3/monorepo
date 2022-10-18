@@ -2,9 +2,16 @@
   import { onMount, onDestroy, beforeUpdate } from 'svelte'
   import { navigate } from 'svelte-routing'
   import { ContextMenu, Selection } from 'src/components'
-  import { editorStore, setSelectedProject, fetchProject } from 'src/store'
+  import {
+    editorStore,
+    setSelectedProject,
+    fetchProject,
+    setInFocusElement,
+  } from 'src/store'
   import { trackMousePosition, untrackMousePosition } from 'src/utils'
   import { selection } from './stores/selection'
+  import { keyboardStore } from 'src/store'
+  import { windowManager } from 'src/ui'
 
   import AutoSave from './AutoSave.svelte'
   import LeftPanel from './LeftPanel.svelte'
@@ -32,9 +39,28 @@
     }
   })
   onMount(() => {
+    keyboardStore.attach('Backspace', {
+      key: 'clipdelete',
+      handler: () => {
+        if (windowManager.stack.length === 0) {
+          if ($editorStore.inFocusElement) {
+            project.tracks.forEach(track => {
+              track.removeMidiClipById($editorStore.inFocusElement)
+              setInFocusElement(undefined)
+            })
+          }
+          Object.keys(selection.selected).forEach(clipId => {
+            project.tracks.forEach(track => {
+              track.removeMidiClipById(clipId)
+            })
+          })
+        }
+      },
+    })
     trackMousePosition()
   })
   onDestroy(() => {
+    keyboardStore.detach('Backspace', 'clipdelete')
     untrackMousePosition()
   })
 </script>

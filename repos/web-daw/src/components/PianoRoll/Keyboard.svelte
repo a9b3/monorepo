@@ -30,5 +30,6 @@
     background: var(--colors__bg);
     border-bottom: 1px solid var(--colors__bg2);
     border-right: 1px solid var(--colors__bg);
+    z-index: 2;
   }
 </style>

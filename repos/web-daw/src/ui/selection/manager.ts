@@ -374,7 +374,7 @@ export class SelectionManager extends EventEmitter {
 
   #moving = false
   #movingOrigin = {}
-  #movingOriginTarget: HTMLElement
+  #movingOriginTarget: Rect
   #moveFinish = () => {}
   #onMove = ({ el, originX, originY, deltaX, deltaY }) => {
     return {
@@ -386,6 +386,7 @@ export class SelectionManager extends EventEmitter {
   #transformDelta = (arg0: {
     originRect: Rect
     selectedBound: Rect
+    originX: number
     deltaX: number
     deltaY: number
   }): { deltaX: number; deltaY: number } => {
@@ -395,7 +396,7 @@ export class SelectionManager extends EventEmitter {
 
     if (this.snapColumn) {
       arg0.deltaX = snapToGrid(arg0.deltaX, this.snapColumn, {
-        tolerance: 0.1,
+        tolerance: 0.3,
       })
     }
 
@@ -449,7 +450,7 @@ export class SelectionManager extends EventEmitter {
     // Custom transform delta
     const { deltaX: transformedDeltaX, deltaY: transformedDeltaY } =
       this.#transformDelta({
-        originRect: getElementRect(this.#movingOriginTarget, this.container),
+        originRect: this.#movingOriginTarget,
         selectedBound: this.#selectedBound,
         deltaX,
         deltaY,
@@ -487,6 +488,10 @@ export class SelectionManager extends EventEmitter {
     this.#movingOrigin = {}
     this.#moving = false
 
+    this.selected = {}
+    this.#resetSelectedBound()
+    this.emit('update')
+
     window.removeEventListener('mousemove', this.#movingHandler)
     window.removeEventListener('mouseup', this.#movingHandlerUp)
   }
@@ -494,7 +499,11 @@ export class SelectionManager extends EventEmitter {
   #startMoving = (target: HTMLElement) => {
     if (this.#isSelected(target)) {
       this.#moving = true
-      this.#movingOriginTarget = target
+      this.#movingOriginTarget = getElementRect(
+        target,
+        this.container,
+        !target.isConnected
+      )
       this.#calcSelectedBound()
 
       // Set this.#movingOrigin origin xy for each selected item
@@ -560,11 +569,11 @@ export class SelectionManager extends EventEmitter {
       return
     }
 
-    if (this.modKey && !evt[this.modKey]) {
-      this.selected = {}
-      this.#resetSelectedBound()
-      this.emit('update')
-    }
+    // if (this.modKey && !evt[this.modKey]) {
+    //   this.selected = {}
+    //   this.#resetSelectedBound()
+    //   this.emit('update')
+    // }
 
     // Set the origin
     this.#origin = this.#containerMouseXY(evt)
