@@ -21,7 +21,10 @@ export async function init() {
     await userDB.init('user'),
   ])
 
-  if (window.location.host === 'lllllllll.link') {
-    await DANGEROUSLY_RESET_EVERYTHING()
+  if (!localStorage.getItem('resetted')) {
+    if (window.location.host === 'lllllllll.link') {
+      await DANGEROUSLY_RESET_EVERYTHING()
+      localStorage.setItem('resetted', 'true')
+    }
   }
 }
