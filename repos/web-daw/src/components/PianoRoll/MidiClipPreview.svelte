@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import type { MidiClip, MidiEvent } from 'daw/core'
-  import Big from 'big.js'
   import type { SelectionManager } from 'src/ui'
   import { hslString, getNoteRect, snapToGrid } from './midiGuiUtils'
 
@@ -21,6 +20,7 @@
       Math.min(heightPercent * offsetHeight, 6),
       4
     )}px`
+    midiDiv.style.background = hslString('accent')
   }
 
   /**
@@ -41,6 +41,9 @@
     // Create HTMLElements for each midiEvent and append to container.
     Object.entries(startIndexMap).forEach(([_, midiEvents]) => {
       midiEvents.forEach(midiEvent => {
+        if (!midiEvent.endTick) {
+          return
+        }
         // Calculate the px rect for the note relative to the container
         const noteRect = getNoteRect(
           midiEvent,
