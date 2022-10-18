@@ -61,9 +61,12 @@ const FONT = {
 }
 
 const SPACING = {
-  padding: '12px',
+  paddingXs: '2px',
   paddingSm: '2px',
   paddingM: '5px',
+  padding: '12px',
+  paddingL: '20px',
+  paddingXL: '40px',
   button: {
     padding: '10px',
   },
@@ -87,6 +90,11 @@ const MISC = {
 const SHADOWS = {
   1: `rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px`,
   2: `rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px`,
+  3: `1px 2px 2px hsl(var(--shadow-color) / 0.2),
+    2px 4px 4px hsl(var(--shadow-color) / 0.2),
+    4px 8px 8px hsl(var(--shadow-color) / 0.2),
+    8px 16px 16px hsl(var(--shadow-color) / 0.2),
+    16px 32px 32px hsl(var(--shadow-color) / 0.2)`,
 }
 
 export const styles = {

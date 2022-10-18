@@ -7,6 +7,7 @@
   export let key: number
   export let keyHeight: number = 20
   export let onMidi: Instrument['onMidi']
+  export let horizontal = false
 
   function isBlackKey(key: number) {
     const note = key % 12
@@ -20,6 +21,7 @@
 
 <div
   class="key"
+  class:horizontal
   class:hover={$hoverKey === key}
   class:black={isBlackKey(key)}
   style={objectStyle({
@@ -92,6 +94,25 @@
       calc(var(--hsl__accent-l) + 10%),
       1
     );
+  }
+
+  .key.horizontal:not(.black) {
+    width: var(--whiteheight);
+    height: 100px;
+    border-bottom: 1px solid var(--colors__fg2);
+    border-right: 1px solid var(--colors__fg2);
+    color: black;
+    background: white;
+    display: flex;
+    align-items: flex-end;
+  }
+  .black.key.horizontal:after {
+    width: var(--blackheight);
+    top: 0;
+    left: calc(var(--blackheight) / -2);
+    height: 70px;
+    background: var(--colors__bg);
+    z-index: 1;
   }
 
   .text {

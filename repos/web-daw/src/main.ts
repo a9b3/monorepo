@@ -1,10 +1,13 @@
 import './app.css'
 import { init } from './init'
-import App from './App.svelte'
 
-// Put startup logic in init
+/**
+ * Put startup logic in init
+ */
 init()
-  .then(() => {
+  .then(async () => {
+    const App = (await import('./App.svelte')).default
+
     // Remove loading node
     const loadingEl = document.getElementById('loading')
     document.body.removeChild(loadingEl)

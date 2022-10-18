@@ -73,10 +73,15 @@
     on:click={closeMenu}
     style={objectStyle(menuPos)}
   >
-    {#each menu as el}
-      <div class="row" on:click={el.onClick}>
-        {el.label}
-      </div>
+    {#each menu as item}
+      {#if item.type === 'item'}
+        <div class="row" on:click={item.onClick}>
+          {item.label}
+        </div>
+      {/if}
+      {#if item.type === 'divider'}
+        <div class="divider" />
+      {/if}
     {/each}
   </div>
 {/if}
@@ -85,23 +90,31 @@
   .hidden {
     visibility: none;
   }
+
   .main {
+    --shadow-color: var(--hsl__accent);
     display: grid;
     position: fixed;
     background: var(--colors__bg);
-    outline: 1px solid var(--colors__fg2);
     width: 200px;
-    box-shadow: 0px 5px 5px 5px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadows__2);
     z-index: 100;
+    border-radius: 2px;
   }
 
   .row {
-    height: 30px;
+    height: 36px;
     display: flex;
     align-items: center;
-    padding: 0 var(--spacing__padding);
+    padding: var(--spacing__padding) var(--spacing__paddingL);
   }
   .row:hover {
     background: var(--colors__bgHover);
+  }
+
+  .divider {
+    width: 85%;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--colors__fg3);
   }
 </style>

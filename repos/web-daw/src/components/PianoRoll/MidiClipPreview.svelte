@@ -1,15 +1,14 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import type { MidiClip, MidiEvent } from 'daw/core'
+  import type { MidiClip } from 'daw/core'
   import type { SelectionManager } from 'src/ui'
-  import { hslString, getNoteRect, snapToGrid } from './midiGuiUtils'
+  import { hslString, getNoteRect } from './midiGuiUtils'
 
   export let midiClip: MidiClip
-  export let displayNoteRange: { max: number; min: number }
-  export let selectionManager: SelectionManager
+  export let selectionManager: SelectionManager = undefined
 
   let container: HTMLElement
-  let noteRange = displayNoteRange || midiClip.noteRange
+  let noteRange = midiClip.noteRange
   let noteLength = noteRange.max - noteRange.min + 1
 
   function smallPreview(midiDiv: HTMLElement, noteLength: number) {

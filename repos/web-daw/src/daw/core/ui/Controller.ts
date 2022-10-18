@@ -1,5 +1,5 @@
-import { Metronome } from 'daw/core/customNodes'
-import { Scheduler } from 'daw/core/scheduler'
+import { Metronome } from '../customNodes/Metronome'
+import { Scheduler } from '../scheduler'
 import { Subscribable } from './Subscribable'
 
 export interface ControllerPosition {

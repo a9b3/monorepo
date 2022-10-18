@@ -1,9 +1,8 @@
-import { Sampler, DX7 } from 'daw/core/instruments'
-import type { Instrument } from 'daw/core/instruments'
-import { MidiClip } from 'daw/core/midi'
-import type { SchedulerHandler } from 'daw/core/scheduler'
+import { Sampler, DX7 } from '../instruments'
 import { Subscribable } from './Subscribable'
-import type { InstrumentType } from '../instruments'
+import { MidiClip } from '../midi/MidiClip'
+import type { SchedulerHandler } from '../scheduler'
+import type { Instrument, InstrumentType } from '../instruments'
 
 export class Track extends Subscribable {
   #audioContext: AudioContext

@@ -1,5 +1,4 @@
-import { Mixer } from 'daw/core/mixer'
-
+import { Mixer } from '../mixer/Mixer'
 import { Subscribable } from './Subscribable'
 import { Track } from './Track'
 import { Controller } from './Controller'

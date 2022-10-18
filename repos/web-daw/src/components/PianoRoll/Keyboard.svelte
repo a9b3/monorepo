@@ -4,6 +4,7 @@
   export let numberOfKeys: number
   export let keyHeight: number
   export let onMidi
+  export let horizontal = false
 
   let keys = Array(numberOfKeys)
     .fill(1)
@@ -11,10 +12,10 @@
     .reverse()
 </script>
 
-<div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
+<div class={'main'} class:horizontal>
   <div class="spacer" />
   {#each keys as key}
-    <Key {key} {onMidi} {keyHeight} />
+    <Key {key} {onMidi} {keyHeight} {horizontal} />
   {/each}
 </div>
 
@@ -31,5 +32,10 @@
     border-bottom: 1px solid var(--colors__bg2);
     border-right: 1px solid var(--colors__bg);
     z-index: 2;
+  }
+
+  .horizontal {
+    display: flex;
+    flex-direction: row-reverse;
   }
 </style>

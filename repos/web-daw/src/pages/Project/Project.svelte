@@ -65,7 +65,9 @@
   })
 </script>
 
-<AutoSave id={params.id} />
+{#key params.id}
+  <AutoSave projectId={params.id} />
+{/key}
 <div class="app-shell">
   {#if $project}
     {#key $project.id}

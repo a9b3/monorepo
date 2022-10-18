@@ -57,12 +57,4 @@ var DX7Library = function () {
   }
 }
 
-var banklist = [
-  'rom1A.syx',
-  'steinber.syx',
-  'SynprezFM_03.syx',
-  'weird1.syx',
-  'solange2.syx',
-  'analog1.syx',
-  'Dexed_01.syx',
-]
+var banklist = ['7V1.SYX']

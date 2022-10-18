@@ -4,11 +4,11 @@
 
   export let container: HTMLElement
   export let selectionManager: SelectionManager
-  export let modKey: ModKeys
-  export let onMove: any
+  export let modKey: ModKeys = undefined
+  export let onMove: any = undefined
   export let snapRow: number = undefined
   export let snapColumn: number = undefined
-  export let onMoveFinish
+  export let onMoveFinish = undefined
 
   let sbox: HTMLElement
 

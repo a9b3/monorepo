@@ -2,9 +2,9 @@ import { writable, derived } from 'svelte/store'
 
 import { Project } from 'daw/core/ui'
 import type { EditorDoc, ProjectDoc } from 'src/db'
-import { editorDb } from 'src/db'
+import { editorDB } from 'src/db'
 import { audioContext } from 'src/daw/audioContext'
-import { instanceToJson } from 'src/utils'
+import { toJSON } from 'src/utils'
 
 // ***********************************
 // Store
@@ -24,7 +24,7 @@ export const editorStore = writable<EditorDoc>({
 // ***********************************
 
 export async function fetchEditor(id: string) {
-  const editor = await editorDb.getByUserId(id)
+  const editor = await editorDB.getByUserId(id)
   editorStore.set({
     ...editor,
     openedProjects: editor.openedProjects.map(
@@ -55,7 +55,7 @@ export function addOpenedProject(project: ProjectDoc & { id: string }) {
     }
 
     // TODO sync database strat
-    editorDb.update(prev.id, instanceToJson(nextState))
+    editorDB.update(prev.id, toJSON(nextState))
 
     return nextState
   })
@@ -82,7 +82,7 @@ export function removeOpenedProject(id: string) {
         selectedProjectId: nextSelectedId,
       }
       // TODO sync database strat
-      editorDb.update(prev.id, instanceToJson(nextState))
+      editorDB.update(prev.id, toJSON(nextState))
       return nextState
     }
 
@@ -95,7 +95,7 @@ export function removeOpenedProject(id: string) {
       selectedProjectId: nextSelectedId,
     }
     // TODO sync database strat
-    editorDb.update(prev.id, instanceToJson(nextState))
+    editorDB.update(prev.id, toJSON(nextState))
     return nextState
   })
   return nextSelectedId
@@ -109,7 +109,7 @@ export function setSelectedProject(id?: string) {
     prev.selectedProjectId = id
 
     // TODO sync database strat
-    editorDb.update(prev.id, instanceToJson(prev))
+    editorDB.update(prev.id, toJSON(prev))
 
     return prev
   })
@@ -128,7 +128,7 @@ export function setInFocusElement(id?: string) {
     prev.inFocusElement = id
 
     // TODO sync database strat
-    editorDb.update(prev.id, instanceToJson(prev))
+    editorDB.update(prev.id, toJSON(prev))
 
     return prev
   })
@@ -143,7 +143,7 @@ export function setInFocusTrack(id?: string) {
     prev.inFocusTrack = id
 
     // TODO sync database strat
-    editorDb.update(prev.id, instanceToJson(prev))
+    editorDB.update(prev.id, toJSON(prev))
 
     return prev
   })

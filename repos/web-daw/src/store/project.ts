@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 
-import { projectDb } from 'src/db'
+import { projectDB } from 'src/db'
 import type { ProjectDoc } from 'src/db'
 
 import { editorStore } from './editor'
@@ -29,9 +29,9 @@ export const projectStore = writable<{
 // ***********************************
 
 export async function createProject(
-  project: Parameters<typeof projectDb.create>[0]
-): ReturnType<typeof projectDb.create> {
-  const res = await projectDb.create(project)
+  project: Parameters<typeof projectDB.create>[0]
+): ReturnType<typeof projectDB.create> {
+  const res = await projectDB.create(project)
   projectStore.update(prev => {
     prev.projects[res.id] = res
     return prev
@@ -42,7 +42,7 @@ export async function createProject(
 export async function fetchProjects() {
   projectFetching.set(true)
 
-  const { results } = await projectDb.get()
+  const { results } = await projectDB.get()
   projectStore.set({
     projects: Object.fromEntries(results.map(doc => [doc.id, doc])),
   })
@@ -53,7 +53,7 @@ export async function fetchProjects() {
 }
 
 export async function fetchProject(id: string) {
-  const result = await projectDb.getById(id)
+  const result = await projectDB.getById(id)
 
   projectStore.update(prev => {
     prev.projects[id] = result
@@ -64,7 +64,7 @@ export async function fetchProject(id: string) {
 }
 
 export async function deleteProject(id: string) {
-  await projectDb.remove(id)
+  await projectDB.remove(id)
 
   projectStore.update(prev => {
     delete prev.projects[id]

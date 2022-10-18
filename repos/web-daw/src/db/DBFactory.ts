@@ -9,55 +9,48 @@ export interface DBManagedFields {
   lastModified: number | undefined
 }
 
-export function dbFactory<T>(database: string) {
-  let docDb = new PouchDB<T & DBManagedFields>(database)
-  function getDb() {
-    return docDb
+export class DBFactory<T> {
+  db: PouchDB.Database<T & DBManagedFields>
+  database: string
+  ready = false
+
+  async init(database: string) {
+    this.db = new PouchDB(database)
+    this.database = database
+    this.ready = true
   }
 
-  // try {
-  //   if (window.location.host === 'lllllllll.link') {
-  //     docDb.destroy().then(() => {
-  //       docDb = new PouchDB(database)
-  //     })
-  //   }
-  // } catch (err) {
-  //   console.error(`err`, err)
-  // }
-
-  async function getById(
-    id: string
-  ): Promise<(T & DBManagedFields) | undefined> {
+  async getById(id: string): Promise<(T & DBManagedFields) | undefined> {
     try {
-      return docDb.get(id)
+      return this.db.get(id)
     } catch (err) {
-      console.error({ database, id }, err)
+      console.error({ database: this.database, id }, err)
       return undefined
     }
   }
 
-  async function create(doc: T): Promise<(T & DBManagedFields) | undefined> {
+  async create(doc: T): Promise<(T & DBManagedFields) | undefined> {
     const id = crypto.randomUUID()
     try {
-      await docDb.put({
+      await this.db.put({
         ...doc,
         _id: id,
         createdAt: Date.now(),
         id,
         lastModified: Date.now(),
       })
-      return docDb.get(id)
+      return this.db.get(id)
     } catch (err) {
-      console.error({ database, id, doc }, err)
+      console.error({ database: this.database, id, doc }, err)
       return undefined
     }
   }
 
-  const update = debounce(
+  update = debounce(
     async (id: string, doc: T): Promise<(T & DBManagedFields) | undefined> => {
       try {
-        const response = await getById(id)
-        await docDb.put({
+        const response = await this.getById(id)
+        await this.db.put({
           ...doc,
           _id: response.id,
           _rev: response._rev,
@@ -65,9 +58,9 @@ export function dbFactory<T>(database: string) {
           id: response.id,
           lastModified: Date.now(),
         })
-        return docDb.get(id)
+        return this.db.get(id)
       } catch (err) {
-        console.error({ database, id, doc }, err)
+        console.error({ database: this.database, id, doc }, err)
         return undefined
       }
     },
@@ -77,11 +70,11 @@ export function dbFactory<T>(database: string) {
   /**
    * https://docs.couchdb.org/en/latest/ddocs/views/pagination.html
    */
-  async function get(
+  async get(
     args: { limit?: number; startkey?: string } = {}
   ): Promise<{ results: (T & DBManagedFields)[]; next: string | undefined }> {
     try {
-      const res = await docDb.allDocs({
+      const res = await this.db.allDocs({
         include_docs: true,
         startkey: args.startkey,
         limit: args.limit,
@@ -94,29 +87,19 @@ export function dbFactory<T>(database: string) {
             : undefined,
       }
     } catch (err) {
-      console.error({ database, limit, startKey }, err)
+      console.error({ database: this.database, limit, startkey }, err)
       return undefined
     }
   }
 
-  async function remove(id: string): Promise<boolean> {
+  async remove(id: string): Promise<boolean> {
     try {
-      const doc = await getById(id)
-      await docDb.remove(id, doc._rev)
+      const doc = await this.getById(id)
+      await this.db.remove(id, doc._rev)
       return true
     } catch (err) {
-      console.error({ database, id }, err)
+      console.error({ database: this.database, id }, err)
       return false
     }
-  }
-
-  return {
-    docDb,
-    getDb,
-    create,
-    get,
-    getById,
-    remove,
-    update,
   }
 }

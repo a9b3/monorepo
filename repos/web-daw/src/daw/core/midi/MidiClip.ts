@@ -1,4 +1,4 @@
-import { Subscribable } from '../ui'
+import { Subscribable } from '../ui/Subscribable'
 import type { MidiArrangement } from './MidiArrangement'
 import { TicksPerBeat } from '../constants'
 

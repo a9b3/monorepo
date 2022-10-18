@@ -1,5 +1,5 @@
 import { MidiEventTypeInteger } from '../midi'
-import { IONode } from '../mixer'
+import { IONode } from '../mixer/IONode'
 import { DX7Node } from './wams/DX7Node'
 import type { Instrument } from './interface'
 

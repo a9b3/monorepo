@@ -41,7 +41,9 @@
   const positionSelf = createPositionSelf(numberOfBeats)
 </script>
 
-<div class="cursor" use:positionSelf />
+{#if $currentProject}
+  <div class="cursor" use:positionSelf />
+{/if}
 
 <style>
   .cursor {
