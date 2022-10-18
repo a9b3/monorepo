@@ -26,13 +26,13 @@ type MidiNote = {
   velocity?: number
 }
 
-type CreateMidiNoteArgs = Omit<MidiNote, 'id'>
+type CreateMidiNoteArgs = Omit<MidiNote, 'id'> & { id?: string }
 
 function createMidiNote(arg: CreateMidiNoteArgs) {
   return {
     ...arg,
     type: 'noteOn',
-    id: crypto.randomUUID(),
+    id: arg.id || crypto.randomUUID(),
   }
 }
 
@@ -221,8 +221,10 @@ export class MidiClip extends Subscribable {
     // Default options
     opts.overlapType = opts.overlapType || 'deny'
 
+    if (arg.id) {
+      this.remove(arg.id)
+    }
     const mnote = createMidiNote(arg)
-    console.log('midi clip created', arg, mnote)
 
     const toRemove = new Set<string>()
     const prevNoteIds = this.notesIndex[String(mnote.note)] || []

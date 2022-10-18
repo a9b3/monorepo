@@ -12,7 +12,7 @@ interface Rect {
 // General
 // -------------------------------------------------------------------------
 
-function noteHeight(totalNotes: number, height: number) {
+export function noteHeight(totalNotes: number, height: number) {
   return height / totalNotes
 }
 
@@ -28,6 +28,29 @@ export function snapToGrid(value: number, division: number, floor = true) {
 
 export function hslString(color: string) {
   return `hsla(var(--hsl__${color}-h), var(--hsl__${color}-s), calc(var(--hsl__${color}-l)), 1)`
+}
+
+function parseCSSTransform(transform: string): number[] {
+  let xy = [0, 0, 0, 0, 0, 0]
+  if (transform.startsWith('matrix')) {
+    let str = transform.replace('matrix(', '')
+    str = str.replace(')', '')
+    xy = str
+      .split(',')
+      .map(a => a.trim())
+      .map(parseFloat)
+    return xy
+  }
+  if (transform.startsWith('translate(')) {
+    let str = transform.replace('translate(', '')
+    str = str.replace(')', '')
+    xy = str
+      .split(',')
+      .map(a => a.trim())
+      .map(parseFloat)
+    return xy
+  }
+  return xy
 }
 
 // -------------------------------------------------------------------------
@@ -82,6 +105,35 @@ function rectToNote(rect: Rect, height: number, totalNotes: number): number {
       calcPos(rect.bottom, height, totalNotes)
     )
   )
+}
+
+export function getElementRect(
+  el: HTMLElement,
+  container: HTMLElement,
+  test?: boolean
+) {
+  const containerBound = container.getBoundingClientRect()
+  const elBound = el.getBoundingClientRect()
+
+  let offsetTop = elBound.top - containerBound.top
+  let offsetLeft = elBound.left - containerBound.left
+  let offsetRight = offsetLeft + el.offsetWidth
+  let offsetBottom = offsetTop + el.offsetHeight
+
+  if (test) {
+    const [x, y] = parseCSSTransform(el.style.transform)
+    offsetTop = x || 0
+    offsetLeft = y || 0
+    offsetRight = offsetLeft + parseFloat(el.style.width)
+    offsetBottom = offsetTop + parseFloat(el.style.height)
+  }
+
+  return {
+    top: offsetTop,
+    left: offsetLeft,
+    right: offsetRight,
+    bottom: offsetBottom,
+  }
 }
 
 /**

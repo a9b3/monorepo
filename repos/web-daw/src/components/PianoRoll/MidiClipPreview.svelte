@@ -15,10 +15,10 @@
 
   function smallPreview(midiDiv: HTMLElement, noteLength: number) {
     const offsetHeight = container.offsetHeight
-    const heightPercent = Big(1).div(noteLength)
+    const heightPercent = 1 / noteLength
 
     midiDiv.style.height = `${Math.max(
-      Math.min(heightPercent.times(offsetHeight).toNumber(), 6),
+      Math.min(heightPercent * offsetHeight, 6),
       4
     )}px`
   }

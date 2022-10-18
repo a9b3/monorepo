@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events'
 import { getScrollParent } from 'src/utils'
 import { zindex } from '../zindex'
+import { getElementRect } from 'src/components/PianoRoll/midiGuiUtils'
 
 export enum ModKeys {
   Ctrl = 'ctrlKey',
@@ -16,6 +17,30 @@ type Rect = {
   bottom: number
 }
 
+/**
+ * Use to snap to grid.
+ *
+ */
+function snapToGrid(
+  value: number,
+  division: number,
+  opt?: { floor?: boolean; tolerance?: number }
+) {
+  opt = opt || {}
+  opt.floor = opt.floor || true
+
+  if (opt.tolerance && Math.abs(value % division) > division * opt.tolerance) {
+    return value
+  }
+
+  if (opt.floor) {
+    const sign = Math.sign(value)
+    return Math.floor(Math.abs(value / division)) * division * sign
+  }
+
+  return Math.round(value / division) * division
+}
+
 function intersectRect(r1: Rect, r2: Rect) {
   return !(
     r2.left > r1.right ||
@@ -23,21 +48,6 @@ function intersectRect(r1: Rect, r2: Rect) {
     r2.top > r1.bottom ||
     r2.bottom < r1.top
   )
-}
-
-function getElementRect(el: HTMLElement, container: HTMLElement) {
-  const containerBound = container.getBoundingClientRect()
-  const elBound = el.getBoundingClientRect()
-
-  const offsetTop = elBound.top - containerBound.top
-  const offsetLeft = elBound.left - containerBound.left
-
-  return {
-    top: offsetTop,
-    left: offsetLeft,
-    right: offsetLeft + el.offsetWidth,
-    bottom: offsetTop + el.offsetHeight,
-  }
 }
 
 function parseCSSTransform(transform: string): number[] {
@@ -338,7 +348,11 @@ export class SelectionManager extends EventEmitter {
     this.#resetSelectedBound()
     Object.keys(this.selected).forEach(id => {
       const selected = this.selectable[id]
-      const r1 = getElementRect(selected.el, this.container)
+      const r1 = getElementRect(
+        selected.el,
+        this.container,
+        !selected.el.isConnected
+      )
       this.#selectedBound.top = Math.min(r1.top, this.#selectedBound.top)
       this.#selectedBound.left = Math.min(r1.left, this.#selectedBound.left)
       this.#selectedBound.right = Math.max(r1.right, this.#selectedBound.right)
@@ -355,6 +369,8 @@ export class SelectionManager extends EventEmitter {
   // -------------------------------------------------------------------------
 
   allowOutOfBounds = false
+  snapRow = undefined
+  snapColumn = undefined
 
   #moving = false
   #movingOrigin = {}
@@ -373,6 +389,16 @@ export class SelectionManager extends EventEmitter {
     deltaX: number
     deltaY: number
   }): { deltaX: number; deltaY: number } => {
+    if (this.snapRow) {
+      arg0.deltaY = snapToGrid(arg0.deltaY, this.snapRow)
+    }
+
+    if (this.snapColumn) {
+      arg0.deltaX = snapToGrid(arg0.deltaX, this.snapColumn, {
+        tolerance: 0.1,
+      })
+    }
+
     // Calculate keep in bound deltas
     if (!this.allowOutOfBounds) {
       const bound = this.container.getBoundingClientRect()
@@ -444,7 +470,20 @@ export class SelectionManager extends EventEmitter {
       })
   }
 
+  setOnMoveFinish(moveFinish) {
+    this.#moveFinish = moveFinish
+  }
+
   #movingHandlerUp = () => {
+    this.#moveFinish(
+      Object.keys(this.selected).map(id => {
+        const r1 = getElementRect(this.selectable[id].el, this.container)
+        return {
+          rect: r1,
+          ...this.selectable[id],
+        }
+      })
+    )
     this.#movingOrigin = {}
     this.#moving = false
 
@@ -456,6 +495,7 @@ export class SelectionManager extends EventEmitter {
     if (this.#isSelected(target)) {
       this.#moving = true
       this.#movingOriginTarget = target
+      this.#calcSelectedBound()
 
       // Set this.#movingOrigin origin xy for each selected item
       Object.keys(this.selected)
@@ -496,6 +536,8 @@ export class SelectionManager extends EventEmitter {
     this.emit('update')
   }
 
+  allowDirectSelectable = true
+
   /**
    * Sets initial selection box styles.
    *
@@ -507,15 +549,20 @@ export class SelectionManager extends EventEmitter {
     if (!this.#containerExclusive(evt.target as HTMLElement)) {
       return
     }
+    const id = this.#isSelectable(evt.target as HTMLElement)
+
     // If mod key is required and not pressed then do nothing
-    if (this.modKey && !evt[this.modKey]) {
+    if (
+      !(id && this.allowDirectSelectable) &&
+      this.modKey &&
+      !evt[this.modKey]
+    ) {
       return
     }
 
     // Set the origin
     this.#origin = this.#containerMouseXY(evt)
 
-    const id = this.#isSelectable(evt.target as HTMLElement)
     if (id) {
       this.selected[id] = evt.target as HTMLElement
       this.emit('update')

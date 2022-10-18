@@ -6,6 +6,9 @@
   export let selectionManager: SelectionManager
   export let modKey: ModKeys
   export let onMove: any
+  export let snapRow: number = undefined
+  export let snapColumn: number = undefined
+  export let onMoveFinish
 
   let sbox: HTMLElement
 
@@ -16,9 +19,16 @@
   onMount(() => {
     selectionManager.registerContainer(container, { modKey })
     selectionManager.setSelectionBox(sbox)
+    if (snapRow) {
+      selectionManager.snapRow = snapRow
+    }
+    if (snapColumn) {
+      selectionManager.snapColumn = snapColumn
+    }
     if (onMove) {
       selectionManager.setOnMove(onMove)
     }
+    selectionManager.setOnMoveFinish(onMoveFinish)
   })
   onDestroy(() => {
     selectionManager.unregisterContainer()

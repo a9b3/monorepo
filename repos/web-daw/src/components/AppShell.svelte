@@ -16,10 +16,6 @@
     mousePosition.observeMousePosition()
     await fetchEditor($userStore.id)
     ready = true
-
-    window.addEventListener('mousedown', evt => {
-      console.log('checking', evt.clientX, evt.clientY)
-    })
   })
   onDestroy(() => {
     mousePosition.unobserveMousePosition()

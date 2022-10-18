@@ -15,7 +15,12 @@
   import { hoverKey, setHoverKey, snapEnabled } from './pianoRollStore'
   import Selection from '../Selection/Selection.svelte'
   import MidiClipPreview from './MidiClipPreview.svelte'
-  import { singlePointToMidiEvent, containerMouseXY } from './midiGuiUtils'
+  import {
+    singlePointToMidiEvent,
+    rectToMidiEvent,
+    containerMouseXY,
+    noteHeight,
+  } from './midiGuiUtils'
 
   export let numberOfKeys: number
   export let keyHeight: number
@@ -86,6 +91,30 @@
         container={selectionContainer}
         modKey={selectionModKey}
         onMove={midiClipPreviewRef.onMove}
+        snapRow={noteHeight(numberOfKeys, selectionContainer.offsetHeight)}
+        snapColumn={selectionContainer.offsetWidth / numberOfBars / barDivision}
+        onMoveFinish={selected => {
+          selected.forEach(({ id }) => {
+            midiClip.remove(id)
+          })
+          selected.forEach(({ id, el, rect }) => {
+            const midiEvt = rectToMidiEvent(
+              rect,
+              selectionContainer,
+              numberOfKeys,
+              totalTicks
+            )
+
+            midiClip.insert({
+              type: 'noteOn',
+              note: midiEvt.note,
+              velocity: 70,
+              startTick: midiEvt.startTick,
+              endTick: midiEvt.endTick - 1,
+              id,
+            })
+          })
+        }}
       />
     {/if}
     <div class="test">

@@ -4,8 +4,6 @@
   export let idx: number
   export let addClip: InstanceType<typeof Track>['addMidiClip']
   export let setActiveClip: InstanceType<typeof Track>['setActiveMidiClip']
-
-  console.log(`here`)
 </script>
 
 <div
