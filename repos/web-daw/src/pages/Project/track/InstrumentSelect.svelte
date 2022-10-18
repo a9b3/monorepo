@@ -2,7 +2,7 @@
   import type { Track, Instrument } from 'daw/core'
   import { Player, Window } from 'src/components'
   import { createDragTarget } from 'src/components/draggable'
-  import Keyboard from 'src/components/PianoRoll/Keyboard.svelte'
+  import { DX7 as DX7Component } from 'src/components/Instruments/DX7'
 
   export let instrumentType: string
   export let instrument: Instrument = undefined
@@ -18,19 +18,16 @@
 </script>
 
 {#if showWindow}
-  <Window
-    title={`${instrumentType}`}
-    onClose={() => {
-      showWindow = false
-    }}
-  >
-    <Keyboard
-      numberOfKeys={88}
-      keyHeight={20}
-      onMidi={instrument.onMidi}
-      horizontal={true}
-    />
-  </Window>
+  {#if instrumentType === 'DX7'}
+    <Window
+      title={`${instrumentType}`}
+      onClose={() => {
+        showWindow = false
+      }}
+    >
+      <DX7Component dx7={instrument} />
+    </Window>
+  {/if}
 {/if}
 <div
   class="main"
@@ -38,7 +35,9 @@
   class:empty={!instrument}
   use:dragDirective
   on:click={() => {
-    showWindow = !showWindow
+    if (instrument) {
+      showWindow = !showWindow
+    }
   }}
 >
   {#if !instrument}

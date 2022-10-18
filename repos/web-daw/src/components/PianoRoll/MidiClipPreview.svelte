@@ -6,9 +6,10 @@
 
   export let midiClip: MidiClip
   export let selectionManager: SelectionManager = undefined
+  export let displayNoteRange: { min: number; max: number } = undefined
 
   let container: HTMLElement
-  let noteRange = midiClip.noteRange
+  let noteRange = displayNoteRange || midiClip.noteRange
   let noteLength = noteRange.max - noteRange.min + 1
 
   function smallPreview(midiDiv: HTMLElement, noteLength: number) {

@@ -45,10 +45,19 @@
     position: absolute;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    /* overflow: hidden; */
     border-radius: var(--misc__borderRadius);
     outline: 1px solid var(--colors__bg2);
     box-shadow: var(--shadows__1);
+    animation: fadein 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes fadein {
+    0% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
   .top {
     height: 30px;

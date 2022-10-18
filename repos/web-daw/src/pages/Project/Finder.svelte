@@ -12,6 +12,8 @@
   export let selectedId: string | undefined
   export let sections: { label: string; rows: (DawFile | DawDirectory)[] }[]
   export let onSelect: (arg0: DawFile | DawDirectory) => void
+
+  console.log(sections)
 </script>
 
 <div class="main">
@@ -28,6 +30,7 @@
           >
             <Icon class="icon" type={row.icon} />
             {row.name}
+            ({row.children.length})
           </SelectableRow>
         {/each}
       </LabeledSection>

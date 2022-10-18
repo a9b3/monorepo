@@ -69,7 +69,7 @@
     overflow: hidden;
   }
   .left {
-    flex: 1.2;
+    flex: 1.3;
     height: 100%;
     overflow: auto;
   }

@@ -2,16 +2,24 @@ import { MidiEventTypeInteger } from '../midi'
 import { IONode } from '../mixer/IONode'
 import { DX7Node } from './wams/DX7Node'
 import type { Instrument } from './interface'
+import { Presets } from './Presets'
 
 export class DX7 extends IONode implements Instrument {
   dx7: DX7Node
   ready = false
   audioContext: AudioContext
+  presets: Presets
 
-  constructor({ audioContext }: { audioContext: AudioContext }) {
-    super(audioContext)
-    this.#init(audioContext)
-    this.audioContext = audioContext
+  constructor(args: {
+    audioContext: AudioContext
+    presets?: ConstructorParameters<typeof Presets>[0]
+  }) {
+    super(args.audioContext)
+    this.#init(args.audioContext)
+    this.audioContext = args.audioContext
+
+    this.presets = new Presets(args.presets)
+    this.presets.setOnPatch(this.setPatch)
   }
 
   async #init(audioContext: AudioContext) {
@@ -20,10 +28,12 @@ export class DX7 extends IONode implements Instrument {
     this.dx7.connect(this.output)
     this.ready = true
 
+    await this.presets.init()
+
     this.emit('update')
   }
 
-  setPatch(patch: any) {
+  setPatch = (patch: any) => {
     this.dx7.setPatch(patch)
 
     this.emit('update')

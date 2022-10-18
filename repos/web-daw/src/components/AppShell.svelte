@@ -58,14 +58,15 @@
       'content' 1fr
       / 1fr;
     background: var(--colors__bg3);
-    animation: fadein 0.5s normal forwards;
+    opacity: 0;
+    animation: fadein 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   @keyframes fadein {
     0% {
       opacity: 0;
     }
     100% {
-      opacity: 100%;
+      opacity: 1;
     }
   }
 

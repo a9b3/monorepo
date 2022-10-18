@@ -184,7 +184,7 @@ if (!AudioWorkletGlobalScope.WAMProcessor) {
     onpatch(data) {
       var buffer = new Uint8Array(data)
       var len = data.byteLength
-      var WAM = th
+      var WAM = this.WAM
       var buf = WAM._malloc(len)
       for (var i = 0; i < len; i++) WAM.setValue(buf + i, buffer[i], 'i8')
       this.wam_onpatch(this.inst, buf, len)

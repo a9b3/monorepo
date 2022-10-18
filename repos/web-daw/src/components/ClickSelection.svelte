@@ -1,30 +1,32 @@
 <script lang="ts">
-  import { objectStyle } from 'src/utils/objectToStyleStr'
+  import { onMount, onDestroy } from 'svelte'
+  import type { ClickSelectionOption } from './clickSelectionType'
 
-  type Option = {
-    key: string
-    label: string
-  }
-
-  export let options: Readonly<Option[]> = []
+  export let options: Readonly<ClickSelectionOption[]> = []
   export let selectedKeys = []
-  export let onSelect: (key: Option) => void
+  export let onSelect: (key: ClickSelectionOption) => void
 
   let showMenu = false
+
+  function onmousedown() {
+    showMenu = false
+  }
+  onMount(() => {
+    window.addEventListener('mousedown', onmousedown)
+  })
+  onDestroy(() => {
+    window.removeEventListener('mousedown', onmousedown)
+  })
 </script>
 
-<div
-  style={objectStyle({ position: 'relative' })}
-  on:click={() => (showMenu = !showMenu)}
->
-  <slot />
+<div class="parent" on:click={() => (showMenu = !showMenu)}>
   {#if showMenu}
-    <div class="card">
+    <div class="child">
       {#each options as option}
         <div
           class="option"
           class:selected={selectedKeys.includes(option.key)}
-          on:click={() => {
+          on:mousedown={() => {
             onSelect(option)
           }}
         >
@@ -33,19 +35,27 @@
       {/each}
     </div>
   {/if}
+
+  <slot />
 </div>
 
 <style>
-  .card {
+  .parent {
+    position: relative;
+  }
+
+  .child {
     border-radius: 4px;
-    overflow: hidden;
     position: absolute;
     top: 0;
     left: 50%;
     background: var(--colors__bottom);
     transform: translate(-50%, 20px);
-    z-index: 10;
+    z-index: 1000;
+    max-height: 500px;
+    overflow: auto;
   }
+
   .option {
     padding: 10px 20px;
     width: 120px;

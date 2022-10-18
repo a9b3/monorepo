@@ -13,12 +13,16 @@
 
   function createPositionSelf(numberOfBeats: number) {
     return function positionSelf(node: HTMLElement) {
+      console.log(`should reisge again`)
       const tickHandler: TickHandler = ({ currentTick, ticksPerBeat }) => {
         const loopLength = numberOfBeats * ticksPerBeat
         const currentPosPercentage = (currentTick % loopLength) / loopLength
 
-        const cursorLeft = node.parentElement.offsetWidth * currentPosPercentage
-        node.style.transform = `translateX(${cursorLeft}px)`
+        if (node?.parentElement) {
+          const cursorLeft =
+            node.parentElement.offsetWidth * currentPosPercentage
+          node.style.transform = `translateX(${cursorLeft}px)`
+        }
       }
 
       function onstop() {
@@ -29,6 +33,7 @@
 
       return {
         destroy() {
+          console.log(`notbeing invoked`)
           if ($currentProject) {
             $currentProject.controller.removeListener('tick', tickHandler)
             $currentProject.controller.removeListener('stop', onstop)
@@ -42,7 +47,9 @@
 </script>
 
 {#if $currentProject}
-  <div class="cursor" use:positionSelf />
+  {#key $currentProject.id}
+    <div class="cursor" use:positionSelf />
+  {/key}
 {/if}
 
 <style>

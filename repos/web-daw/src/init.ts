@@ -14,6 +14,8 @@ export async function init() {
   // @ts-expect-error Hack for now
   await AWPF.polyfill(audioContext, [])
 
+  // await new Promise(resolve => setTimeout(resolve, 2000))
+
   await Promise.all([
     await editorDB.init('editor'),
     await projectDB.init('project'),

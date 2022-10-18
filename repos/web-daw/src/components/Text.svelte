@@ -7,8 +7,9 @@
   import { objectToStyleStr } from 'src/utils/objectToStyleStr'
   import { styles } from 'src/utils/styles'
 
-  export let type = 'label'
+  export let type: 'label' = 'label'
   export let color: keyof typeof styles.colors = 'fg'
+  export let bold: boolean = false
 
   const types = {
     label: {
@@ -19,6 +20,7 @@
   const overrideStyles =
     objectToStyleStr({
       ...types[type],
+      fontWeight: bold ? 'bold' : 'normal',
     }) + $$restProps.style
 </script>
 
