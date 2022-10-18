@@ -72,6 +72,27 @@ importers:
     dependencies:
       '@monorepo/examples-js-lib': link:../js-lib
 
+  repos/examples/svelte-app:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': ^1.0.2
+      '@tsconfig/svelte': ^3.0.0
+      svelte: ^3.50.1
+      svelte-check: ^2.9.0
+      svelte-preprocess: ^4.10.7
+      svelte-routing: ^1.6.0
+      typescript: ^4.8.3
+      vite: ^3.1.0
+    dependencies:
+      svelte: 3.50.1
+      svelte-routing: 1.6.0_iprco5tylfmvffqgrvqxc46njy
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': 1.0.8_svelte@3.50.1+vite@3.1.4
+      '@tsconfig/svelte': 3.0.0
+      svelte-check: 2.9.0_svelte@3.50.1
+      svelte-preprocess: 4.10.7_iprco5tylfmvffqgrvqxc46njy
+      typescript: 4.8.3
+      vite: 3.1.4
+
   repos/scaffold/templates/svelte-template:
     specifiers:
       '@sveltejs/vite-plugin-svelte': ^1.0.2

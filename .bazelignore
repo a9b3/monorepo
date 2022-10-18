@@ -6,3 +6,4 @@ bazel/js/examples/js-lib/node_modules
 bazel/js/examples/js-lib-consumer/node_modules
 repos/scaffold/templates/svelte-template/node_modules
 repos/web-daw/node_modules
+repos/examples/svelte-app/node_modules

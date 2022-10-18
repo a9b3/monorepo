@@ -7,10 +7,10 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [
     svelte(),
-    VitePWA({
-      srcDir: 'src',
-      strategies: 'injectManifest',
-    }),
+    // VitePWA({
+    //   srcDir: 'src',
+    //   strategies: 'injectManifest',
+    // }),
   ],
   resolve: {
     alias: {
@@ -19,7 +19,8 @@ export default defineConfig({
     },
   },
   define: {
-    // global: 'window',
+    // global: '({})',
+    // global: {},
     process: { env: {} },
   },
 })

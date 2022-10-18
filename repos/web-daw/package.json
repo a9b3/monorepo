@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "deploy": "aws s3 sync ./dist s3://173316437537-lllllllll-link-static-sites/www.lllllllll.link/"
+    "deploy": "aws s3 sync ./dist s3://173316437537-lllllllll-link-static-sites/www.lllllllll.link/ && aws cloudfront create-invalidation --distribution-id E11I35R1LIGQVO --paths /index.html"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.2",
