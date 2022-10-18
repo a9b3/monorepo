@@ -21,7 +21,7 @@
   let barWidth = 400
 
   onMount(() => {
-    scrollParent.scrollTo(0, (keyHeight / 1.5) * startingKey)
+    scrollParent.scrollTo(0, (keyHeight / 2) * startingKey)
   })
 </script>
 
