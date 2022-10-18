@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { Loader, Icon, ContextMenu } from 'src/components'
+  import { Icon, ContextMenu } from 'src/components'
   import {
     addOpenedProject,
     createProject,
@@ -12,10 +12,11 @@
     projectFetching,
   } from 'src/store'
   import { objectStyle, randomEmoji, randomLinearGradient } from 'src/utils'
-
   import ProjectCard from './ProjectCard.svelte'
   import ProjectRow from './ProjectRow.svelte'
   import FilterSort from './FilterSort.svelte'
+
+  export let location: any
 
   let contextMenuRef: ContextMenu
 
@@ -40,9 +41,6 @@
 </script>
 
 <div class="content" on:contextmenu|preventDefault={contextMenuRef.openMenu}>
-  {#if $projectFetching}
-    <Loader />
-  {/if}
   {#if !$projectFetching}
     <ContextMenu
       bind:this={contextMenuRef}

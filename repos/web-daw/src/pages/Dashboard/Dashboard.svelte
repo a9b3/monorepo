@@ -14,9 +14,9 @@
         <div class="row" class:active={$url.pathname === '/recent'}>Recent</div>
       </Link>
       <Linebreak />
-      <div class="row">Favorites</div>
+      <div class="row disabled">Favorites</div>
       <Linebreak />
-      <div class="row">Teams</div>
+      <div class="row disabled">Teams</div>
     </div>
     <div class="content">
       <Route path="/recent" component={Recent} />
@@ -59,8 +59,16 @@
     background-color: var(--colors__bgHover);
   }
   .row.active {
-    background: var(--colors__accent);
+    font-weight: bold;
   }
+
+  .row.disabled {
+    color: var(--colors__fg3);
+  }
+  .row.disabled:hover {
+    background-color: inherit;
+  }
+
   .projects {
     display: flex;
     flex-direction: row;

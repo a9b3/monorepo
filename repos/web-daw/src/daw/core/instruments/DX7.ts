@@ -23,6 +23,18 @@ export class DX7 extends IONode implements Instrument {
     this.emit('update')
   }
 
+  setPatch(patch: any) {
+    this.dx7.setPatch(patch)
+
+    this.emit('update')
+  }
+
+  setSysex(sysex: any) {
+    this.dx7.setSysex(sysex)
+
+    this.emit('update')
+  }
+
   onMidi: Instrument['onMidi'] = e => {
     e.velocity = e.velocity || 60
 

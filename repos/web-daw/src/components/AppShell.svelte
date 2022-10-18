@@ -3,7 +3,7 @@
   import { Router, Route } from 'svelte-routing'
   import Project from 'src/pages/Project/Project.svelte'
   import Dashboard from 'src/pages/Dashboard/Dashboard.svelte'
-  import { Theme, TabBar, Loader } from 'src/components'
+  import { Theme, TabBar } from 'src/components'
   import userStore from 'src/store/user'
   import { fetchEditor } from 'src/store/editor'
   import { mousePosition, KeyboardManager } from 'src/ui'
@@ -25,9 +25,6 @@
   })
 </script>
 
-{#if !ready}
-  <Loader />
-{/if}
 {#if ready}
   <div class="shell">
     <Theme />
@@ -61,6 +58,15 @@
       'content' 1fr
       / 1fr;
     background: var(--colors__bg3);
+    animation: fadein 0.5s normal forwards;
+  }
+  @keyframes fadein {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 100%;
+    }
   }
 
   .nav {

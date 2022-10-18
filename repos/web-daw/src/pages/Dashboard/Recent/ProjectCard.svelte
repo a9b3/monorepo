@@ -1,7 +1,6 @@
 <script lang="ts">
   import { navigate } from 'svelte-routing'
   import moment from 'moment'
-
   import type { ProjectDoc } from 'src/db'
   import { ContextMenu, Text } from 'src/components'
   import {
@@ -33,24 +32,9 @@
     navigate(`/project/${project.id}`, { replace: true })
   }}
 >
-  <ContextMenu
-    bind:this={contextMenuRef}
-    menu={[
-      {
-        label: 'Delete Project',
-        onClick: () => {
-          deleteProject(project.id)
-          removeOpenedProject(project.id)
-        },
-        type: 'item',
-      },
-    ]}
-  />
   <div
     class="cover"
-    style={objectStyle({
-      background: project.color,
-    })}
+    style={project.color || ''}
   />
   <div class="info">
     <div
@@ -75,6 +59,19 @@
       </Text>
     </div>
   </div>
+  <ContextMenu
+    bind:this={contextMenuRef}
+    menu={[
+      {
+        label: 'Delete Project',
+        onClick: () => {
+          deleteProject(project.id)
+          removeOpenedProject(project.id)
+        },
+        type: 'item',
+      },
+    ]}
+  />
 </div>
 
 <style>

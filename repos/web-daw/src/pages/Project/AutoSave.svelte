@@ -19,6 +19,10 @@
   // auto-save projects every 2 seconds
   let interval: number
   onMount(() => {
+    // TODO REMOVE, super hack until database stablizes
+    if (window.location.host === 'lllllllll.link"') {
+      return
+    }
     // onMount save
     if ($project) {
       projectDb.update($project.id, instanceToJson($project))

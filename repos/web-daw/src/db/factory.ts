@@ -15,15 +15,15 @@ export function dbFactory<T>(database: string) {
     return docDb
   }
 
-  try {
-    if (window.location.host === 'lllllllll.link') {
-      docDb.destroy().then(() => {
-        docDb = new PouchDB(database)
-      })
-    }
-  } catch (err) {
-    console.error(`err`, err)
-  }
+  // try {
+  //   if (window.location.host === 'lllllllll.link') {
+  //     docDb.destroy().then(() => {
+  //       docDb = new PouchDB(database)
+  //     })
+  //   }
+  // } catch (err) {
+  //   console.error(`err`, err)
+  // }
 
   async function getById(
     id: string

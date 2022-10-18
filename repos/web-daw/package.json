@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "deploy": "aws s3 sync ./dist s3://173316437537-lllllllll-link-static-sites/www.lllllllll.link/ && aws cloudfront create-invalidation --distribution-id E11I35R1LIGQVO --paths /index.html"
+    "deploy": "aws s3 sync ./dist s3://173316437537-lllllllll-link-static-sites/www.lllllllll.link/",
+    "invalidate": "aws cloudfront create-invalidation --distribution-id E11I35R1LIGQVO --paths /index.html"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.2",
@@ -33,6 +34,7 @@
     "pouchdb": "^7.3.0",
     "pouchdb-browser": "^7.3.0",
     "pouchdb-find": "^7.3.0",
+    "randomcolor": "^0.6.2",
     "svelte": "^3.50.1",
     "svelte-routing": "^1.6.0",
     "vite-plugin-pwa": "^0.13.1"

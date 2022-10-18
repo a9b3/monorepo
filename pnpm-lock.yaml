@@ -130,6 +130,7 @@ importers:
       pouchdb: ^7.3.0
       pouchdb-browser: ^7.3.0
       pouchdb-find: ^7.3.0
+      randomcolor: ^0.6.2
       svelte: ^3.50.1
       svelte-check: ^2.8.1
       svelte-preprocess: ^4.10.7
@@ -152,6 +153,7 @@ importers:
       pouchdb: 7.3.0
       pouchdb-browser: 7.3.0
       pouchdb-find: 7.3.0
+      randomcolor: 0.6.2
       svelte: 3.50.1
       svelte-routing: 1.6.0_iprco5tylfmvffqgrvqxc46njy
       vite-plugin-pwa: 0.13.1_bhe5iaipiq3lmbaxwdxgnnn2gq
@@ -5475,6 +5477,10 @@ packages:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
     dependencies:
       safe-buffer: 5.2.1
+    dev: false
+
+  /randomcolor/0.6.2:
+    resolution: {integrity: sha512-Mn6TbyYpFgwFuQ8KJKqf3bqqY9O1y37/0jgSK/61PUxV4QfIMv0+K2ioq8DfOjkBslcjwSzRfIDEXfzA9aCx7A==}
     dev: false
 
   /react-is/16.13.1:
