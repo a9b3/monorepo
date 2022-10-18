@@ -6,7 +6,8 @@
   import { Theme, TabBar, Loader } from 'src/components'
   import userStore from 'src/store/user'
   import { fetchEditor } from 'src/store/editor'
-  import { mousePosition } from 'src/ui'
+  import { mousePosition, KeyboardManager } from 'src/ui'
+  import { keyboardStore } from 'src/store'
 
   export let url = ''
 
@@ -16,9 +17,11 @@
     mousePosition.observeMousePosition()
     await fetchEditor($userStore.id)
     ready = true
+    keyboardStore.start()
   })
   onDestroy(() => {
     mousePosition.unobserveMousePosition()
+    keyboardStore.stop()
   })
 </script>
 

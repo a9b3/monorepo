@@ -560,6 +560,12 @@ export class SelectionManager extends EventEmitter {
       return
     }
 
+    if (this.modKey && !evt[this.modKey]) {
+      this.selected = {}
+      this.#resetSelectedBound()
+      this.emit('update')
+    }
+
     // Set the origin
     this.#origin = this.#containerMouseXY(evt)
 
