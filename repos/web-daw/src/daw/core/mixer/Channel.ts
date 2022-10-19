@@ -1,4 +1,5 @@
 import { Analyser } from 'daw/core/customNodes'
+import { percentToGain, gainToPercent } from 'daw/utils/volumeControl'
 import { IONode } from './IONode'
 import { Effects } from './Effects'
 
@@ -95,10 +96,14 @@ export class Channel extends IONode {
   }
 
   setGain(value: number) {
-    this.gain = value
+    this.gain = percentToGain(value)
     this.fader.gain.setValueAtTime(value, this.#audioContext.currentTime)
 
     this.emit('update')
+  }
+
+  get percentGain() {
+    return gainToPercent(this.gain)
   }
 
   setIsMute(muteState = !this.isMute) {

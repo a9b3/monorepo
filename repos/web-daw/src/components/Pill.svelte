@@ -34,7 +34,7 @@
     padding: 2px 12px;
     border-radius: 35px;
     height: 20px;
-    color: var(--colors__fg);
+    color: var(--colors__fg2);
   }
   .main:hover {
     background-color: var(--colors__bg3Hover);

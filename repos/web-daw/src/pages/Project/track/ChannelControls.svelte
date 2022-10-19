@@ -12,7 +12,10 @@
     <StereoMeter analyser={$channel.analyser} />
   </div>
 
-  <Slider value={$channel.gain} onChange={val => $channel.setGain(val)} />
+  <Slider
+    value={$channel.percentGain}
+    onChange={val => $channel.setGain(val)}
+  />
 
   <Layout type="col" padding={'8px'} align="center">
     <LED color={$channel.isRecord ? 'red' : $channel.isMute ? 'bg' : 'green'} />

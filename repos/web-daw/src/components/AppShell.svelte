@@ -54,7 +54,7 @@
     display: grid;
     position: relative;
     grid-template:
-      'nav' 40px
+      'nav' 30px
       'content' 1fr
       / 1fr;
     background: var(--colors__bg3);

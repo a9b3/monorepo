@@ -8,7 +8,7 @@
   import { styles } from 'src/utils/styles'
 
   export let type: 'label' = 'label'
-  export let color: keyof typeof styles.colors = 'fg'
+  export let color: keyof typeof styles.colors = 'fg2'
   export let bold: boolean = false
 
   const types = {

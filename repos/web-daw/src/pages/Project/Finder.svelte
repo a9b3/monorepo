@@ -12,8 +12,6 @@
   export let selectedId: string | undefined
   export let sections: { label: string; rows: (DawFile | DawDirectory)[] }[]
   export let onSelect: (arg0: DawFile | DawDirectory) => void
-
-  console.log(sections)
 </script>
 
 <div class="main">
@@ -42,6 +40,7 @@
   .main {
     height: 100%;
     width: 100%;
+    color: var(--colors__fg2);
   }
 
   .main :global(.row) {

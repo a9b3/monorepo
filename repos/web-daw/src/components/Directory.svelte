@@ -43,5 +43,6 @@
   .main {
     display: flex;
     flex-direction: column;
+    color: var(--colors__fg2);
   }
 </style>
