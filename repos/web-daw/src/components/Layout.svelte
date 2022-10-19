@@ -1,9 +1,15 @@
 <script lang="ts">
+  import { objectStyle } from 'src/utils'
+
   export let type: 'row' | 'col' = 'row'
   export let padding: string = 'var(--spacing__paddingM)'
   export let align: 'center' | 'start' = undefined
+  export let height = '100%'
 
-  const overrideStyle = `--padding: ${padding};`
+  const overrideStyle = objectStyle({
+    '--padding': padding,
+    height: height,
+  })
 </script>
 
 <div class={$$restProps.class || ''}>

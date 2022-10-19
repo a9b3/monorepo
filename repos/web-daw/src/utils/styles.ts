@@ -27,27 +27,27 @@ const COLORS = Object.freeze({
 
 const HSL = {
   ...Object.fromEntries(
-    Object.entries(COLORS).map(([key, value]) => {
+    Object.entries({ ...COLORS, ...TOKENS }).map(([key, value]) => {
       return [`${key}-h`, hexToHSL(value)[0]]
     })
   ),
   ...Object.fromEntries(
-    Object.entries(COLORS).map(([key, value]) => {
+    Object.entries({ ...COLORS, ...TOKENS }).map(([key, value]) => {
       return [`${key}-s`, hexToHSL(value)[1]]
     })
   ),
   ...Object.fromEntries(
-    Object.entries(COLORS).map(([key, value]) => {
+    Object.entries({ ...COLORS, ...TOKENS }).map(([key, value]) => {
       return [`${key}-l`, hexToHSL(value)[2]]
     })
   ),
   ...Object.fromEntries(
-    Object.entries(COLORS).map(([key, value]) => {
+    Object.entries({ ...COLORS, ...TOKENS }).map(([key, value]) => {
       return [`${key}-raw`, hexToHSL(value).join(', ')]
     })
   ),
   ...Object.fromEntries(
-    Object.entries(COLORS).map(([key, value]) => {
+    Object.entries({ ...COLORS, ...TOKENS }).map(([key, value]) => {
       return [`${key}-hsl`, `hsl(${hexToHSL(value).join(', ')})`]
     })
   ),

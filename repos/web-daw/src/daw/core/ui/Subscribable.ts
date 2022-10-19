@@ -9,7 +9,7 @@ export class Subscribable extends EventEmitter {
 
   constructor() {
     super()
-    this.setMaxListeners(200)
+    this.setMaxListeners(1000)
   }
 
   /**

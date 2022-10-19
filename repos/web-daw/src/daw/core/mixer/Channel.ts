@@ -23,6 +23,8 @@ export class Channel extends IONode {
   name: string
   gain: number
   isMute: boolean
+  isSolo: boolean
+  isRecord: boolean
   panPosition = 0
 
   fader: GainNode
@@ -54,6 +56,8 @@ export class Channel extends IONode {
     id: string
     gain?: number
     isMute?: boolean
+    isRecord?: boolean
+    isSolo?: boolean
     panPosition?: number
     name?: string
   }) {
@@ -70,6 +74,8 @@ export class Channel extends IONode {
     this.name = args.name || 'Untitled'
     this.setGain(args.gain || 0.9)
     this.setIsMute(args.isMute || false)
+    this.setIsSolo(args.isSolo || false)
+    this.setIsRecord(args.isRecord || false)
     this.setPanPosition(args.panPosition || 0)
 
     // Connect the chain.
@@ -103,6 +109,20 @@ export class Channel extends IONode {
     }
     this.isMute = muteState
 
+    this.emit('update')
+  }
+
+  setIsSolo(soloState = !this.isSolo, skipEmit = false) {
+    this.isSolo = soloState
+
+    if (!skipEmit) {
+      this.emit('solo', this.id, soloState)
+    }
+    this.emit('update')
+  }
+
+  setIsRecord(recordState = !this.isRecord) {
+    this.isRecord = recordState
     this.emit('update')
   }
 }

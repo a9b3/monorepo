@@ -1,8 +1,10 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
+  import { ContextMenu } from 'src/components'
   import { objectStyle } from 'src/utils'
   import type { MidiClip, TickHandler } from 'daw/core'
   import { editorStore, currentProject } from 'src/store/editor'
+  import StepNote from './StepNote.svelte'
 
   export let beatsPerLoop: number
   // TODO use this later to handle time signature change
@@ -75,15 +77,21 @@
 
 <div class={'main'}>
   <div class="sequencer" {style}>
-    {#each rows as row, rowIdx}
-      {#each row as _, idx}
-        <div
-          class="cell"
-          class:clipIsActive
-          class:playing={elapsedCounter === idx}
-          class:odd={isOddBeat(idx)}
-          class:active={$clip && getNote(rowIdx, idx)}
-          on:mousedown={() => toggleNote(rowIdx, idx)}
+    {#each rows as col, rowIdx}
+      {#each col as _, colIdx}
+        <StepNote
+          {clipIsActive}
+          playing={elapsedCounter === colIdx}
+          odd={isOddBeat(colIdx)}
+          active={$clip && getNote(rowIdx, colIdx)}
+          clip={$clip}
+          {ticksPerBeat}
+          {beatDivision}
+          {getNote}
+          {toggleNote}
+          {rowIdx}
+          {colIdx}
+          colLength={col.length}
         />
       {/each}
     {/each}
@@ -102,30 +110,5 @@
     width: 100%;
     justify-content: space-between;
     height: 100%;
-  }
-  .cell {
-    width: 20px;
-    height: 25px;
-    outline: 1px solid var(--colors__fg2);
-    border-radius: 4px;
-    margin: 3px;
-    background: var(--colors__bg3);
-    transition: all 0.1s ease;
-  }
-  .cell:hover {
-    filter: brightness(0.8);
-  }
-  .odd {
-    background: none;
-  }
-  .active {
-    background: var(--colors__fg2);
-    animation: ease-out();
-  }
-  .cell.playing {
-    outline: 1px solid var(--colors__bg2);
-  }
-  .cell.playing.active.clipIsActive {
-    background: var(--colors__neonPink);
   }
 </style>

@@ -17,37 +17,53 @@
   import type { MenuItem } from './types'
   import { directSubtreeOf, objectStyle } from 'src/utils'
 
-  // Configure the context menu through this prop
-  export let menu: MenuItem[] = []
-  // bind to this component from parent to access this function to open menu
-  export function openMenu(evt: MouseEvent) {
-    if (
-      !directSubtreeOf(
-        evt.target as HTMLElement,
-        anchor,
-        el => el.getAttribute('data-component-type') === 'contextmenu'
-      )
-    ) {
-      return
-    }
-    showMenu = true
-    menuPos = {
-      top: `${evt.clientY}px`,
-      left: `${evt.clientX}px`,
-    }
-    window.addEventListener('mousedown', onmousedown)
-  }
-  export function closeMenu() {
-    showMenu = false
-    menuEl.style.display = 'none'
-  }
-
   let showMenu = false
   let anchor: HTMLElement
   let menuEl: HTMLDivElement
   let menuPos = {
     top: '',
     left: '',
+  }
+
+  // Configure the context menu through this prop
+  export let menu: MenuItem[] = []
+  // bind to this component from parent to access this function to open menu
+
+  function isImmediateParentOfContextMenu(target: HTMLElement) {
+    for (let i = 0; i < target.children.length; i += 1) {
+      if (
+        target.children.item(i).getAttribute('data-component-type') ===
+        'contextmenu'
+      ) {
+        return true
+      }
+    }
+  }
+
+  export function openMenu(evt: MouseEvent) {
+    menuPos = {
+      top: `${evt.clientY}px`,
+      left: `${evt.clientX}px`,
+    }
+    if (
+      !directSubtreeOf(
+        evt.target as HTMLElement,
+        anchor,
+        el => el.getAttribute('data-component-type') === 'contextmenu'
+      ) &&
+      !isImmediateParentOfContextMenu(evt.target as HTMLElement)
+    ) {
+      return
+    }
+    showMenu = true
+    window.addEventListener('mousedown', onmousedown)
+  }
+
+  export function closeMenu() {
+    showMenu = false
+    if (menuEl) {
+      menuEl.style.display = 'none'
+    }
   }
 
   // Close context menu on any click outside of context menu
@@ -59,7 +75,9 @@
       // do nothing
       return
     } else {
-      menuEl.style.display = 'none'
+      if (menuEl) {
+        menuEl.style.display = 'none'
+      }
     }
     window.removeEventListener('mousedown', onmousedown)
   }
@@ -70,7 +88,11 @@
   <div
     bind:this={menuEl}
     class={'main'}
-    on:click={closeMenu}
+    on:click={() => {
+      if (menuEl) {
+        closeMenu()
+      }
+    }}
     style={objectStyle(menuPos)}
   >
     {#each menu as item}

@@ -54,9 +54,22 @@ export class Mixer extends Subscribable {
     this.turnon()
   }
 
+  #channelSolo = (id: string, soloState: boolean) => {
+    Object.keys(this.channels).forEach(cid => {
+      if (cid === id) {
+        this.channels[cid].setIsMute(false)
+      }
+      if (cid !== id) {
+        this.channels[cid].setIsSolo(false, true)
+        this.channels[cid].setIsMute(soloState)
+      }
+    })
+  }
+
   addChannel(arg: ConstructorParameters<typeof Channel>[0]): Channel {
     const channel = new Channel(arg)
     channel.connect(this.master)
+    channel.on('solo', this.#channelSolo)
     this.channels[channel.id] = channel
 
     this.emit('update')
@@ -66,6 +79,7 @@ export class Mixer extends Subscribable {
 
   removeChannel(id: string) {
     const channel = this.channels[id]
+    channel.removeListener('solo', this.#channelSolo)
     channel.disconnect()
 
     delete this.channels[id]

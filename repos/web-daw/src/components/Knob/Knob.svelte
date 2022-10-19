@@ -50,7 +50,6 @@
     --size: 30px;
     --color: var(--colors__bg2);
 
-    margin: 10px;
     overflow: visible;
     display: flex;
     direction: column;
