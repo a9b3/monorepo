@@ -14,6 +14,13 @@
   function update() {
     rms = analyser.getRms().map(rms => rms * 80)
     peak = analyser.getPeaks().map(peak => peak * 50)
+    const stereoFreq = analyser.getFloatFrequencyData()
+    // Both arrays should be the same length using frequencyBinCount
+    // for (let i = 0; i < stereoFreq[0].length; i += 1) {
+    //   if (stereoFreq[0] > 1 || stereoFreq[1] > 1) {
+    //     console.log(`clipped`)
+    //   }
+    // }
   }
 
   onMount(() => {
