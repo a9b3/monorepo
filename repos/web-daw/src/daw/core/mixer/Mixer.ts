@@ -1,4 +1,4 @@
-import { Subscribable } from '../ui/Subscribable'
+import { Subscribable } from '../Subscribable'
 import { Channel } from './Channel'
 
 /**

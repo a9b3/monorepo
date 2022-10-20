@@ -1,5 +1,5 @@
 import { Mixer } from '../mixer/Mixer'
-import { Subscribable } from './Subscribable'
+import { Subscribable } from '../Subscribable'
 import { Track } from './Track'
 import { Controller } from './Controller'
 

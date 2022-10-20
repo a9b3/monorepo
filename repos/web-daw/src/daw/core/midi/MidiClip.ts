@@ -1,4 +1,4 @@
-import { Subscribable } from '../ui/Subscribable'
+import { Subscribable } from '../Subscribable'
 import { TicksPerBeat } from '../constants'
 
 export enum MidiEventTypes {

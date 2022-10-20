@@ -1,4 +1,4 @@
-import { Subscribable } from '../ui/Subscribable'
+import { Subscribable } from '../Subscribable'
 
 /**
  * Use this interface to encapsulate a chain of AudioNodes to ensure there is an

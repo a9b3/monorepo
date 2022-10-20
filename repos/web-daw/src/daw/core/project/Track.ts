@@ -1,6 +1,6 @@
 import { Sampler } from '../instruments/Sampler'
 import { DX7 } from '../instruments/DX7'
-import { Subscribable } from './Subscribable'
+import { Subscribable } from '../Subscribable'
 import { MidiClip, MidiEventTypes } from '../midi/MidiClip'
 import type { SchedulerHandler } from '../scheduler'
 import type { Instrument, InstrumentType } from '../instruments'

@@ -1,7 +1,7 @@
 import { Metronome } from '../customNodes/Metronome'
 import { Scheduler } from '../scheduler'
 import type { TickHandler } from '../scheduler'
-import { Subscribable } from './Subscribable'
+import { Subscribable } from '../Subscribable'
 
 export declare interface Controller {
   on(event: 'tick', listener: TickHandler): this
