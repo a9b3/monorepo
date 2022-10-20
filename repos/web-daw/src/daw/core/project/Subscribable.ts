@@ -1,5 +1,10 @@
 import { EventEmitter } from 'events'
 
+export declare interface Subscribable {
+  on(event: 'update', listener: Function): this
+  on(event: string, listener: Function): this
+}
+
 /**
  * Used to notify UI of changes. Implements the svelte subscribe API but you can
  * also just listen to the update event.

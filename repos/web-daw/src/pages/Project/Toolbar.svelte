@@ -6,7 +6,7 @@
 <script lang="ts">
   import { onMount, onDestroy, beforeUpdate } from 'svelte'
 
-  import type { Project, Controller } from 'daw/core/ui'
+  import type { Project, Controller } from 'daw/core/project'
   import { Pill, Layout, Icon } from 'src/components'
   import { objectStyle } from 'src/utils'
   import { audioContext } from 'daw/audioContext'

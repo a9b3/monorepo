@@ -6,7 +6,7 @@
 <script lang="ts">
   import { Link, navigate } from 'svelte-routing'
   import { Icon, ClearEditableText } from 'src/components'
-  import type { Controller, Project } from 'daw/core/ui'
+  import type { Controller, Project } from 'daw/core/project'
   import { setSelectedProject, removeOpenedProject, url } from 'src/store'
 
   export let project: Project

@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 
-import { Project } from 'daw/core/ui'
+import { Project } from 'daw/core/project'
 import type { EditorDoc, ProjectDoc } from 'src/db'
 import { editorDB } from 'src/db'
 import { audioContext } from 'src/daw/audioContext'

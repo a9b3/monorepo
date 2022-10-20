@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Track } from 'daw/core/ui'
+  import type { Track } from 'daw/core/project'
 
   export let idx: number
   export let addClip: InstanceType<typeof Track>['addMidiClip']

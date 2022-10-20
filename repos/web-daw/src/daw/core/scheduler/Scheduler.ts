@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events'
-
 /**
  * scheduler.on('tick', SchedulerHandler)
  */
@@ -8,7 +7,13 @@ export type SchedulerHandler = (arg0: {
   nextTickTime: number
   ticksPerBeat: number
 }) => void
+// Alias
 export type TickHandler = SchedulerHandler
+
+export declare interface Scheduler {
+  on(event: 'tick', listener: SchedulerHandler): this
+  on(event: string, listener: Function): this
+}
 
 /**
  * Handle all scheduling logic here.

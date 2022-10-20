@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Project, Track } from 'daw/core/ui'
+  import type { Project, Track } from 'daw/core/project'
   import {
     Text,
     Pill,

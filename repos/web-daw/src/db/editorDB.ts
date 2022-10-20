@@ -1,4 +1,4 @@
-import type { Project } from 'daw/core/ui/Project'
+import type { Project } from 'daw/core/project/Project'
 import { DBFactory } from './DBFactory'
 import type { DBManagedFields } from './DBFactory'
 

@@ -1,6 +1,15 @@
 import { Metronome } from '../customNodes/Metronome'
 import { Scheduler } from '../scheduler'
+import type { TickHandler } from '../scheduler'
 import { Subscribable } from './Subscribable'
+
+export declare interface Controller {
+  on(event: 'tick', listener: TickHandler): this
+  on(event: 'update', listener: Function): this
+  on(event: 'start', listener: Function): this
+  on(event: 'stop', listener: Function): this
+  on(event: string, listener: Function): this
+}
 
 export interface ControllerPosition {
   cursor: number
@@ -60,7 +69,7 @@ export class Controller extends Subscribable {
     this.setBpm(args.bpm || 120)
   }
 
-  #onschedulertick = args => {
+  #onschedulertick: TickHandler = args => {
     this.emit('tick', args)
   }
 
