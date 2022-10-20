@@ -1,14 +1,21 @@
 <script lang="ts">
   import Key from './Key.svelte'
 
-  export let numberOfKeys: number
+  /**
+   * Total number of notes to display for the keyboard.
+   */
+  export let numberOfKeys: number = 88
+  /**
+   * The height of each key, this will be divided in half for each
+   */
   export let keyHeight: number
   export let onMidi
   export let horizontal = false
+  export let startingNote = 21
 
   let keys = Array(numberOfKeys)
     .fill(1)
-    .map((k, i) => i)
+    .map((k, i) => startingNote + i)
     .reverse()
 </script>
 

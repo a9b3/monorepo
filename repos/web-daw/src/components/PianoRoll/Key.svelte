@@ -17,7 +17,7 @@
   }
 
   function getOctave(key: number) {
-    return Math.floor(key / 12) + 1
+    return Math.floor(key / 12) - 1
   }
 
   onMount(() => {})

@@ -6,22 +6,44 @@
   import type { MidiClip, Instrument } from 'daw/core'
   import type { SelectionManager } from 'src/ui'
 
+  /**
+   * Total number of notes to display.
+   */
   export let numberOfKeys = 120
+  /**
+   * Total number of bars to display.
+   */
   export let numberOfBars = 4
+  /**
+   * How should each bar be divided. This creates grid lines for each bar.
+   * eg. barDivision of 8 would there are grid lines created for 8th notes.
+   */
   export let barDivision = 8
-  export let startingKey = 60
+  /**
+   * Sets the first displayed note to the corresponding midi note.
+   * eg. 88 key controller's first midi note is 21
+   */
+  export let offsetStartNote = 0
+  /**
+   * Scroll to this note on component mount.
+   */
+  export let scrollToNote = 60
   export let midiClip: MidiClip
   export let ticksPerBeat: number
+  /**
+   * UI interactions will preview midi playback.
+   */
   export let onMidi: Instrument['onMidi']
   export let selectionManager: SelectionManager
 
   let scrollParent: HTMLElement
 
+  // TODO these should probably move to a size manager class
   let keyHeight = 40
   let barWidth = 400
 
   onMount(() => {
-    scrollParent.scrollTo(0, (keyHeight / 2) * startingKey)
+    scrollParent.scrollTo(0, (keyHeight / 2) * scrollToNote)
   })
 </script>
 

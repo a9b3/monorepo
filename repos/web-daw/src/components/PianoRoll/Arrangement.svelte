@@ -32,6 +32,7 @@
   export let onMidi: Instrument['onMidi']
   export let midiClip: MidiClip
   export let selectionManager: SelectionManager
+  export let startingNote: number = 21
 
   let container: HTMLElement
   let selectionContainer: HTMLElement
@@ -44,7 +45,7 @@
   // Initialize the grid
   let rows = Array(numberOfKeys)
     .fill(1)
-    .map((_, i) => i)
+    .map((_, i) => i + startingNote)
     .reverse()
   let bars = Array(numberOfBars)
     .fill(1)
@@ -116,7 +117,7 @@
             midiClip.insert({
               type: 'noteOn',
               note: midiEvt.note,
-              velocity: 70,
+              velocity: 100,
               startTick: midiEvt.startTick,
               endTick: midiEvt.endTick - 1,
               id,
