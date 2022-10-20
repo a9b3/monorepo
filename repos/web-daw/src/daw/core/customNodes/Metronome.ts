@@ -1,4 +1,4 @@
-import type { SchedulerHandler } from 'daw/core/scheduler'
+import type { SchedulerHandler } from '../scheduler/Scheduler'
 
 export class Metronome {
   #ticksPerBeat: number

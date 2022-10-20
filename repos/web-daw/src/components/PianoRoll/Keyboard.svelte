@@ -37,6 +37,7 @@
   export let offsetStartNote = 21
   // Used if next to arrangement view to offset the height of the timeline.
   export let spacerSize = 20
+  export let showHover = true
 
   // -------------------------------------------------------------------------
   // Internals
@@ -57,7 +58,7 @@
 >
   <div class="spacer" />
   {#each keys as key}
-    <Key {key} {onMidi} {keyHeight} {horizontal} />
+    <Key {key} {onMidi} {keyHeight} {horizontal} {showHover} />
   {/each}
 </div>
 

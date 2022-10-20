@@ -67,6 +67,7 @@
       onMidi={dx7.onMidi}
       horizontal={true}
       spacerSize={0}
+      showHover={false}
     />
   </div>
 </div>

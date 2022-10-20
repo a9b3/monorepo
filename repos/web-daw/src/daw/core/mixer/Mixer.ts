@@ -1,4 +1,4 @@
-import { Subscribable } from 'daw/core/ui'
+import { Subscribable } from '../ui/Subscribable'
 import { Channel } from './Channel'
 
 /**

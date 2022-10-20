@@ -12,9 +12,11 @@ init()
     const loadingEl = document.getElementById('loading')
     document.body.removeChild(loadingEl)
 
+    /* eslint-disable */
     const app = new App({
       target: document.getElementById('app'),
     })
+    /* eslint-enable */
   })
   .catch(err => {
     // There was an error initializing, show some response to the user.

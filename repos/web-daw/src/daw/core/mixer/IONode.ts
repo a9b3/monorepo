@@ -1,4 +1,4 @@
-import { Subscribable } from 'daw/core/ui'
+import { Subscribable } from '../ui/Subscribable'
 
 /**
  * Use this interface to encapsulate a chain of AudioNodes to ensure there is an

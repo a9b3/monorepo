@@ -1,5 +1,5 @@
-import { SoundSource } from 'daw/core/customNodes'
-import { IONode } from 'daw/core/mixer'
+import { SoundSource } from '../customNodes/SoundSource'
+import { IONode } from '../mixer/IONode'
 import { MidiEventTypes } from '../midi/MidiClip'
 import type { Instrument } from './interface'
 

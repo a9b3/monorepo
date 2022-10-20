@@ -1,5 +1,5 @@
-import type { IONode } from 'daw/core/mixer'
-import type { MidiEvent } from 'daw/core/midi'
+import type { IONode } from '../mixer/IONode'
+import type { MidiEvent } from '../midi/MidiClip'
 
 export interface Instrument extends IONode {
   onMidi(e: MidiEvent & { nextTickTime?: number }): void

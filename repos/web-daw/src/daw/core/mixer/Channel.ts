@@ -1,5 +1,5 @@
-import { Analyser } from 'daw/core/customNodes'
-import { percentToGain, gainToPercent } from 'daw/utils/volumeControl'
+import { Analyser } from '../customNodes/Analyser'
+import { percentToGain, gainToPercent } from '../../utils/volumeControl'
 import { IONode } from './IONode'
 import { Effects } from './Effects'
 

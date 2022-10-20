@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
+  import { onDestroy } from 'svelte'
   import { MidiEventTypes } from 'daw/core/midi'
   import { hoverKey, setHoverKey } from './pianoRollStore'
   import type { Instrument } from 'daw/core'
@@ -15,6 +15,7 @@
   export let onMidi: Instrument['onMidi']
   export let horizontal = false
   export let pressed = false
+  export let showHover = true
 
   // -------------------------------------------------------------------------
   // Internals
@@ -23,7 +24,6 @@
   let whiteKeyHeight = (keyHeight * 12) / 7
   let blackKeyHeight = whiteKeyHeight / 2
 
-  onMount(() => {})
   onDestroy(() => {
     onMidi({ type: MidiEventTypes.noteOff, note: key, velocity: 0 })
   })
@@ -33,18 +33,21 @@
   class="key"
   class:horizontal
   class:pressed
-  class:hover={$hoverKey === key}
+  class:hover={showHover && $hoverKey === key}
   class:black={isBlackKey(key)}
   style={objectStyle({
     '--whitekeyheight': `${whiteKeyHeight}px`,
     '--blackkeyheight': `${blackKeyHeight}px`,
   })}
   on:focus={() => {}}
-  on:mousedown|stopPropagation={() => {
+  on:mousedown={() => {
     pressed = true
     onMidi({ type: MidiEventTypes.noteOn, note: key, velocity: 100 })
   }}
   on:mouseover={evt => {
+    if (showHover) {
+      setHoverKey(key)
+    }
     if (evt.buttons) {
       pressed = true
       onMidi({ type: MidiEventTypes.noteOn, note: key, velocity: 100 })
