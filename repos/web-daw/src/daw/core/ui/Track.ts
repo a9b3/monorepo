@@ -1,6 +1,6 @@
 import { Sampler, DX7 } from '../instruments'
 import { Subscribable } from './Subscribable'
-import { MidiClip } from '../midi/MidiClip'
+import { MidiClip, MidiEventTypes } from '../midi/MidiClip'
 import type { SchedulerHandler } from '../scheduler'
 import type { Instrument, InstrumentType } from '../instruments'
 
@@ -186,10 +186,10 @@ export class Track extends Subscribable {
 
     noteEvents.forEach(event => {
       this.instrument.onMidi({ ...event, nextTickTime: arg.nextTickTime })
-      if (event.type === 'noteOn' && event.endTick) {
+      if (event.type === MidiEventTypes.noteOn && event.endTick) {
         this.#noteOffs[event.endTick] = [
           ...(this.#noteOffs[event.endTick] || []),
-          { ...event, type: 'noteOff' },
+          { ...event, type: MidiEventTypes.noteOff },
         ]
       }
     })

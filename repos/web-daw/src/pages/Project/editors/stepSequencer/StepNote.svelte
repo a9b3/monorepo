@@ -23,7 +23,12 @@
     if (foundNotes) {
       return
     } else {
-      $clip.insert({ note, type: 'noteOn', velocity: 67, startTick })
+      $clip.insert({
+        note,
+        type: $clip.MidiEventTypes.noteOn,
+        velocity: 67,
+        startTick,
+      })
     }
   }
 

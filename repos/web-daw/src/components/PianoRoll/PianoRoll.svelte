@@ -1,3 +1,8 @@
+<!--
+  @component
+
+  Piano roll editor for midi clips.
+-->
 <script lang="ts">
   import { onMount } from 'svelte'
   import Keyboard from './Keyboard.svelte'
@@ -6,14 +11,21 @@
   import type { MidiClip, Instrument } from 'daw/core'
   import type { SelectionManager } from 'src/ui'
 
+  // -------------------------------------------------------------------------
+  // Props
+  // -------------------------------------------------------------------------
+
   /**
    * Total number of notes to display.
+   * TODO this has to be multiples of 12 since keyboard being black and white
+   * keys of uneven heights will not align with all even rows in the
+   * arrangement component unless its multiples of 12.
    */
-  export let numberOfKeys = 120
+  export let numberOfKeys = 84
   /**
    * Total number of bars to display.
    */
-  export let numberOfBars = 4
+  export let numberOfBars: number
   /**
    * How should each bar be divided. This creates grid lines for each bar.
    * eg. barDivision of 8 would there are grid lines created for 8th notes.
@@ -23,7 +35,7 @@
    * Sets the first displayed note to the corresponding midi note.
    * eg. 88 key controller's first midi note is 21
    */
-  export let offsetStartNote = 0
+  export let offsetStartNote = 24
   /**
    * Scroll to this note on component mount.
    */
@@ -36,14 +48,23 @@
   export let onMidi: Instrument['onMidi']
   export let selectionManager: SelectionManager
 
+  // -------------------------------------------------------------------------
+  // Internal State
+  // -------------------------------------------------------------------------
+
   let scrollParent: HTMLElement
 
-  // TODO these should probably move to a size manager class
-  let keyHeight = 40
+  // Height of each row in the Arrangement component
+  let keyHeight = 20
   let barWidth = 400
+  let spacerSize = 20
 
   onMount(() => {
-    scrollParent.scrollTo(0, (keyHeight / 2) * scrollToNote)
+    scrollParent.scrollTo(
+      0,
+      scrollParent.scrollHeight *
+        ((scrollToNote - offsetStartNote) / numberOfKeys)
+    )
   })
 </script>
 
@@ -55,21 +76,29 @@
       }}
     />
   </div>
-  <div class={'main'} bind:this={scrollParent}>
+  <div class="main" bind:this={scrollParent}>
     <div class="keyboard">
-      <Keyboard {onMidi} {numberOfKeys} {keyHeight} />
+      <Keyboard
+        {onMidi}
+        {numberOfKeys}
+        {keyHeight}
+        {offsetStartNote}
+        {spacerSize}
+      />
     </div>
     <div class="arrangement">
       <Arrangement
         {barDivision}
         {barWidth}
-        {numberOfBars}
-        {onMidi}
         {keyHeight}
-        {numberOfKeys}
         {midiClip}
-        {ticksPerBeat}
+        {numberOfBars}
+        {numberOfKeys}
+        {offsetStartNote}
+        {onMidi}
         {selectionManager}
+        {spacerSize}
+        {ticksPerBeat}
       />
     </div>
   </div>

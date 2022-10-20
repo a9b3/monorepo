@@ -11,6 +11,7 @@
   import { ModKeys } from 'src/ui'
   import { ContextMenu } from 'src/components'
   import type { MidiClip, MidiEvent as MidiEventT } from 'daw/core/midi'
+  import { MidiEventTypes } from 'daw/core/midi'
   import type { Instrument } from 'daw/core'
   import { hoverKey, setHoverKey, snapEnabled } from './pianoRollStore'
   import { keyboardStore } from 'src/store/keyboard'
@@ -23,16 +24,25 @@
     noteHeight,
   } from './midiGuiUtils'
 
-  export let numberOfKeys: number
-  export let keyHeight: number
-  export let barWidth: number
-  export let numberOfBars: number
-  export let ticksPerBeat: number
+  // -------------------------------------------------------------------------
+  // Props
+  // -------------------------------------------------------------------------
+
   export let barDivision: number
-  export let onMidi: Instrument['onMidi']
+  export let barWidth: number
+  export let keyHeight: number
   export let midiClip: MidiClip
+  export let numberOfBars: number
+  export let numberOfKeys: number
+  export let onMidi: Instrument['onMidi']
   export let selectionManager: SelectionManager
-  export let startingNote: number = 21
+  export let spacerSize: number
+  export let offsetStartNote: number
+  export let ticksPerBeat: number
+
+  // -------------------------------------------------------------------------
+  // Internal State
+  // -------------------------------------------------------------------------
 
   let container: HTMLElement
   let selectionContainer: HTMLElement
@@ -45,7 +55,7 @@
   // Initialize the grid
   let rows = Array(numberOfKeys)
     .fill(1)
-    .map((_, i) => i + startingNote)
+    .map((_, i) => i + offsetStartNote)
     .reverse()
   let bars = Array(numberOfBars)
     .fill(1)
@@ -78,9 +88,10 @@
   bind:this={container}
   class={'main'}
   style={objectStyle({
-    '--keyheight': `${(keyHeight * 7) / 12}px`,
+    '--keyheight': `${keyHeight}px`,
     '--barwidth': `${barWidth}px`,
     '--notewidth': `${barWidth / barDivision}px`,
+    '--spacersize': `${spacerSize}px`,
   })}
 >
   <CursorLine numberOfBeats={numberOfBars * 4} />
@@ -115,7 +126,7 @@
             )
 
             midiClip.insert({
-              type: 'noteOn',
+              type: midiClip.MidiEventTypes.noteOn,
               note: midiEvt.note,
               velocity: 100,
               startTick: midiEvt.startTick,
@@ -148,7 +159,12 @@
           }
 
           mouseOverNotes = true
-          onMidi({ type: 'noteOn', note: row, velocity: 67, endTick: 0.5 })
+          onMidi({
+            type: MidiEventTypes.noteOn,
+            note: row,
+            velocity: 67,
+            endTick: 0.5,
+          })
 
           const mouseXY = containerMouseXY(evt, selectionContainer)
           const { note, startTick } = singlePointToMidiEvent(
@@ -163,7 +179,7 @@
           )
 
           midiClip.insert({
-            type: 'noteOn',
+            type: midiClip.MidiEventTypes.noteOn,
             note,
             velocity: 70,
             startTick: startTick,
@@ -177,7 +193,12 @@
             return
           }
           if (evt.buttons) {
-            onMidi({ note: row, type: 'noteOn', velocity: 40, endTick: 0.5 })
+            onMidi({
+              note: row,
+              type: MidiEventTypes.noteOn,
+              velocity: 40,
+              endTick: 0.5,
+            })
           }
         }}
       >
@@ -195,9 +216,10 @@
 
 <style>
   .main {
-    --keyheight: 20px;
-    --barwidth: 20px;
-    --notewidth: 20px;
+    --spacersize: var(--spacersize);
+    --keyheight: var(--keyheight);
+    --barwidth: var(--barwidth);
+    --notewidth: var(--notewidth);
     --bg-h: var(--hsl__bg-h);
     --bg-s: var(--hsl__bg-s);
     --bg-l: var(--hsl__bg-l);
@@ -226,7 +248,7 @@
 
   .timeline {
     position: sticky;
-    height: 20px;
+    height: var(--spacersize);
     left: 0;
     top: 0;
     background: var(--bg-hsl);

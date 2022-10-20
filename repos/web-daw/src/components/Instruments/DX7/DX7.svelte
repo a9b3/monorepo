@@ -63,9 +63,10 @@
   <div class="keys">
     <Keyboard
       numberOfKeys={88}
-      keyHeight={20}
+      keyHeight={10}
       onMidi={dx7.onMidi}
       horizontal={true}
+      spacerSize={0}
     />
   </div>
 </div>

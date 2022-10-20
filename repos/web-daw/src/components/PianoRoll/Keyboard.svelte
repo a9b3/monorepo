@@ -1,5 +1,18 @@
+<!--
+  @component
+
+  A generic keyboard component.
+
+  To allow clicking on keys to play midi supply an onMidi callback.
+-->
 <script lang="ts">
+  import type { Instrument } from 'daw/core'
+  import { objectStyle } from 'src/utils'
   import Key from './Key.svelte'
+
+  // -------------------------------------------------------------------------
+  // Props
+  // -------------------------------------------------------------------------
 
   /**
    * Total number of notes to display for the keyboard.
@@ -9,17 +22,39 @@
    * The height of each key, this will be divided in half for each
    */
   export let keyHeight: number
-  export let onMidi
+  /**
+   * UI interactions will preview midi playback.
+   */
+  export let onMidi: Instrument['onMidi']
+  /**
+   * Show the keyboard horizontally.
+   */
   export let horizontal = false
-  export let startingNote = 21
+  /**
+   * Sets the first displayed note to the corresponding midi note.
+   * eg. 88 key controller's first midi note is 21
+   */
+  export let offsetStartNote = 21
+  // Used if next to arrangement view to offset the height of the timeline.
+  export let spacerSize = 20
+
+  // -------------------------------------------------------------------------
+  // Internals
+  // -------------------------------------------------------------------------
 
   let keys = Array(numberOfKeys)
     .fill(1)
-    .map((k, i) => startingNote + i)
+    .map((_, i) => offsetStartNote + i)
     .reverse()
 </script>
 
-<div class={'main'} class:horizontal>
+<div
+  class={'keyboard'}
+  class:horizontal
+  style={objectStyle({
+    '--spacersize': spacerSize + 'px',
+  })}
+>
   <div class="spacer" />
   {#each keys as key}
     <Key {key} {onMidi} {keyHeight} {horizontal} />
@@ -27,11 +62,15 @@
 </div>
 
 <style>
-  .main {
+  .keyboard {
+    --spacersize: var(--spacersize);
+
     position: relative;
+    height: var(--keyboardsize);
   }
+
   .spacer {
-    height: 20px;
+    height: var(--spacersize);
     position: sticky;
     top: 0;
     left: 0;
@@ -42,6 +81,7 @@
   }
 
   .horizontal {
+    height: unset;
     display: flex;
     flex-direction: row-reverse;
   }

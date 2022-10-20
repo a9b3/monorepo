@@ -1,4 +1,4 @@
-import { MidiEventTypeInteger } from '../midi'
+import { MidiEventTypes } from '../midi/MidiClip'
 import { IONode } from '../mixer/IONode'
 import { DX7Node } from './wams/DX7Node'
 import type { Instrument } from './interface'
@@ -49,15 +49,15 @@ export class DX7 extends IONode implements Instrument {
     e.velocity = e.velocity || 60
 
     const type =
-      e.type === 'noteOn'
-        ? MidiEventTypeInteger.NoteOn
-        : MidiEventTypeInteger.NoteOff
+      e.type === MidiEventTypes.noteOn
+        ? MidiEventTypes.noteOn
+        : MidiEventTypes.noteOff
     this.dx7.onMidi([type, e.note, e.velocity, e.nextTickTime])
 
     // Convenience
-    if (e.type === 'noteOn' && e.endTick) {
+    if (e.type === MidiEventTypes.noteOn && e.endTick) {
       this.dx7.onMidi([
-        MidiEventTypeInteger.NoteOff,
+        MidiEventTypes.noteOff,
         e.note,
         e.velocity,
         this.audioContext.currentTime + e.endTick,
@@ -71,7 +71,7 @@ export class DX7 extends IONode implements Instrument {
     // hack to run noteOff in the future to account for already scheduled events.
     setTimeout(() => {
       for (let i = 0; i < 127; i += 1) {
-        this.dx7.onMidi([MidiEventTypeInteger.NoteOff, i, 0])
+        this.dx7.onMidi([MidiEventTypes.noteOff, i, 0])
       }
     }, 80)
   }

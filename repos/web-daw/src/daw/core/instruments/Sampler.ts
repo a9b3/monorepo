@@ -1,5 +1,6 @@
 import { SoundSource } from 'daw/core/customNodes'
 import { IONode } from 'daw/core/mixer'
+import { MidiEventTypes } from '../midi/MidiClip'
 import type { Instrument } from './interface'
 
 // keyed by midi note 0-127
@@ -62,7 +63,7 @@ export class Sampler extends IONode implements Instrument {
     if (!sample) {
       return
     }
-    if (e.type === 'noteOn') {
+    if (e.type === MidiEventTypes.noteOn) {
       sample.play({ startTime: e.nextTickTime })
 
       this.emit('update')

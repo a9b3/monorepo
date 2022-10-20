@@ -1,6 +1,15 @@
 import { Subscribable } from '../ui/Subscribable'
-import type { MidiArrangement } from './MidiArrangement'
 import { TicksPerBeat } from '../constants'
+
+export enum MidiEventTypes {
+  noteOff = 128,
+  noteOn = 144,
+  noteAftertouch = 10,
+  controller = 11,
+  programChange = 12,
+  channelAftertouch = 13,
+  pitchBend = 14,
+}
 
 // TODO need to capture all possible midi event types. Currently just dealing
 // with noteOn and noteOff
@@ -9,35 +18,22 @@ export interface MidiEvent {
   /**
    * Used internally to allow O(1) read/writes
    */
+  endTick?: number
   id?: string
-  type: 'noteOn' | 'noteOff'
   note: number
-  velocity?: number
   startTick?: number
-  endTick?: number
-}
-
-type MidiNote = {
-  id?: string
-  type: 'noteOn'
-  startTick: number
-  endTick?: number
-  note: number
+  type: MidiEventTypes
   velocity?: number
 }
 
-type CreateMidiNoteArgs = Omit<MidiNote, 'id'> & { id?: string }
+type CreateMidiEventArgs = Omit<MidiEvent, 'id'> & { id?: string }
 
-function createMidiNote(arg: CreateMidiNoteArgs) {
+function createMidiEvent(arg: CreateMidiEventArgs) {
   return {
     ...arg,
-    type: 'noteOn',
+    type: MidiEventTypes.noteOn,
     id: arg.id || crypto.randomUUID(),
   }
-}
-
-export type EventsMap = {
-  [tick: string]: { [note: string]: { [id: string]: MidiEvent } }
 }
 
 /**
@@ -51,6 +47,7 @@ export type EventsMap = {
  * Abstraction on top of MidiArrangement that includes conviences for the UI.
  */
 export class MidiClip extends Subscribable {
+  MidiEventTypes = MidiEventTypes
   /**
    * Useful for keeping track of selections in UI.
    */
@@ -59,16 +56,6 @@ export class MidiClip extends Subscribable {
    * A display name for this clip.
    */
   name: string | undefined
-  /**
-   * The actual midi arrangement.
-   */
-  midiArrangement: MidiArrangement
-  /**
-   * More efficient storage format for midi events. Keyed by the tick for O(1)
-   * lookup and inserts. Useful for playback. Rendering into UI is fine with
-   * O(n).
-   */
-  eventsMap: EventsMap
   /**
    * For loops and recording, the desired starting tick might not be exactly 0.
    * Allow setting an offset to create arbitrary loop lengths for arrangements.
@@ -88,11 +75,13 @@ export class MidiClip extends Subscribable {
    * ( currentTick % ( loopLength * ticksPerbeat ) ) + offsetStartTick
    */
   beatsPerLoop: number
+  beatsPerBeat: number
 
-  // -----------------
-  // New Internal Data Structure
-  // -----------------
-  eventsIndex: { [id: string]: MidiNote }
+  // --------------------------------------------------------------------------
+  // Midi Events data structures
+  // --------------------------------------------------------------------------
+
+  eventsIndex: { [id: string]: MidiEvent }
   /**
    * This is useful for quick UI rendering lookups.
    */
@@ -105,11 +94,9 @@ export class MidiClip extends Subscribable {
   constructor(args: {
     id: string
     name?: string
-    midiArrangement?: MidiArrangement
-    eventsMap?: EventsMap
     offsetStartTick?: number
     beatsPerLoop?: number
-    eventsIndex?: { [id: string]: MidiNote }
+    eventsIndex?: { [id: string]: MidiEvent }
     notesIndex?: { [note: string]: string[] }
     startTickIndex?: { [startTick: string]: string[] }
   }) {
@@ -117,13 +104,6 @@ export class MidiClip extends Subscribable {
 
     this.id = args.id
     this.name = args.name
-    this.midiArrangement = args.midiArrangement || {
-      formatType: 0,
-      numTracks: 1,
-      timeDivision: 960,
-      trackChunks: [],
-    }
-    this.eventsMap = args.eventsMap || {}
     this.offsetStartTick = args.offsetStartTick || 0
     this.beatsPerLoop = args.beatsPerLoop || 8
 
@@ -132,14 +112,27 @@ export class MidiClip extends Subscribable {
     this.startTickIndex = args.startTickIndex || {}
   }
 
+  // -------------------------------------------------------------------------
+  // Getters
+  // -------------------------------------------------------------------------
+
+  /**
+   * amount of ticks in this clip
+   */
   get totalLoopTicks() {
     return this.beatsPerLoop * TicksPerBeat
   }
 
+  /**
+   * the absolute end tick value
+   */
   get offsetEndTick() {
     return this.offsetStartTick + this.totalLoopTicks
   }
 
+  /**
+   * max and min notes in this clip
+   */
   get noteRange() {
     let max = Number.NEGATIVE_INFINITY
     let min = Number.POSITIVE_INFINITY
@@ -152,28 +145,9 @@ export class MidiClip extends Subscribable {
     return { max, min }
   }
 
-  /**
-   * Add a MidiEvent into the eventsMap.
-   */
-  addEvent(tick: number, midiEvent: Omit<MidiEvent, 'id'>) {
-    const tickStr = String(tick)
-
-    this.eventsMap[tickStr] = this.eventsMap[tickStr] || {}
-    this.eventsMap[tickStr][midiEvent.note] =
-      this.eventsMap[tickStr][midiEvent.note] || {}
-    const id = crypto.randomUUID()
-    this.eventsMap[tickStr][midiEvent.note][id] = { ...midiEvent, id }
-
-    this.emit('update')
-  }
-
-  removeEvent(tick: number, note: string, id: string) {
-    if (this.eventsMap[String(tick)]?.[note]?.[id]) {
-      delete this.eventsMap[String(tick)]?.[note]?.[id]
-    }
-
-    this.emit('update')
-  }
+  // -------------------------------------------------------------------------
+  // Setters
+  // -------------------------------------------------------------------------
 
   setBeatsPerLoop(beatsPerLoop: number) {
     this.beatsPerLoop = beatsPerLoop
@@ -193,7 +167,14 @@ export class MidiClip extends Subscribable {
     this.emit('update')
   }
 
-  getEvents(tick: number, note: number) {
+  // -------------------------------------------------------------------------
+  // MIDI Events
+  // -------------------------------------------------------------------------
+
+  /**
+   * Get MidiEvent at tick and note
+   */
+  getEvents(tick: number, note: number): MidiEvent[] {
     const res = (this.startTickIndex[tick] || [])
       .filter(id => this.eventsIndex[id].note === note)
       .map(id => this.eventsIndex[id])
@@ -204,7 +185,7 @@ export class MidiClip extends Subscribable {
    * Overlap behavior
    */
   insert = (
-    arg: CreateMidiNoteArgs,
+    arg: CreateMidiEventArgs,
     opts: {
       /**
        * replace:
@@ -224,21 +205,19 @@ export class MidiClip extends Subscribable {
     if (arg.id) {
       this.remove(arg.id)
     }
-    const mnote = createMidiNote(arg)
 
+    const mnote = createMidiEvent(arg)
     const toRemove = new Set<string>()
     const prevNoteIds = this.notesIndex[String(mnote.note)] || []
+
     // TODO I wonder if there's a more elegant way to do this using some set
     // logic.
     for (let i = 0; i < prevNoteIds.length; i += 1) {
       const prevId = prevNoteIds[i]
       const pnote = this.eventsIndex[prevId]
 
-      console.log('oninsert')
-
       // no overlap
       if (pnote.startTick > mnote.endTick || mnote.startTick > pnote.endTick) {
-        console.log(`no overlap`)
         break
       }
 
@@ -251,7 +230,6 @@ export class MidiClip extends Subscribable {
         mnote.startTick >= pnote.startTick &&
         mnote.startTick <= pnote.endTick
       ) {
-        console.log(`new note starts in middle`)
         if (opts.overlapType === 'replace') {
           toRemove.add(pnote.id)
         } else if (opts.overlapType === 'splice') {
@@ -266,7 +244,6 @@ export class MidiClip extends Subscribable {
       // mnote [-----------]
       // pnote         [             ]
       if (mnote.endTick <= pnote.endTick && mnote.endTick >= pnote.startTick) {
-        console.log(`new note starts in middle 2`)
         if (opts.overlapType === 'replace') {
           toRemove.add(pnote.id)
         } else if (opts.overlapType === 'splice') {
@@ -282,7 +259,6 @@ export class MidiClip extends Subscribable {
         pnote.startTick <= mnote.startTick &&
         pnote.endTick >= mnote.endTick
       ) {
-        console.log(`middle 3`)
         if (opts.overlapType === 'replace') {
           toRemove.add(pnote.id)
         } else if (opts.overlapType === 'splice') {
@@ -300,6 +276,7 @@ export class MidiClip extends Subscribable {
       this.remove(id)
     })
 
+    // Sets the MidiEvent in all the internal data structures
     this.eventsIndex[mnote.id] = mnote
     this.notesIndex[String(mnote.note)] =
       this.notesIndex[String(mnote.note)] || []
@@ -315,6 +292,9 @@ export class MidiClip extends Subscribable {
     this.emit('update')
   }
 
+  /**
+   * Remove a MidiEvent by id from all internal data structures.
+   */
   remove = (id: string) => {
     const pnote = this.eventsIndex[id]
     if (!pnote) {
@@ -330,15 +310,13 @@ export class MidiClip extends Subscribable {
     this.emit('update')
   }
 
-  // getTickEvent(tick: number) {
-  //   // this.startTickIndex[]
-  // }
-
   /**
    * returnTotal = false will return only events within the loop range and after
    * the offsetStartTick
    */
-  getStartIndexForUI(opt?: { onlyLoopEvents?: boolean }) {
+  getStartIndexForUI(opt?: { onlyLoopEvents?: boolean }): {
+    [tick: string]: MidiEvent[]
+  } {
     opt = opt || {}
     opt.onlyLoopEvents = opt.onlyLoopEvents || false
 
@@ -359,7 +337,10 @@ export class MidiClip extends Subscribable {
     return produced
   }
 
-  getTickEvents(tick: number) {
+  /**
+   * Get MidiEvent(s) at given tick.
+   */
+  getTickEvents(tick: number): MidiEvent[] {
     return (this.startTickIndex[String(tick)] || []).map(
       id => this.eventsIndex[id]
     )

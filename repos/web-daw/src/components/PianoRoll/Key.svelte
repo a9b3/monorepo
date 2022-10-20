@@ -1,9 +1,14 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
+  import { MidiEventTypes } from 'daw/core/midi'
   import { hoverKey, setHoverKey } from './pianoRollStore'
   import type { Instrument } from 'daw/core'
   import { objectStyle } from 'src/utils'
-  import { audioContext } from 'daw/audioContext'
+  import { isBlackKey, getOctave } from './midiGuiUtils'
+
+  // -------------------------------------------------------------------------
+  // Props
+  // -------------------------------------------------------------------------
 
   export let key: number
   export let keyHeight: number = 20
@@ -11,18 +16,16 @@
   export let horizontal = false
   export let pressed = false
 
-  function isBlackKey(key: number) {
-    const note = key % 12
-    return [1, 3, 6, 8, 10].includes(note)
-  }
+  // -------------------------------------------------------------------------
+  // Internals
+  // -------------------------------------------------------------------------
 
-  function getOctave(key: number) {
-    return Math.floor(key / 12) - 1
-  }
+  let whiteKeyHeight = (keyHeight * 12) / 7
+  let blackKeyHeight = whiteKeyHeight / 2
 
   onMount(() => {})
   onDestroy(() => {
-    onMidi({ type: 'noteOff', note: key, velocity: 0 })
+    onMidi({ type: MidiEventTypes.noteOff, note: key, velocity: 0 })
   })
 </script>
 
@@ -33,26 +36,27 @@
   class:hover={$hoverKey === key}
   class:black={isBlackKey(key)}
   style={objectStyle({
-    '--whiteheight': `${keyHeight}px`,
+    '--whitekeyheight': `${whiteKeyHeight}px`,
+    '--blackkeyheight': `${blackKeyHeight}px`,
   })}
   on:focus={() => {}}
   on:mousedown|stopPropagation={() => {
     pressed = true
-    onMidi({ type: 'noteOn', note: key, velocity: 100 })
+    onMidi({ type: MidiEventTypes.noteOn, note: key, velocity: 100 })
   }}
   on:mouseover={evt => {
     if (evt.buttons) {
       pressed = true
-      onMidi({ type: 'noteOn', note: key, velocity: 100 })
+      onMidi({ type: MidiEventTypes.noteOn, note: key, velocity: 100 })
     }
   }}
   on:mouseout={() => {
     pressed = false
-    onMidi({ type: 'noteOff', note: key, velocity: 0 })
+    onMidi({ type: MidiEventTypes.noteOff, note: key, velocity: 0 })
   }}
   on:mouseup={() => {
     pressed = false
-    onMidi({ type: 'noteOff', note: key, velocity: 0 })
+    onMidi({ type: MidiEventTypes.noteOff, note: key, velocity: 0 })
   }}
   on:blur={() => {}}
 >
@@ -65,14 +69,13 @@
 
 <style>
   .key {
-    --whiteheight: 20px;
-    --blackheight: calc(var(--whiteheight) / 2);
+    --whitekeyheight: var(--whitekeyheight);
+    --blackkeyheight: var(--blackkeyheight);
 
-    box-sizing: border-box;
-    transition: background 0.1s ease;
+    /* transition: background 0.1s ease; */
   }
   .key:not(.black) {
-    height: var(--whiteheight);
+    height: var(--whitekeyheight);
     width: 100%;
     border-bottom: 1px solid var(--colors__fg2);
     border-right: 1px solid var(--colors__fg2);
@@ -81,41 +84,24 @@
     display: flex;
     align-items: center;
   }
-  .black.key {
+  .key.black {
     position: relative;
     z-index: 1;
     height: 0;
   }
-  .black.key:after {
+  .key.black:after {
     content: '';
     position: absolute;
-    height: var(--blackheight);
+    height: var(--blackkeyheight);
     left: 0;
-    bottom: calc(var(--blackheight) / -2);
+    bottom: calc(var(--blackkeyheight) / -2);
     width: 70px;
-    background: var(--colors__bg);
+    background: linear-gradient(45deg, #222 0%, #555 100%);
     z-index: 1;
   }
 
-  .key.hover {
-    background: hsl(
-      var(--hsl__accent-h),
-      var(--hsl__accent-s),
-      calc(var(--hsl__accent-l) + 10%),
-      1
-    );
-  }
-  .key.hover:after {
-    background: hsl(
-      var(--hsl__accent-h),
-      var(--hsl__accent-s),
-      calc(var(--hsl__accent-l) + 10%),
-      1
-    );
-  }
-
   .key.horizontal:not(.black) {
-    width: var(--whiteheight);
+    width: var(--whitekeyheight);
     height: 100px;
     border-bottom: 1px solid var(--colors__fg2);
     border-right: 1px solid var(--colors__fg2);
@@ -124,10 +110,10 @@
     display: flex;
     align-items: flex-end;
   }
-  .black.key.horizontal:after {
-    width: var(--blackheight);
+  .key.black.horizontal:after {
+    width: var(--blackkeyheight);
     top: 0;
-    left: calc(var(--blackheight) / -2);
+    left: calc(var(--blackkeyheight) / -2);
     height: 70px;
     background: var(--colors__bg);
     z-index: 1;
@@ -140,16 +126,29 @@
     font-weight: bold;
   }
 
-  .key.pressed {
-    transform: scale(1.1);
+  .key.hover,
+  .key.hover:after,
+  .key.hover.black:after,
+  .key.hover.horizontal {
+    background: hsl(
+      var(--hsl__accent-h),
+      var(--hsl__accent-s),
+      calc(var(--hsl__accent-l) + 30%),
+      1
+    );
+  }
+
+  .key.pressed,
+  .key.pressed.black:after,
+  .key.pressed.horizontal {
     background: var(--colors__neonPink);
+    box-shadow: 2px 0 3px rgba(0, 0, 0, 0.1) inset,
+      -5px 5px 20px rgba(0, 0, 0, 0.2) inset, 0 0 3px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(to bottom, #fff 0%, #e9e9e9 100%);
   }
   .key.pressed.black:after {
-    transform: scale(1.1);
-    background: var(--colors__neonPink);
-  }
-  .key.pressed.horizontal {
-    transform: scale(1.1);
-    background: var(--colors__neonPink);
+    box-shadow: -1px -1px 2px rgba(255, 255, 255, 0.2) inset,
+      0 -2px 2px 3px rgba(0, 0, 0, 0.6) inset, 0 1px 2px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(to right, #444 0%, #222 100%);
   }
 </style>
