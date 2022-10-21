@@ -1,40 +1,19 @@
 import { findFirstAncestor, findAllAncestors } from 'src/utils'
+import { OrderedSet } from 'src/ui/ds/OrderedSet'
 
 type Boundary = {
-  root: string
   key: string
   el: HTMLElement
 }
 
 /**
- * User wants to perform an action exclusive to their current boundary.
- * A boundary is a wrapper around a subtree.
- * A active boundary can exist.
- * Active boundary can be set whenever user performs an interaction e.g.
- * mousedown, which can propogate up to it's nearest boundary boundary.
  *
- * This active boundary can then be referenced upon actions that need to be
- * boundary aware.
- *
- * Boundaries can be nested, for example if you have a Backspace keyboard
- * handler that will delete midinotes in the arrangement track but delete clips
- * in the arrangement view. You want to be able to determine in which boundary
- * the user's event is originating from so you don't delete clips when they
- * meant to delete notes.
- *
- * This will work by establishing a tree by wrapping dom subtrees with a
- * Boundary component. This will register the boundary with an instance of
- * BoundaryManager.
- *
- * BoundaryManager will handle listening to all mousedown events do it registers
- * the last boundary as the active boundary.
- *
- * Other services can then refer to the BoundaryManager instance to see if they
- * should invoke their handlers.
  */
 export class BoundaryManager {
   rootKey: string | undefined
-  activeBoundary: Boundary | undefined
+  #orderedSet = new OrderedSet()
+  #focusHistory = new OrderedSet()
+  #elements: { [key: string]: Boundary } = {}
   rootAttr = 'data-boundary-root'
   keyAttr = 'data-boundary-key'
 
@@ -42,25 +21,12 @@ export class BoundaryManager {
     this.rootKey = rootKey
   }
 
-  get currentBoundaryKey() {
-    return this.activeBoundary?.key
+  get activeBoundary() {
+    return this.#elements[this.#focusHistory.last()]
   }
 
-  /**
-   * Parse the element for it's boundary data. If none exists return undefined.
-   */
-  #getBoundaryData(el: HTMLElement): Boundary | undefined {
-    const root = el.getAttribute(this.rootAttr)
-    const key = el.getAttribute(this.keyAttr)
-    if (!root || root !== this.rootKey) {
-      return undefined
-    }
-
-    return {
-      el,
-      key,
-      root,
-    }
+  get currentBoundaryKey() {
+    return this.activeBoundary?.key
   }
 
   /**
@@ -71,7 +37,12 @@ export class BoundaryManager {
     if (!evt.target) {
       return
     }
-    this.activeBoundary = this.getEventBoundary(evt.target as HTMLElement)
+    const found = this.getEventBoundary(evt.target as HTMLElement)
+    // Set activeBoundary
+    if (found && this.#orderedSet.has(found.key)) {
+      this.#focusHistory.add(found.key)
+      this.#elements[found.key] = found
+    }
   }
 
   startListener() {
@@ -83,25 +54,34 @@ export class BoundaryManager {
   }
 
   /**
+   * Parse the element for it's boundary data. If none exists return undefined.
+   */
+  #getAttr(el: HTMLElement): Boundary | undefined {
+    const root = el.getAttribute(this.rootAttr)
+    const key = el.getAttribute(this.keyAttr)
+    if (!root || root !== this.rootKey) {
+      return undefined
+    }
+
+    return {
+      el,
+      key,
+    }
+  }
+
+  /**
    * Returns the first found boundary from the origin event.
    */
   getEventBoundary(target: HTMLElement): Boundary | undefined {
-    // Scan up the tree of the origin event until the first boundary of it's
-    // type is found.
     const firstBoundary = findFirstAncestor(target, t => {
-      for (let i = 0; i < t.children.length; i += 1) {
-        const child = t.children.item(i)
-        if (child.getAttribute(this.rootAttr) === this.rootKey) {
-          return child as HTMLElement
-        }
-      }
-      return undefined
+      return t.getAttribute(this.rootAttr) === this.rootKey ? t : undefined
     })
 
     if (!firstBoundary) {
       return undefined
     }
-    return this.#getBoundaryData(firstBoundary)
+
+    return this.#getAttr(firstBoundary)
   }
 
   /**
@@ -111,18 +91,27 @@ export class BoundaryManager {
     if (!target) {
       return []
     }
-    const ancestors = findAllAncestors(target, t => {
-      if (!t) {
-        return undefined
-      }
-      for (let i = 0; i < t.children.length; i += 1) {
-        const child = t.children.item(i)
-        if (child.getAttribute(this.rootAttr) === this.rootKey) {
-          return this.#getBoundaryData(child as HTMLElement)
-        }
-      }
-      return undefined
-    })
-    return ancestors.reverse()
+    return findAllAncestors(target, t => {
+      return t.getAttribute(this.rootAttr) === this.rootKey ? t : undefined
+    }).map(t => this.#getAttr(t))
+  }
+
+  getActiveBoundaryPath(): Boundary[] {
+    return this.getEventBoundaryParents(this.activeBoundary.el)
+  }
+
+  addBoundary(key: string, el: HTMLElement) {
+    if (this.#orderedSet.has(key)) {
+      throw new Error('Boundary keys must be unique.')
+    }
+    this.#orderedSet.add(key)
+    this.#focusHistory.add(key)
+    this.#elements[key] = { el, key }
+  }
+
+  deleteBoundary(key: string) {
+    this.#orderedSet.delete(key)
+    this.#focusHistory.delete(key)
+    delete this.#elements[key]
   }
 }

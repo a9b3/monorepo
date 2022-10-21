@@ -7,6 +7,7 @@
   import { onMount, onDestroy } from 'svelte'
   import TopBar from './TopBar.svelte'
   import { windowManager } from 'src/ui'
+  import { KeyboardBoundary } from 'src/components'
 
   // -------------------------------------------------------------------------
   // Props
@@ -37,6 +38,17 @@
     windowManager.focus(mainWindowEl)
   }}
 >
+        <KeyboardBoundary
+          key="window"
+          comboHandler={{
+            Backspace: {
+              key: 'del',
+              handler: () => {
+                console.log(`backspace in window`)
+              },
+            },
+          }}
+        />
   <div class="top" bind:this={topbarEl}>
     <TopBar {title} {onClose}>
       <slot name="left" slot="left" />

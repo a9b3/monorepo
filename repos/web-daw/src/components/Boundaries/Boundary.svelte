@@ -1,11 +1,12 @@
 <!--
   @component
 
+  Adds the Boundary attrs to the immediate parent.
   Extend this for different types of Boundaries (e.g. KeyboardEventBoundary,
   ContextMenuBoundary etc.).
 -->
 <script lang="ts">
-  import { getContext, onMount } from 'svelte'
+  import { getContext, onMount, onDestroy } from 'svelte'
   import type { BoundaryManager } from 'src/ui/boundary/manager'
 
   export let rootKey: string
@@ -18,18 +19,14 @@
   }
 
   onMount(() => {
-    // No two boundaries can be siblings.
-    for (let i = 0; i < boundaryEl.parentElement.children.length; i += 1) {
-      const child = boundaryEl.parentElement.children.item(i)
-      if (
-        child.getAttribute(boundaryManager.rootAttr) === rootKey &&
-        child !== boundaryEl
-      ) {
-        throw new Error('Boundaries of the same type cannot be siblings.')
-      }
-    }
-    boundaryEl.setAttribute(boundaryManager.rootAttr, rootKey)
-    boundaryEl.setAttribute(boundaryManager.keyAttr, key)
+    boundaryEl.parentElement.setAttribute(boundaryManager.rootAttr, rootKey)
+    boundaryEl.parentElement.setAttribute(boundaryManager.keyAttr, key)
+    boundaryManager.addBoundary(key)
+  })
+  onDestroy(() => {
+    boundaryEl.parentElement.removeAttribute(boundaryManager.rootAttr)
+    boundaryEl.parentElement.removeAttribute(boundaryManager.keyAttr)
+    boundaryManager.deleteBoundary(key)
   })
 </script>
 

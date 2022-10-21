@@ -10,13 +10,10 @@ export type ComboHandler = {
 }
 
 /**
- * Tree data structure for keyboard shortcuts, each level is a depth in the
- * boundary tree.
+ * Tree data structure for keyboard shortcuts.
  */
-export type ComboHandlerTree = {
-  [boundaryKey: string]: ComboHandler & {
-    children?: ComboHandlerTree
-  }
+export type ComboHandlers = {
+  [boundaryKey: string]: ComboHandler
 }
 
 /**
@@ -54,25 +51,7 @@ function keyEventToComboKey(evt: KeyboardEvent): string {
 export class KeyboardManager {
   started = false
   boundaryManager = new BoundaryManager(BOUNDARY_KEY)
-
-  /**
-   * ex.
-   *
-   * 'Ctrl+t': {
-      root: {
-        handler: () => {},
-        key: 'asd',
-        description: 'Hello',
-        children: {
-          project: {
-            handler: () => {},
-            key: 'asd',
-            description: 'Hello',
-          },
-        },
-      },
-   */
-  combos: { [comboKey: string]: ComboHandlerTree } = {}
+  combos: { [comboKey: string]: ComboHandlers } = {}
 
   /**
    * Invoke once per application.
@@ -95,35 +74,19 @@ export class KeyboardManager {
    * Attach into the combos data structure. The boundary path can be gotten by
    * calling boundaryManager.getEventBoundaryParents
    */
-  attach(comboKey: string, handler: ComboHandler, path: string[] = []) {
+  attach(comboKey: string, handler: ComboHandler, boundaryKey: string) {
     this.combos[comboKey] = this.combos[comboKey] || {}
-
-    let node = this.combos[comboKey]
-    for (let i = 0; i < path.length; i += 1) {
-      if (!node[path[i]]) {
-        node[path[i]] = {
-          ...handler,
-          children: {},
-        }
-        return
-      }
-
-      node = node[path[i]].children
-    }
+    this.combos[comboKey][boundaryKey] = handler
   }
 
   /**
    * Remove the registered handler at a given path, this will prune the subtree.
    */
-  detach(comboKey: string, path: string[] = []) {
-    let node = this.combos[comboKey]
-    for (let i = 0; i <= path.length; i += 1) {
-      if (!node[path[i]]) {
-        return
-      }
-      node = node[path[i]].children
+  detach(comboKey: string, boundaryKey: string) {
+    delete this.combos[comboKey]?.[boundaryKey]
+    if (Object.keys(this.combos[comboKey]).length === 0) {
+      delete this.combos[comboKey]
     }
-    delete node[path[path.length - 1]]
   }
 
   /**
@@ -136,54 +99,20 @@ export class KeyboardManager {
    */
   #onkeydown = (evt: KeyboardEvent) => {
     const comboKey = keyEventToComboKey(evt)
-
-    const path = this.boundaryManager
-      .getEventBoundaryParents(this.boundaryManager.activeBoundary?.el)
-      .map(boundary => boundary.key)
-
-    let curNode = this.combos[comboKey]
-    let comboHandler: ComboHandler & { children?: ComboHandlerTree }
-    const foundStack = []
-    for (let i = 0; i < path.length; i += 1) {
-      comboHandler = curNode?.[path[i]]
-      if (comboHandler) {
-        foundStack.push(comboHandler)
-      }
-      curNode = comboHandler?.children
+    const found = this.combos[comboKey]
+    if (!found) {
+      return
     }
 
-    let run: { handler: () => void }
-    while (foundStack.length > 0) {
-      run = foundStack.pop()
-      if (run && run.handler) {
-        run.handler()
+    const path = this.boundaryManager
+      .getActiveBoundaryPath()
+      .map(boundary => boundary.key)
+
+    for (let i = 0; i < path.length; i += 1) {
+      if (found[path[i]]?.handler) {
+        found[path[i]].handler()
         return
       }
     }
   }
-}
-
-function flattenTree(node, res = []) {
-  if (!node) {
-    return res.flat()
-  }
-  res.push(node)
-
-  for (let i = 0; i < Object.keys(node.children || []).length; i += 1) {
-    res.push(flattenTree(node.children[i]))
-  }
-  return res.flat()
-}
-
-export function parseCombosForHelpMenu(
-  combos: { [comboKey: string]: ComboHandlerTree },
-  activeBoundary: string
-) {
-  console.log(combos)
-  return Object.entries(combos).map(([comboKey, comboHandler]) => {
-    return {
-      comboKey,
-      handlers: flattenTree(comboHandler),
-    }
-  })
 }

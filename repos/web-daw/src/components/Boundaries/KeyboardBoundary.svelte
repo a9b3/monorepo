@@ -7,29 +7,17 @@
 
   export let key: string
   export let comboHandler: { [comboKey: string]: ComboHandler }
-  let boundaryEl: HTMLElement
-  let path: string[]
 
   onMount(() => {
-    path = keyboardStore.boundaryManager
-      .getEventBoundaryParents(boundaryEl)
-      .map(boundary => boundary.key)
-
-    Object.entries(comboHandler).forEach(([comboKey, comboHandlerTree]) => {
-      keyboardStore.attach(
-        comboKey,
-        { ...comboHandlerTree, boundaryKey: key },
-        [...path, key]
-      )
+    Object.entries(comboHandler).forEach(([comboKey, comboHandler]) => {
+      keyboardStore.attach(comboKey, comboHandler, key)
     })
-    console.log(`mounting`, path)
   })
   onDestroy(() => {
-    console.log(`unmounting`, path)
-    Object.entries(comboHandler).forEach(([comboKey]) => {
-      keyboardStore.detach(comboKey, [...path, key])
+    Object.keys(comboHandler).forEach(comboKey => {
+      keyboardStore.detach(comboKey, key)
     })
   })
 </script>
 
-<Boundary rootKey={BOUNDARY_KEY} {key} bind:boundaryEl />
+<Boundary rootKey={BOUNDARY_KEY} {key} />

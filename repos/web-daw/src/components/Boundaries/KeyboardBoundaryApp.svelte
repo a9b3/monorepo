@@ -15,12 +15,19 @@
 
 <BoundaryApp boundaryManager={keyboardStore.boundaryManager}>
   <KeyboardBoundary
-    key="help"
+    key="global"
     comboHandler={{
       'Shift+?': {
         key: 'help',
-        description: 'Show the help menu.',
+        description: 'Toggle help menu.',
         handler: () => {
+          if (!$showHelp) {
+            keyboardStore.boundaryManager.activeBoundary.el.style.filter =
+              'brightness(2)'
+          } else {
+            keyboardStore.boundaryManager.activeBoundary.el.style.filter =
+              'unset'
+          }
           showHelp.set(!$showHelp)
         },
       },

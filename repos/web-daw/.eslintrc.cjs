@@ -1,6 +1,7 @@
 module.exports = {
   extends: '../../.eslintrc.cjs',
   rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/ban-types': [
       'error',
       {

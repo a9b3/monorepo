@@ -57,12 +57,14 @@
   comboHandler={{
     Backspace: {
       key: 'del',
+      description: 'Remove selected midi clips.',
       handler: () => {
         console.log(`backspace`)
       },
     },
     Space: {
       key: 'play',
+      description: 'Toggle play project.',
       handler: () => {
         if (project.controller.isPlaying) {
           project.controller.stop()

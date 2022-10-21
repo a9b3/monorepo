@@ -42,10 +42,10 @@ export function findFirstAncestor(
   node: HTMLElement,
   predicate: (el: HTMLElement) => HTMLElement | undefined
 ) {
-  if (node === window.document.body) {
+  if (node === window.document.body || !node) {
     return false
   }
-  const result = predicate(node.parentElement)
+  const result = predicate(node)
   if (result) {
     return result
   }
@@ -57,7 +57,7 @@ export function findAllAncestors<T>(
   predicate: (el: HTMLElement) => T | undefined,
   results: T[] = []
 ): T[] {
-  if (node === window.document.body) {
+  if (node === window.document.body || !node) {
     return results
   }
   const result = predicate(node)
