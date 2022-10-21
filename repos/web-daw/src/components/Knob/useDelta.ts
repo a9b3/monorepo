@@ -1,27 +1,32 @@
-export function useDelta(
-  getDelta: (delta: number) => void,
-  opts: { pxRange: number }
-) {
+/**
+ * Place on a dom element to use the origin click event handler.
+ */
+export function useDelta(getDelta: (arg: { x: number; y: number }) => void) {
   return function handler(node: HTMLElement) {
-    let currentY: number
+    let curX = 0
+    let curY = 0
 
     const mousemove = (evt: MouseEvent) => {
-      const pxDelta = currentY - evt.clientY
-      currentY = evt.clientY
-      const percentageDelta = pxDelta / opts.pxRange
-      getDelta(percentageDelta)
+      window.requestAnimationFrame(() => {
+        getDelta({ x: curX + evt.movementX, y: curY + evt.movementY })
+        curX = evt.movementX
+        curY = evt.movementY
+      })
     }
 
     const mouseup = () => {
+      document.body.style.cursor = 'default'
       document.removeEventListener('mousemove', mousemove)
       document.removeEventListener('mouseup', mouseup)
     }
 
     const mousedown = (evt: MouseEvent) => {
-      if (!node.contains(evt.target)) {
+      document.body.style.cursor = 'ns-resize'
+      if (!node.contains(evt.target as HTMLElement)) {
         return
       }
-      currentY = evt.clientY
+      curX = 0
+      curY = 0
 
       document.addEventListener('mousemove', mousemove)
       document.addEventListener('mouseup', mouseup)

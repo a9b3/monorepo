@@ -32,17 +32,39 @@ export function directSubtreeOf(
   return directSubtreeOf(node.parentElement, target, predicate)
 }
 
+/**
+ * Find the first ancestor node that the predicate returns true.
+ *
+ * ex.
+ *    const body = findFirstAncestor(node, (t) => { t === window.document.body })
+ */
 export function findFirstAncestor(
   node: HTMLElement,
-  predicate: (el: Element) => boolean
+  predicate: (el: HTMLElement) => HTMLElement | undefined
 ) {
   if (node === window.document.body) {
     return false
   }
-  if (predicate(node.parentElement)) {
-    return node.parentElement
+  const result = predicate(node.parentElement)
+  if (result) {
+    return result
   }
   return findFirstAncestor(node.parentElement, predicate)
+}
+
+export function findAllAncestors<T>(
+  node: HTMLElement,
+  predicate: (el: HTMLElement) => T | undefined,
+  results: T[] = []
+): T[] {
+  if (node === window.document.body) {
+    return results
+  }
+  const result = predicate(node)
+  if (result) {
+    results.push(result)
+  }
+  return findAllAncestors(node.parentElement, predicate, results)
 }
 
 export function getScrollParent(element: HTMLElement, includeHidden?: boolean) {

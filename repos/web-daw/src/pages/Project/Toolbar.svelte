@@ -1,17 +1,15 @@
 <!--
   @component
 
-  Project toolbar, display the project metadata like bpm and play controls.
+  Project toolbar, play controls, bpm, etc.
 -->
 <script lang="ts">
-  import { onMount, onDestroy, beforeUpdate } from 'svelte'
-
+  import { onMount, onDestroy } from 'svelte'
   import type { Project, Controller } from 'daw/core/project'
   import { Pill, Layout, Icon } from 'src/components'
   import { objectStyle } from 'src/utils'
   import { audioContext } from 'daw/audioContext'
   import { useDelta } from 'src/components/Knob/useDelta'
-  import { keyboardStore } from 'src/store'
 
   export let project: Project
 
@@ -20,18 +18,16 @@
   let elapsedBeats = 0
   let elapsedBars = 0
 
-  const deltaDirective = useDelta(
-    delta => {
-      const nextBpm = Math.floor($controller.bpm + delta * 100)
-      $controller.setBpm(nextBpm <= 0 ? 0 : nextBpm)
-    },
-    { pxRange: 200 }
-  )
+  const deltaDirective = useDelta(({ y }) => {
+    const nextBpm = Math.floor($controller.bpm - y)
+    $controller.setBpm(Math.max(0, Math.min(nextBpm, 200)))
+  })
 
   function handleStop() {
     elapsedBeats = 0
     elapsedBars = 0
   }
+
   function handleTick({ currentTick }) {
     const currentBeat =
       Math.floor(currentTick / controller.scheduler.ticksPerBeat) % 4
@@ -66,20 +62,8 @@
     }
   }
 
-  onMount(() => {
-    keyboardStore.attach('Space', {
-      key: 'play',
-      handler: () => {
-        if (project.controller.isPlaying) {
-          project.controller.stop()
-        } else {
-          project.controller.play()
-        }
-      },
-    })
-  })
+  onMount(() => {})
   onDestroy(() => {
-    keyboardStore.detach('Space', 'play')
     controller.removeListener('stop', handleStop)
     controller.scheduler.removeListener('tick', handleTick)
   })

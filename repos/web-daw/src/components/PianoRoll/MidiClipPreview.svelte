@@ -17,10 +17,11 @@
     const heightPercent = 1 / noteLength
 
     midiDiv.style.height = `${Math.max(
-      Math.min(heightPercent * offsetHeight, 6),
-      4
+      2,
+      Math.min(heightPercent * offsetHeight, 4)
     )}px`
-    midiDiv.style.background = hslString('accent')
+    midiDiv.style.background = hslString('accent', 0.7)
+    midiDiv.style.borderRadius = '0'
   }
 
   /**

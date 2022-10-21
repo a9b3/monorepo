@@ -1,7 +1,12 @@
+<!--
+  @component
+
+  The entire project view.
+-->
 <script lang="ts">
   import { onMount, onDestroy, beforeUpdate } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { ContextMenu, Selection } from 'src/components'
+  import { ContextMenu, Selection, KeyboardBoundary } from 'src/components'
   import {
     editorStore,
     setSelectedProject,
@@ -10,8 +15,6 @@
   } from 'src/store'
   import { trackMousePosition, untrackMousePosition } from 'src/utils'
   import { selection } from './stores/selection'
-  import { keyboardStore } from 'src/store'
-  import { windowManager } from 'src/ui'
 
   import AutoSave from './AutoSave.svelte'
   import LeftPanel from './LeftPanel.svelte'
@@ -39,28 +42,9 @@
     }
   })
   onMount(() => {
-    keyboardStore.attach('Backspace', {
-      key: 'clipdelete',
-      handler: () => {
-        if (windowManager.stack.length === 0) {
-          if ($editorStore.inFocusElement) {
-            project.tracks.forEach(track => {
-              track.removeMidiClipById($editorStore.inFocusElement)
-              setInFocusElement(undefined)
-            })
-          }
-          Object.keys(selection.selected).forEach(clipId => {
-            project.tracks.forEach(track => {
-              track.removeMidiClipById(clipId)
-            })
-          })
-        }
-      },
-    })
     trackMousePosition()
   })
   onDestroy(() => {
-    keyboardStore.detach('Backspace', 'clipdelete')
     untrackMousePosition()
   })
 </script>
@@ -68,6 +52,27 @@
 {#key params.id}
   <AutoSave projectId={params.id} />
 {/key}
+<KeyboardBoundary
+  key="project"
+  comboHandler={{
+    Backspace: {
+      key: 'del',
+      handler: () => {
+        console.log(`backspace`)
+      },
+    },
+    Space: {
+      key: 'play',
+      handler: () => {
+        if (project.controller.isPlaying) {
+          project.controller.stop()
+        } else {
+          project.controller.play()
+        }
+      },
+    },
+  }}
+/>
 <div class="app-shell">
   {#if $project}
     {#key $project.id}
@@ -75,6 +80,17 @@
         <Toolbar project={$project} />
       </div>
       <div class="left">
+        <KeyboardBoundary
+          key="left"
+          comboHandler={{
+            Backspace: {
+              key: 'del',
+              handler: () => {
+                console.log(`backspace in left`)
+              },
+            },
+          }}
+        />
         <LeftPanel />
       </div>
       <div

@@ -45,6 +45,8 @@ function createMidiEvent(arg: CreateMidiEventArgs) {
  * 1. notesIndex[note].forEach(id => eventsIndex[id].contains(startTick])
  *
  * Abstraction on top of MidiArrangement that includes conviences for the UI.
+ *
+ * https://studiocode.dev/resources/midi-middle-c/
  */
 export class MidiClip extends Subscribable {
   MidiEventTypes = MidiEventTypes

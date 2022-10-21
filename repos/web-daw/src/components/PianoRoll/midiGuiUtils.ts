@@ -39,8 +39,8 @@ export function snapToGrid(value: number, division: number, floor = true) {
     : Math.round(value / division) * division
 }
 
-export function hslString(color: string) {
-  return `hsla(var(--hsl__${color}-h), var(--hsl__${color}-s), calc(var(--hsl__${color}-l)), 1)`
+export function hslString(color: string, opacity = 1) {
+  return `hsla(var(--hsl__${color}-h), var(--hsl__${color}-s), calc(var(--hsl__${color}-l)), ${opacity})`
 }
 
 function parseCSSTransform(transform: string): number[] {

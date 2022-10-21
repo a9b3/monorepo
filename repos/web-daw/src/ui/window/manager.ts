@@ -204,8 +204,14 @@ export class WindowManager extends EventEmitter {
     this.emit('update')
   }
 
+  /**
+   * Finds the el and pushes it to the top. If not found do nothing.
+   */
   focus = (el: HTMLElement) => {
     const found = this.stack.find(arg => arg[0] === el)
+    if (!found) {
+      return
+    }
     const idx = this.stack.findIndex(arg => arg[0] === el)
     if (idx > -1) {
       this.stack.splice(idx, 1)

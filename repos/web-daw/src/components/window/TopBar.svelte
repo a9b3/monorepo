@@ -5,7 +5,7 @@
   export let onClose: () => void
 </script>
 
-<div class={($$restProps.class || '') + ' main'} style={$$restProps.style}>
+<div class="main">
   <div class="left">
     <slot name="left" />
   </div>

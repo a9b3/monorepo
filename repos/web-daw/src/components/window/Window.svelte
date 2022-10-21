@@ -8,8 +8,16 @@
   import TopBar from './TopBar.svelte'
   import { windowManager } from 'src/ui'
 
+  // -------------------------------------------------------------------------
+  // Props
+  // -------------------------------------------------------------------------
+
   export let title = ''
-  export let onClose: () => void
+  export let onClose: Function
+
+  // -------------------------------------------------------------------------
+  // Internals
+  // -------------------------------------------------------------------------
 
   let topbarEl: HTMLElement
   let mainWindowEl: HTMLElement

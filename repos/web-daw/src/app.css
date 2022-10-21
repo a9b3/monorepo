@@ -12,7 +12,6 @@ html {
 *:after {
   overscroll-behavior-x: none;
   box-sizing: inherit;
-  cursor: default;
   user-select: none;
 }
 a {

@@ -7,6 +7,7 @@
     PianoRoll,
     Sampler,
     Window,
+    KeyboardBoundary,
   } from 'src/components'
   import { objectStyle } from 'src/utils'
   import { editorStore, setInFocusElement } from 'src/store'
@@ -95,6 +96,7 @@
       title={getWindowTitle(trackLabel, clip?.name)}
       onClose={() => (showWindow = false)}
     >
+      <!-- <KeyboardBoundary key="clip" /> -->
       <div slot="left">Edit</div>
       <div
         style={objectStyle({

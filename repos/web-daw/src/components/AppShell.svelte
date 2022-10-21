@@ -4,10 +4,11 @@
   import Project from 'src/pages/Project/Project.svelte'
   import Dashboard from 'src/pages/Dashboard/Dashboard.svelte'
   import { Theme, TabBar } from 'src/components'
+  import KeyboardBoundaryApp from 'src/components/Boundaries/KeyboardBoundaryApp.svelte'
+  import ContextMenuBoundaryApp from 'src/components/Boundaries/ContextMenuBoundaryApp.svelte'
   import userStore from 'src/store/user'
   import { fetchEditor } from 'src/store/editor'
-  import { mousePosition, KeyboardManager } from 'src/ui'
-  import { keyboardStore } from 'src/store'
+  import { mousePosition } from 'src/ui'
 
   export let url = ''
 
@@ -17,28 +18,30 @@
     mousePosition.observeMousePosition()
     await fetchEditor($userStore.id)
     ready = true
-    keyboardStore.start()
   })
   onDestroy(() => {
     mousePosition.unobserveMousePosition()
-    keyboardStore.stop()
   })
 </script>
 
 {#if ready}
   <div class="shell">
-    <Theme />
-    <Router {url}>
-      <div class="nav">
-        <TabBar />
-      </div>
-      <div class="content">
-        <Route path="/project/:id" let:params>
-          <Project {params} />
-        </Route>
-        <Route path="/*" component={Dashboard} />
-      </div>
-    </Router>
+    <KeyboardBoundaryApp>
+      <ContextMenuBoundaryApp>
+        <Theme />
+        <Router {url}>
+          <div class="nav">
+            <TabBar />
+          </div>
+          <div class="content">
+            <Route path="/project/:id" let:params>
+              <Project {params} />
+            </Route>
+            <Route path="/*" component={Dashboard} />
+          </div>
+        </Router>
+      </ContextMenuBoundaryApp>
+    </KeyboardBoundaryApp>
   </div>
 {/if}
 
