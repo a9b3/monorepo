@@ -105,8 +105,8 @@ export class BoundaryManager {
       throw new Error('Boundary keys must be unique.')
     }
     this.#orderedSet.add(key)
-    this.#focusHistory.add(key)
     this.#elements[key] = { el, key }
+    this.#focusHistory.add(key)
   }
 
   deleteBoundary(key: string) {

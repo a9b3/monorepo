@@ -21,7 +21,7 @@
   onMount(() => {
     boundaryEl.parentElement.setAttribute(boundaryManager.rootAttr, rootKey)
     boundaryEl.parentElement.setAttribute(boundaryManager.keyAttr, key)
-    boundaryManager.addBoundary(key)
+    boundaryManager.addBoundary(key, boundaryEl)
   })
   onDestroy(() => {
     boundaryEl.parentElement.removeAttribute(boundaryManager.rootAttr)
