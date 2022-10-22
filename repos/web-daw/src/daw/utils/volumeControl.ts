@@ -7,11 +7,11 @@
  * percent = gain^4
  */
 export function percentToGain(percent: number) {
-  return 10 ** (Math.log(percent) / 4)
+  return percent ** 3
 }
 
 export function gainToPercent(gain: number) {
-  return gain ** 4
+  return gain ** (1 / 3)
 }
 
 /**

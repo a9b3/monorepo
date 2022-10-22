@@ -97,7 +97,7 @@ export class Channel extends IONode {
 
   setGain(value: number) {
     this.gain = percentToGain(value)
-    this.fader.gain.setValueAtTime(value, this.#audioContext.currentTime)
+    this.fader.gain.setValueAtTime(this.gain, this.#audioContext.currentTime)
 
     this.emit('update')
   }
