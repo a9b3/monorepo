@@ -5,8 +5,8 @@ import { Subscribable } from '../Subscribable'
  * input and output.
  */
 export class IONode extends Subscribable {
-  input: AudioNode
-  output: AudioNode
+  input: GainNode
+  output: GainNode
 
   constructor(audioContext: AudioContext) {
     super()

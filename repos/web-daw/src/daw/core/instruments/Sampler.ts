@@ -30,6 +30,7 @@ export class Sampler extends IONode implements Instrument {
         this.addSoundSource(key, { ...val })
       })
     }
+    this.output.gain.setValueAtTime(0.1, this.#audioContext.currentTime)
   }
 
   async addSoundSource(
