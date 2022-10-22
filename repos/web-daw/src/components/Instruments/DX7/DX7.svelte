@@ -26,16 +26,15 @@
           onSelect={async ({ key }) => {
             await $presets.load(key)
           }}
-        >
-          <Layout type="col">
-            <Text color={'fg2'}>Banks:</Text>
-            <div>
-              Selected: {$presets.banks.find(
-                ({ url }) => url === $presets.selectedBankUrl
-              )?.name || 'None'}
-            </div>
-          </Layout>
-        </ClickSelection>
+        />
+        <Layout type="col">
+          <Text color={'fg2'}>Banks:</Text>
+          <div>
+            Selected: {$presets.banks.find(
+              ({ url }) => url === $presets.selectedBankUrl
+            )?.name || 'None'}
+          </div>
+        </Layout>
       </div>
       <div class="select">
         <ClickSelection
@@ -49,14 +48,13 @@
           onSelect={async ({ key }) => {
             $presets.setPatch(Number(key))
           }}
-        >
-          <Layout type="col">
-            <Text color={'fg2'}>Patches:</Text>
-            <div>
-              Selected: {$presets.selectedPatch?.voice || 'None'}
-            </div>
-          </Layout>
-        </ClickSelection>
+        />
+        <Layout type="col">
+          <Text color={'fg2'}>Patches:</Text>
+          <div>
+            Selected: {$presets.selectedPatch?.voice || 'None'}
+          </div>
+        </Layout>
       </div>
     {/if}
   </div>
@@ -86,5 +84,6 @@
   }
   .select {
     padding: var(--spacing__paddingM);
+    position: relative;
   }
 </style>

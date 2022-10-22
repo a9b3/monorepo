@@ -91,6 +91,7 @@
     <Window
       title={getWindowTitle(trackLabel, clip?.name)}
       onClose={() => (showWindow = false)}
+      let:getChild
     >
       <!-- <KeyboardBoundary key="clip" /> -->
       <div slot="left">Edit</div>
@@ -111,6 +112,7 @@
         {/if}
         {#if instrumentType !== 'Sampler' && clip}
           <PianoRoll
+            {getChild}
             numberOfBars={clip.beatsPerLoop / 4}
             onMidi={instrument.onMidi}
             {ticksPerBeat}

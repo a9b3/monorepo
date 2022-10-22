@@ -8,6 +8,7 @@
   import TopBar from './TopBar.svelte'
   import { windowManager } from 'src/ui'
   import { KeyboardBoundary } from 'src/components'
+  import Resizer from './Resizer.svelte'
 
   // -------------------------------------------------------------------------
   // Props
@@ -22,8 +23,39 @@
 
   let topbarEl: HTMLElement
   let mainWindowEl: HTMLElement
+  let contentEl: HTMLElement
+  let contentChild: HTMLElement
+
+  let minHeight
+  let minWidth
+  let maxHeight
+  let maxWidth
+
+  let originWidth
+  let originHeight
+
+  function getChild(child: HTMLElement) {
+    contentChild = child
+  }
+
+  function onStart() {
+    originWidth = contentEl.offsetWidth
+    originHeight = contentEl.offsetHeight
+  }
+
+  function onChange({ deltaX, deltaY }) {
+    contentChild.style.width =
+      Math.max(minWidth, Math.min(maxWidth, originWidth + deltaX)) + 'px'
+    contentChild.style.height =
+      Math.max(minHeight, Math.min(maxHeight, originHeight + deltaY)) + 'px'
+  }
 
   onMount(() => {
+    minHeight = parseFloat(getComputedStyle(contentChild).height)
+    minWidth = parseFloat(getComputedStyle(contentChild).width)
+    maxHeight = contentChild.scrollHeight
+    maxWidth = contentChild.scrollWidth
+
     windowManager.upsert(mainWindowEl, topbarEl)
   })
   onDestroy(() => {
@@ -38,24 +70,24 @@
     windowManager.focus(mainWindowEl)
   }}
 >
-        <KeyboardBoundary
-          key="window"
-          comboHandler={{
-            Backspace: {
-              key: 'del',
-              handler: () => {
-                console.log(`backspace in window`)
-              },
-            },
-          }}
-        />
+  <KeyboardBoundary
+    comboHandler={{
+      Backspace: {
+        key: 'del',
+        handler: () => {
+          console.log(`backspace in window`)
+        },
+      },
+    }}
+  />
   <div class="top" bind:this={topbarEl}>
     <TopBar {title} {onClose}>
       <slot name="left" slot="left" />
     </TopBar>
   </div>
-  <div class="content">
-    <slot />
+  <div class="content" bind:this={contentEl}>
+    <Resizer {onChange} {onStart} />
+    <slot {getChild} />
   </div>
 </div>
 
@@ -86,5 +118,6 @@
     width: 100%;
     height: 100%;
     flex-grow: 1;
+    position: relative;
   }
 </style>

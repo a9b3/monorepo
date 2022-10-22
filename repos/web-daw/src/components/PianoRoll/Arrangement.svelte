@@ -252,7 +252,7 @@
     background: var(--bg-hsl);
     border-bottom: 1px solid var(--border-hsl);
     display: flex;
-    z-index: 1;
+    z-index: 2;
   }
 
   .rows {

@@ -5,19 +5,19 @@
   import type { ComboHandler } from 'src/ui/keyboard/manager'
   import { keyboardStore } from 'src/store'
 
-  export let key: string
   export let comboHandler: { [comboKey: string]: ComboHandler }
+  let boundaryId = crypto.randomUUID()
 
   onMount(() => {
     Object.entries(comboHandler).forEach(([comboKey, comboHandler]) => {
-      keyboardStore.attach(comboKey, comboHandler, key)
+      keyboardStore.attach(comboKey, comboHandler, boundaryId)
     })
   })
   onDestroy(() => {
     Object.keys(comboHandler).forEach(comboKey => {
-      keyboardStore.detach(comboKey, key)
+      keyboardStore.detach(comboKey, boundaryId)
     })
   })
 </script>
 
-<Boundary rootKey={BOUNDARY_KEY} {key} />
+<Boundary rootKey={BOUNDARY_KEY} key={boundaryId} />

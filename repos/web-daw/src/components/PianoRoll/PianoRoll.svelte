@@ -48,6 +48,11 @@
   export let onMidi: Instrument['onMidi']
   export let selectionManager: SelectionManager
 
+  /**
+   * From Window.svelte
+   */
+  export let getChild: (el: HTMLElement) => void
+
   // -------------------------------------------------------------------------
   // Internal State
   // -------------------------------------------------------------------------
@@ -60,6 +65,7 @@
   let spacerSize = 20
 
   onMount(() => {
+    getChild(scrollParent)
     scrollParent.scrollTo(
       0,
       scrollParent.scrollHeight *
@@ -107,10 +113,9 @@
 <style>
   .main {
     background: var(--colors__bg);
-    max-height: 700px;
     overflow: auto;
-    width: 100%;
     display: grid;
+    height: 600px;
     grid-template: 'keyboard arrangement' auto / 100px 1fr;
     position: relative;
     overscroll-behavior: none;
