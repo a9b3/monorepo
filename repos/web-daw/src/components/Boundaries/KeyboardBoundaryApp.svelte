@@ -21,13 +21,6 @@
         key: 'help',
         description: 'Toggle help menu.',
         handler: () => {
-          if (!$showHelp) {
-            keyboardStore.boundaryManager.activeBoundary.el.style.filter =
-              'brightness(2)'
-          } else {
-            keyboardStore.boundaryManager.activeBoundary.el.style.filter =
-              'unset'
-          }
           showHelp.set(!$showHelp)
         },
       },
