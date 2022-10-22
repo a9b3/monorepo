@@ -6,7 +6,7 @@
 <script lang="ts">
   import { onMount, onDestroy, beforeUpdate } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { ContextMenu, Selection, KeyboardBoundary } from 'src/components'
+  import { ContextMenuGroup, Selection, KeyboardBoundary } from 'src/components'
   import {
     editorStore,
     setSelectedProject,
@@ -30,8 +30,6 @@
   $: project = $editorStore.openedProjects.find(proj => {
     return proj.id === params.id
   })
-
-  let contextMenuRef: ContextMenu
 
   beforeUpdate(async () => {
     try {
@@ -95,28 +93,25 @@
         />
         <LeftPanel />
       </div>
-      <div
-        class="main"
-        bind:this={main}
-        on:contextmenu|preventDefault={contextMenuRef.openMenu}
-      >
+      <div class="main" bind:this={main}>
         {#if main}
           <Selection selectionManager={selection} container={main} />
         {/if}
-        <ContextMenu
-          bind:this={contextMenuRef}
-          menu={[
-            {
-              label: 'Add Track',
-              onClick: () => {
-                $project.addTrack({
-                  label: 'Untitled',
-                  id: crypto.randomUUID(),
-                })
+        <ContextMenuGroup
+          menu={{
+            items: [
+              {
+                label: 'Add Track',
+                onClick: () => {
+                  $project.addTrack({
+                    label: 'Untitled',
+                    id: crypto.randomUUID(),
+                  })
+                },
+                type: 'item',
               },
-              type: 'item',
-            },
-          ]}
+            ],
+          }}
         />
         {#each $project.tracks as track}
           {#key track.id}

@@ -3,7 +3,7 @@
   import moment from 'moment'
 
   import type { ProjectDoc } from 'src/db'
-  import { Text, ContextMenu } from 'src/components'
+  import { Text, ContextMenuGroup } from 'src/components'
   import {
     addOpenedProject,
     deleteProject,
@@ -14,8 +14,6 @@
   import { objectStyle } from 'src/utils'
 
   export let project: ProjectDoc
-
-  let contextMenuRef: ContextMenu
 </script>
 
 <div
@@ -24,27 +22,27 @@
   on:click={() => {
     setInFocusElement(project.id)
   }}
-  on:contextmenu|preventDefault={evt => {
+  on:contextmenu={evt => {
     setInFocusElement(project.id)
-    contextMenuRef.openMenu(evt)
   }}
   on:dblclick={() => {
     addOpenedProject(project)
     navigate(`/project/${project.id}`, { replace: true })
   }}
 >
-  <ContextMenu
-    bind:this={contextMenuRef}
-    menu={[
-      {
-        label: 'Delete Project',
-        onClick: () => {
-          deleteProject(project.id)
-          removeOpenedProject(project.id)
+  <ContextMenuGroup
+    menu={{
+      items: [
+        {
+          label: 'Delete Project',
+          handler: () => {
+            deleteProject(project.id)
+            removeOpenedProject(project.id)
+          },
+          type: 'item',
         },
-        type: 'item',
-      },
-    ]}
+      ],
+    }}
   />
   <div class="info">
     <div

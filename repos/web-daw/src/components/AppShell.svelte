@@ -5,7 +5,7 @@
   import Dashboard from 'src/pages/Dashboard/Dashboard.svelte'
   import { Theme, TabBar } from 'src/components'
   import KeyboardBoundaryApp from 'src/components/Boundaries/KeyboardBoundaryApp.svelte'
-  import ContextMenuBoundaryApp from 'src/components/Boundaries/ContextMenuBoundaryApp.svelte'
+  import ContextMenuApp from 'src/components/Boundaries/ContextMenuApp.svelte'
   import userStore from 'src/store/user'
   import { fetchEditor } from 'src/store/editor'
   import { mousePosition } from 'src/ui'
@@ -27,20 +27,19 @@
 {#if ready}
   <div class="shell">
     <KeyboardBoundaryApp>
-      <ContextMenuBoundaryApp>
-        <Theme />
-        <Router {url}>
-          <div class="nav">
-            <TabBar />
-          </div>
-          <div class="content">
-            <Route path="/project/:id" let:params>
-              <Project {params} />
-            </Route>
-            <Route path="/*" component={Dashboard} />
-          </div>
-        </Router>
-      </ContextMenuBoundaryApp>
+      <ContextMenuApp />
+      <Theme />
+      <Router {url}>
+        <div class="nav">
+          <TabBar />
+        </div>
+        <div class="content">
+          <Route path="/project/:id" let:params>
+            <Project {params} />
+          </Route>
+          <Route path="/*" component={Dashboard} />
+        </div>
+      </Router>
     </KeyboardBoundaryApp>
   </div>
 {/if}

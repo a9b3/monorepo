@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
-  import { ContextMenu } from 'src/components'
   import { objectStyle } from 'src/utils'
   import type { MidiClip, TickHandler } from 'daw/core'
   import { editorStore, currentProject } from 'src/store/editor'

@@ -4,11 +4,11 @@
     Text,
     Pill,
     Layout,
-    ContextMenu,
     ClearEditableText,
     StereoMeter,
     Slider,
     Knob,
+    ContextMenuGroup,
   } from 'src/components'
   import InstrumentSelect from './InstrumentSelect.svelte'
   import { editorStore, setInFocusElement, setInFocusTrack } from 'src/store'
@@ -22,7 +22,6 @@
   export let track: Track
 
   let mainElRef: HTMLElement
-  let contextMenuRef: ContextMenu
   let clips = Array(8).fill({})
 
   $: currentTrack = track
@@ -37,29 +36,27 @@
   style={objectStyle({
     '--color': track.color,
   })}
-  on:contextmenu|preventDefault={evt => {
+  on:contextmenu={evt => {
     setInFocusElement(track.id)
-    if (contextMenuRef) {
-      contextMenuRef.openMenu(evt)
-    }
   }}
   on:mousedown={() => {
     setInFocusTrack(track.id)
   }}
   draggable
 >
-  <ContextMenu
-    bind:this={contextMenuRef}
-    menu={[
-      {
-        label: 'Delete Track',
-        onClick: () => {
-          project.removeTrack(track.id)
-          setInFocusElement()
+  <ContextMenuGroup
+    menu={{
+      items: [
+        {
+          label: 'Delete Track',
+          handler: () => {
+            project.removeTrack(track.id)
+            setInFocusElement()
+          },
+          type: 'item',
         },
-        type: 'item',
-      },
-    ]}
+      ],
+    }}
   />
   <div
     class="title"

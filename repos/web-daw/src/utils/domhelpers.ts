@@ -40,7 +40,7 @@ export function directSubtreeOf(
  */
 export function findFirstAncestor(
   node: HTMLElement,
-  predicate: (el: HTMLElement) => HTMLElement | undefined
+  predicate: (el: HTMLElement) => HTMLElement | any | undefined
 ) {
   if (node === window.document.body || !node) {
     return false

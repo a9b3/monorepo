@@ -2,12 +2,12 @@
   import type { Track, MidiClip, Instrument, InstrumentType } from 'daw/core'
   import {
     ClearEditableText,
-    ContextMenu,
     Icon,
     PianoRoll,
     Sampler,
     Window,
     KeyboardBoundary,
+    ContextMenuGroup,
   } from 'src/components'
   import { objectStyle } from 'src/utils'
   import { editorStore, setInFocusElement } from 'src/store'
@@ -29,7 +29,6 @@
   export let removeClip: InstanceType<typeof Track>['removeMidiClip']
 
   let el: HTMLElement
-  let contextMenuRef: ContextMenu
   let showWindow = false
   let prevClipId: string | undefined
 
@@ -72,10 +71,7 @@
     }
     showWindow = true
   }}
-  on:contextmenu|preventDefault|stopPropagation={e => {
-    if (clip) {
-      contextMenuRef.openMenu(e)
-    }
+  on:contextmenu={e => {
     setInFocusElement(clip.id)
   }}
 >
@@ -125,20 +121,21 @@
       </div>
     </Window>
   {/if}
-  <ContextMenu
-    bind:this={contextMenuRef}
-    menu={clip
-      ? [
-          {
-            label: 'Delete Clip',
-            onClick: () => {
-              removeClip(idx)
-              showWindow = false
+  <ContextMenuGroup
+    menu={{
+      items: clip
+        ? [
+            {
+              label: 'Delete Clip',
+              handler: () => {
+                removeClip(idx)
+                showWindow = false
+              },
+              type: 'item',
             },
-            type: 'item',
-          },
-        ]
-      : []}
+          ]
+        : [],
+    }}
   />
   <div
     class="icon"

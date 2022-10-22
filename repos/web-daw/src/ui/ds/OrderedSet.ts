@@ -18,6 +18,16 @@ export class OrderedSet extends Set {
     return super.clear()
   }
 
+  prepend(value: any) {
+    if (this.has(value)) {
+      const idx = this.#orderedSet.indexOf(value)
+      this.#orderedSet.splice(idx, 1)
+    }
+    this.#orderedSet.unshift(value)
+
+    return super.add(value)
+  }
+
   add(value: any) {
     if (this.has(value)) {
       const idx = this.#orderedSet.indexOf(value)

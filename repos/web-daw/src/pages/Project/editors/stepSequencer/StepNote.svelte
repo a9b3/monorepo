@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ContextMenu } from 'src/components'
+  import { ContextMenuGroup } from 'src/components'
 
   export let clip
   export let clipIsActive
@@ -13,8 +13,6 @@
   export let rowIdx
   export let colIdx
   export let colLength
-
-  let contextMenuRef: ContextMenu
 
   function insertNote(row: number, col: number) {
     const note = 60 + row
@@ -33,8 +31,7 @@
   }
 
   function createHandler(division) {
-    return evt => {
-      evt.stopPropagation()
+    return () => {
       for (let i = 0; i < colLength; i += 1) {
         if (i % division === 0) {
           insertNote(rowIdx, i)
@@ -55,35 +52,32 @@
       toggleNote(rowIdx, colIdx)
     }
   }}
-  on:contextmenu|preventDefault|stopPropagation={evt => {
-    contextMenuRef.openMenu(evt)
-  }}
 >
-  <ContextMenu
-    bind:this={contextMenuRef}
-    menu={[
-      {
-        label: 'Repeat every 2',
-        onClick: createHandler(2),
-        type: 'item',
-      },
-      {
-        label: 'Repeat every 4',
-        onClick: createHandler(4),
-        type: 'item',
-      },
-      {
-        label: 'Repeat every 2/4',
-        onClick: evt => {
-          evt.stopPropagation()
-          insertNote(rowIdx, 4)
-          insertNote(rowIdx, 12)
-          insertNote(rowIdx, 20)
-          insertNote(rowIdx, 28)
+  <ContextMenuGroup
+    menu={{
+      items: [
+        {
+          label: 'Repeat every 2',
+          handler: createHandler(2),
+          type: 'item',
         },
-        type: 'item',
-      },
-    ]}
+        {
+          label: 'Repeat every 4',
+          handler: createHandler(4),
+          type: 'item',
+        },
+        {
+          label: 'Repeat every 2/4',
+          handler: () => {
+            insertNote(rowIdx, 4)
+            insertNote(rowIdx, 12)
+            insertNote(rowIdx, 20)
+            insertNote(rowIdx, 28)
+          },
+          type: 'item',
+        },
+      ],
+    }}
   />
 </div>
 

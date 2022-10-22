@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { Icon, ContextMenu } from 'src/components'
+  import { Icon, ContextMenuGroup } from 'src/components'
   import {
     addOpenedProject,
     createProject,
@@ -20,7 +20,6 @@
 
   export let location: any
 
-  let contextMenuRef: ContextMenu
   let showApp = true
 
   onMount(() => {
@@ -50,17 +49,24 @@
 </script>
 
 {#if showApp}
-  <div class="content" on:contextmenu|preventDefault={contextMenuRef.openMenu}>
+  <div class="content">
     {#if !$projectFetching}
-      <ContextMenu
-        bind:this={contextMenuRef}
-        menu={[
-          {
-            label: 'Create Project',
-            onClick: handleCreateProject,
-            type: 'item',
-          },
-        ]}
+      <ContextMenuGroup
+        menu={{
+          items: [
+            {
+              label: 'WHATSUP',
+              handler: () => {},
+              type: 'item',
+            },
+            {
+              label: 'EXCLUSIVE',
+              handler: () => {},
+              type: 'item',
+              exclusive: true,
+            },
+          ],
+        }}
       />
       <div class="actions">
         <div class="card" on:click={handleCreateProject}>

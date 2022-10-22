@@ -9,7 +9,6 @@
   import CursorLine from './CursorLine/CursorLine.svelte'
   import type { SelectionManager } from 'src/ui'
   import { ModKeys } from 'src/ui'
-  import { ContextMenu } from 'src/components'
   import type { MidiClip, MidiEvent as MidiEventT } from 'daw/core/midi'
   import { MidiEventTypes } from 'daw/core/midi'
   import type { Instrument } from 'daw/core'
@@ -95,7 +94,6 @@
   })}
 >
   <CursorLine numberOfBeats={numberOfBars * 4} />
-  <ContextMenu />
   <div class="timeline">
     {#each bars as bar}
       <div class="bar" class:offset={bar % 2 === 1}>

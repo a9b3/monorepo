@@ -2,7 +2,7 @@
   import { navigate } from 'svelte-routing'
   import moment from 'moment'
   import type { ProjectDoc } from 'src/db'
-  import { ContextMenu, Text } from 'src/components'
+  import { ContextMenuGroup, Text } from 'src/components'
   import {
     editorStore,
     deleteProject,
@@ -13,8 +13,6 @@
   import { objectStyle } from 'src/utils'
 
   export let project: ProjectDoc
-
-  let contextMenuRef: ContextMenu
 </script>
 
 <div
@@ -23,19 +21,15 @@
   on:click={() => {
     setInFocusElement(project.id)
   }}
-  on:contextmenu|preventDefault={evt => {
+  on:contextmenu={evt => {
     setInFocusElement(project.id)
-    contextMenuRef.openMenu(evt)
   }}
   on:dblclick={() => {
     addOpenedProject(project)
     navigate(`/project/${project.id}`, { replace: true })
   }}
 >
-  <div
-    class="cover"
-    style={project.color || ''}
-  />
+  <div class="cover" style={project.color || ''} />
   <div class="info">
     <div
       style={objectStyle({
@@ -59,18 +53,19 @@
       </Text>
     </div>
   </div>
-  <ContextMenu
-    bind:this={contextMenuRef}
-    menu={[
-      {
-        label: 'Delete Project',
-        onClick: () => {
-          deleteProject(project.id)
-          removeOpenedProject(project.id)
+  <ContextMenuGroup
+    menu={{
+      items: [
+        {
+          label: 'Delete Project',
+          handler: () => {
+            deleteProject(project.id)
+            removeOpenedProject(project.id)
+          },
+          type: 'item',
         },
-        type: 'item',
-      },
-    ]}
+      ],
+    }}
   />
 </div>
 
