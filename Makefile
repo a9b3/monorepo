@@ -2,9 +2,13 @@
 # Place to remember bazel commands
 
 list:
-	echo "Showing available clis"
-	echo ""
-	bazelisk query 'kind("alias", //...)'
+	@echo "====================================================================="
+	@echo "Welcome to the monorepo"
+	@echo ""
+	@echo "Below are all the available CLIs"
+	@echo "====================================================================="
+	@echo ""
+	@bazelisk query 'kind("alias", //...)'
 
 k8s-exec-shell:
 	kubectl run -i --tty busybox --image=busybox --restart=Never -- sh

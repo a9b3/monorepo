@@ -7,12 +7,10 @@ go_library(
         "main.go",
         "person.go",
     ],
-    importpath = "github.com/publiclabel/monorepo/orgs/examples/go_server/internal/rpc",
+    importpath = "github.com/publiclabel/monorepo/repos/examples/go_server/internal/rpc",
     visibility = ["//orgs/examples/go_server:__subpackages__"],
     deps = [
         "//libs/go/logger",
-        "//orgs/examples/go_server/internal/sqlc/models",
-        "//orgs/examples/proto",
         "@com_github_google_uuid//:uuid",
         "@com_github_jackc_pgx_v4//pgxpool",
         "@org_golang_google_grpc//:go_default_library",

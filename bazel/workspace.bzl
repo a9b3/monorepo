@@ -35,25 +35,25 @@ def setup_http_archives():
     # js
     # ------------------------------------------------------------------------
 
-    # http_archive(
-    #     name = "aspect_rules_js",
-    #     sha256 = "0707a425093704fab05fb91c3a4b62cf22dca18ea334d8a72f156d4c18e8db90",
-    #     strip_prefix = "rules_js-1.3.1",
-    #     url = "https://github.com/aspect-build/rules_js/archive/refs/tags/v1.3.1.tar.gz",
-    # )
-    #
-    # http_archive(
-    #     name = "aspect_rules_ts",
-    #     sha256 = "3eb3171c26eb5d0951d51ae594695397218fb829e3798eea5557814723a1b3da",
-    #     strip_prefix = "rules_ts-1.0.0-rc3",
-    #     url = "https://github.com/aspect-build/rules_ts/archive/refs/tags/v1.0.0-rc3.tar.gz",
-    # )
-    #
-    # http_archive(
-    #     name = "build_bazel_rules_nodejs",
-    #     sha256 = "2b2004784358655f334925e7eadc7ba80f701144363df949b3293e1ae7a2fb7b",
-    #     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.4.0/rules_nodejs-5.4.0.tar.gz"],
-    # )
+    http_archive(
+        name = "aspect_rules_js",
+        sha256 = "0707a425093704fab05fb91c3a4b62cf22dca18ea334d8a72f156d4c18e8db90",
+        strip_prefix = "rules_js-1.3.1",
+        url = "https://github.com/aspect-build/rules_js/archive/refs/tags/v1.3.1.tar.gz",
+    )
+
+    http_archive(
+        name = "aspect_rules_ts",
+        sha256 = "3eb3171c26eb5d0951d51ae594695397218fb829e3798eea5557814723a1b3da",
+        strip_prefix = "rules_ts-1.0.0-rc3",
+        url = "https://github.com/aspect-build/rules_ts/archive/refs/tags/v1.0.0-rc3.tar.gz",
+    )
+
+    http_archive(
+        name = "build_bazel_rules_nodejs",
+        sha256 = "2b2004784358655f334925e7eadc7ba80f701144363df949b3293e1ae7a2fb7b",
+        urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.4.0/rules_nodejs-5.4.0.tar.gz"],
+    )
 
     # ------------------------------------------------------------------------
     # protobuf
