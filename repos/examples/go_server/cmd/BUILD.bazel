@@ -17,3 +17,20 @@ go_library(
         "@com_github_spf13_viper//:viper",
     ],
 )
+
+go_library(
+    name = "cmd",
+    srcs = [
+        "migrate.go",
+        "root.go",
+    ],
+    importpath = "github.com/publiclabel/monorepo/repos/examples/go_server/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_golang_migrate_migrate_v4//:migrate",
+        "@com_github_golang_migrate_migrate_v4//database/pgx",
+        "@com_github_golang_migrate_migrate_v4//source/file",
+        "@com_github_spf13_cobra//:cobra",
+        "@com_github_spf13_viper//:viper",
+    ],
+)
