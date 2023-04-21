@@ -26,3 +26,8 @@ sh_binary_cwd(
         ":templates",
     ],
 )
+
+alias(
+    name = "scaffold_alias",
+    actual = ":scaffold",
+)
