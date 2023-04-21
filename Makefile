@@ -8,7 +8,7 @@ list:
 	@echo "Below are all the available CLIs"
 	@echo "====================================================================="
 	@echo ""
-	@bazelisk query 'kind("alias", //...)'
+	@bazel query 'kind("alias", //...)'
 
 k8s-exec-shell:
 	kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
