@@ -87,6 +87,7 @@
               # the .bazelversion file in your project directory.
               # https://github.com/bazelbuild/bazelisk
               pkgs.bazelisk
+              pkgs.bazel-buildtools
 
               # cli
               pkgs.gnupg

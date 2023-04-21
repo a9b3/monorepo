@@ -16,7 +16,7 @@ ts_project(
 
 js_library(
     name = "lib",
-    package_name = "@monorepo/orgs/examples/ts-lib-consumer",
+    # package_name = "@monorepo/orgs/examples/ts-lib-consumer",
     deps = [":project"],
 )
 

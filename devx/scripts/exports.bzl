@@ -6,14 +6,14 @@ def sh_binary_cwd(name, binary_target, **kwargs):
     data = kwargs.pop("data", [])
 
     if binary_target == "":
-      fail("binary_target must be provided")
+        fail("binary_target must be provided")
 
     native.sh_binary(
         name = name,
         srcs = ["//devx/scripts:sh_binary_cwd.sh"],
-        args = ["$(location "+ binary_target + ")"],
+        args = ["$(location " + binary_target + ")"],
         data = [
-          binary_target,
+            binary_target,
         ] + data,
-        **kwargs,
+        **kwargs
     )

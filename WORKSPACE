@@ -95,6 +95,7 @@ gazelle_dependencies()
 ##################################
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 http_archive(
     name = "aspect_rules_swc",
     sha256 = "313307136cb6369f3c9d2992209c1e354b3e2c9989877ee67c688917320fba1f",
@@ -127,6 +128,7 @@ swc_register_toolchains(
 ##################################
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 http_archive(
     name = "aspect_rules_ts",
     sha256 = "3eb3171c26eb5d0951d51ae594695397218fb829e3798eea5557814723a1b3da",
