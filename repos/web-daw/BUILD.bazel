@@ -1,21 +1,21 @@
-load("@npm//:defs.bzl", "npm_link_all_packages")
+# load("@npm//:defs.bzl", "npm_link_all_packages")
 
-npm_link_all_packages(name = "node_modules")
+# npm_link_all_packages(name = "node_modules")
 
-load("@npm//repos/web-daw:vite/package_json.bzl", vite_bin = "bin")
-
-vite_bin.vite(
-    name = "build",
-    srcs = [
-        "index.html",
-        "svelte.config.js",
-        "package.json",
-        "tsconfig.json",
-        "tsconfig.node.json",
-        ":node_modules",
-    ] + glob(["src/**"]),
-    outs = ["dist"],
-    chdir = package_name(),
-)
+# load("@npm//repos/web-daw:vite/package_json.bzl", vite_bin = "bin")
+#
+# vite_bin.vite(
+#     name = "build",
+#     srcs = [
+#         "index.html",
+#         "svelte.config.js",
+#         "package.json",
+#         "tsconfig.json",
+#         "tsconfig.node.json",
+#         ":node_modules",
+#     ] + glob(["src/**"]),
+#     outs = ["dist"],
+#     chdir = package_name(),
+# )
 
 # TODO need add bazel macro for uploading to s3

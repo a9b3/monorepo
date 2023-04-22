@@ -9,6 +9,11 @@ build --enable_runfiles
 run --enable_runfiles
 test --enable_runfiles
 
+build --enable_bzlmod
+run --enable_bzlmod
+test --enable_bzlmod
+query --enable_bzlmod
+
 test --test_output=all
 
 run --ui_event_filters=-info,-stdout,-stderr --noshow_progress
