@@ -1,7 +1,7 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    "declaration": true,
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
@@ -16,12 +16,13 @@
         "./bazel/js/backend/node_modules/*",
         "./bazel/js/backend/node_modules/@types/*"
       ]
-    },
-    "plugins": [
-      {
-        "name": "typescript-svelte-plugin"
-      }
-    ]
+    }
   },
-  "include": ["orgs", "libs", "./bazel/js/backend/node_modules", "repos"]
+  "include": [
+    "orgs",
+    "libs",
+    "./bazel/js/backend/node_modules",
+    "repos",
+    "bazel"
+  ]
 }
