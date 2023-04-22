@@ -1,14 +1,19 @@
 alias(
     name = "node",
-    actual = "@nodejs_host//:node_bin",
+    actual = "@nodejs_darwin_arm64//:node_bin",
 )
 
 alias(
     name = "npx",
-    actual = "@nodejs_host//:npx_bin",
+    actual = "@nodejs_darwin_arm64//:npx_bin",
 )
 
 alias(
     name = "npm",
-    actual = "@nodejs_host//:npm_bin",
+    actual = "@npm//:npm",
+)
+
+alias(
+    name = "pnpm",
+    actual = "@pnpm//:pnpm",
 )
