@@ -1,3 +1,17 @@
+load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+
+ts_config(
+    name = "tsconfig_root",
+    src = "tsconfig.json",
+    visibility = [":__subpackages__"],
+)
+
+ts_config(
+    name = "tsconfig_svelte",
+    src = "tsconfig.svelte.json",
+    visibility = [":__subpackages__"],
+)
+
 # load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
 
 # gazelle:prefix github.com/publiclabel/monorepo
@@ -81,13 +95,13 @@
 #     name = "buildifier",
 # )
 
-# exports_files([
-#     ".swcrc",
-#     "tsconfig.json",
-#     "jest.config.ts",
-#     "package.json",
-# ])
-#
+exports_files([
+    ".swcrc",
+    "tsconfig.json",
+    "jest.config.ts",
+    "package.json",
+])
+
 # xcode_version(
 #     name = "11",
 #     aliases = [
@@ -110,8 +124,8 @@
 #     versions = [":11"],
 # )
 
-# load("@npm//:defs.bzl", "npm_link_all_packages")
-#
-# npm_link_all_packages(
-#     name = "node_modules",
-# )
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(
+    name = "node_modules",
+)

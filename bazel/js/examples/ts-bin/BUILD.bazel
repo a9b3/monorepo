@@ -1,0 +1,14 @@
+load("//bazel/js:exports.bzl", "js_binary", "ts_project")
+
+ts_project(
+    name = "project",
+    srcs = ["index.ts"],
+)
+
+js_binary(
+    name = "bin",
+    data = [
+        ":project",
+    ],
+    entry_point = "index.js",
+)
