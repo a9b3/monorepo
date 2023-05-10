@@ -3,15 +3,66 @@ module(
     version = "0.0.1",
 )
 
+bazel_dep(name = "platforms", version = "0.0.6")
 bazel_dep(name = "bazel_skylib", version = "1.4.1")
 bazel_dep(name = "bazel_skylib_gazelle_plugin", dev_dependency = True, version = "1.4.1")
 bazel_dep(name = "rules_go", version = "0.39.1")
 bazel_dep(name = "gazelle", version = "0.30.0")
 bazel_dep(name = "rules_proto", version = "5.3.0-21.7")
-bazel_dep(name = "rules_oci", version = "0.3.9")
+bazel_dep(name = "rules_oci", version = "0.6.2")
+bazel_dep(name = "aspect_bazel_lib", version = "1.28.0")
 
 ###############################################################################
-# ASPECT JS STUFF
+# >>> OCI STUFF
+###############################################################################
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+
+oci.toolchains(crane_version = "v0.14.0")
+
+# ( name, digest, image )
+_BASE_IMAGES = [
+    (
+        "debian",
+        "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
+        "debian",
+    ),
+]
+
+[
+    oci.pull(
+        name = image[0],
+        digest = image[1],
+        image = image[2],
+        # DOES NOT WORK
+        # https://github.com/bazelbuild/bazel/issues/17655
+        # all the aliases for platforms are listed here
+        # https://github.com/bazel-contrib/rules_oci/blob/2e7ca44886f5dae977408c55f0a7be8743e6db08/oci/pull.bzl#L334
+        #
+        # slack convo regarding unknown repo platforms
+        # https://bazelbuild.slack.com/archives/CA3NW13MH/p1683306040074659
+        platforms = [
+            "linux/amd64",
+            "linux/arm64/v8",
+        ],
+    )
+    for image in _BASE_IMAGES
+]
+
+[
+    use_repo(
+        oci,
+        image[0],
+    )
+    for image in _BASE_IMAGES
+]
+
+###############################################################################
+# <<< END OCI STUFF
+###############################################################################
+
+###############################################################################
+# >>> ASPECT JS STUFF
 ###############################################################################
 
 bazel_dep(name = "aspect_rules_js", version = "1.25.0")
@@ -68,5 +119,5 @@ rules_ts_ext.deps()
 use_repo(rules_ts_ext, "npm_typescript")
 
 ###############################################################################
-# END ASPECT JS STUFF
+# <<< END ASPECT JS STUFF
 ###############################################################################

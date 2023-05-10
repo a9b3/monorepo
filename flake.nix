@@ -89,6 +89,9 @@
               pkgs.bazelisk
               pkgs.bazel-buildtools
 
+              pkgs.qemu
+              pkgs.podman
+
               # cli
               pkgs.gnupg
               pkgs.awscli2
@@ -116,23 +119,39 @@
               pkgs.minikube
             ];
             shellHook = ''
-              echo "---------------------------------------------"
+              echo "----------------------------------------------------------"
               echo "Welcome to the monorepo"
+              echo "----------------------------------------------------------"
               echo ""
 
-              docker ps 2>/dev/null
-              isDockerRunning="$?"
-              if [ "$isDockerRunning" = "1" ]; then
-                echo "* docker isn't running start docker on mac for minikube"
+              podman info &>/dev/null
+              isPodmanRunning="$?"
+              if [ "$isPodmanRunning" != "0" ]; then
+                echo ">>>>>>>>>>>>>>>>>>>>>>>>>> podman not running"
+
+                podman machine list | rg monorepo 2>/dev/null
+                isPodmanMachineCreated="$?"
+                if [ "$isPodmanMachineCreated" == "0" ]; then
+                  yes | podman machine rm monorepo &>/dev/null
+                fi
+                echo ">>>>>>>>>>>>>>>>>>>>>>>>>> podman machine init"
+                podman machine init --now monorepo
+                echo "$?"
+                echo "><><><><><><><><><><><><><"
+
+                echo ">>>>>>>>>>>>>>>>>>>>>>>>>> setting podman system connection default to monorepo"
+                podman system connection default monorepo
               fi
 
-              # ----------------------------
+
+              # ---------------------------------------------------------------
               # If minikube is not running start it.
               # Uses container-runtime docker so minikube can pull from local docker
               # images.
               # The k8s manifest must also have ImagePullPolicy: Never
-              # ----------------------------
-              if [ "$isDockerRunning" = "0" ]; then
+              # ---------------------------------------------------------------
+
+              if [ "$isPodmanRunning" = "0" ]; then
                 minikubeStarted=$(minikube status | rg Running)
               fi
               if [[ -z "$minikubeStarted" ]]; then
@@ -142,9 +161,11 @@
                 echo ""
               fi
 
-              # ----------------------------
+
+              # ---------------------------------------------------------------
               # Set npm root so you can use npm global
-              # ----------------------------
+              # ---------------------------------------------------------------
+
               npm config set prefix "$HOME/.npm-packages"
               export PATH="$(npm root -g)/../../bin:$PATH"
               if [ ! -f "$(which ibazel)" ]; then
@@ -152,13 +173,14 @@
                 npm install -g @bazel/ibazel
               fi
 
-              # ----------------------------
+              # ---------------------------------------------------------------
               # This will install configuration from .pre-commit-config.yaml to
               # git hooks
-              # ----------------------------
+              # ---------------------------------------------------------------
+
               pre-commit install -f --hook-type pre-commit
 
-              echo "---------------------------------------------"
+              echo "----------------------------------------------------------"
             '';
           };
         }
