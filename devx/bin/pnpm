@@ -1,2 +1,2 @@
 #!/bin/sh
-bazel run --ui_event_filters=-info,-stdout,-stderr --noshow_progress //bazel/js:pnpm -- "$@"
+bazel run --ui_event_filters=-info,-stdout,-stderr --noshow_progress //bazel/js:pnpm -- --dir $PWD "$@"

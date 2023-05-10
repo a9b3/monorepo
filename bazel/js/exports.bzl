@@ -7,6 +7,7 @@ load(
 )
 load(
     "@aspect_rules_js//js:defs.bzl",
+    _js_image_layer = "js_image_layer",
     _js_library = "js_library",
     _nodejs_binary = "js_binary",
 )
@@ -47,3 +48,4 @@ ts_project = _ts_project_override
 # jest_test = _jest_test_override
 js_library = _js_library
 js_binary = _nodejs_binary
+js_image_layer = _js_image_layer
