@@ -78,7 +78,7 @@
                 '';
                 src = fetchzip {
                   url = "https://releases.hashicorp.com/terraform/1.3.2/terraform_1.3.2_darwin_arm64.zip";
-                  sha256 = "sha256-7LSfnrPensPtYnqu4GzcZL0vzW9TssvRgfET/CKbiA0=";
+                  sha256 = "sha256-KzKA/ORUui/0GHvTO2ox0EV6MM9QWV9n1Lw5OdgP4C4=";
                 };
               };
             in
