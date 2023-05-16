@@ -124,25 +124,7 @@
               echo "----------------------------------------------------------"
               echo ""
 
-              podman info &>/dev/null
-              isPodmanRunning="$?"
-              if [ "$isPodmanRunning" != "0" ]; then
-                echo ">>>>>>>>>>>>>>>>>>>>>>>>>> podman not running"
-
-                podman machine list | rg monorepo 2>/dev/null
-                isPodmanMachineCreated="$?"
-                if [ "$isPodmanMachineCreated" == "0" ]; then
-                  yes | podman machine rm monorepo &>/dev/null
-                fi
-                echo ">>>>>>>>>>>>>>>>>>>>>>>>>> podman machine init"
-                podman machine init --now monorepo
-                echo "$?"
-                echo "><><><><><><><><><><><><><"
-
-                echo ">>>>>>>>>>>>>>>>>>>>>>>>>> setting podman system connection default to monorepo"
-                podman system connection default monorepo
-              fi
-
+              ./devx/scripts/start_podman.sh
 
               # ---------------------------------------------------------------
               # If minikube is not running start it.
