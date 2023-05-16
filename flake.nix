@@ -78,7 +78,7 @@
                 '';
                 src = fetchzip {
                   url = "https://releases.hashicorp.com/terraform/1.3.2/terraform_1.3.2_darwin_arm64.zip";
-                  sha256 = "sha256-7LSfnrPensPtYnqu4GzcZL0vzW9TssvRgfET/CKbiA0=";
+                  sha256 = "sha256-KzKA/ORUui/0GHvTO2ox0EV6MM9QWV9n1Lw5OdgP4C4=";
                 };
               };
             in
@@ -124,25 +124,7 @@
               echo "----------------------------------------------------------"
               echo ""
 
-              podman info &>/dev/null
-              isPodmanRunning="$?"
-              if [ "$isPodmanRunning" != "0" ]; then
-                echo ">>>>>>>>>>>>>>>>>>>>>>>>>> podman not running"
-
-                podman machine list | rg monorepo 2>/dev/null
-                isPodmanMachineCreated="$?"
-                if [ "$isPodmanMachineCreated" == "0" ]; then
-                  yes | podman machine rm monorepo &>/dev/null
-                fi
-                echo ">>>>>>>>>>>>>>>>>>>>>>>>>> podman machine init"
-                podman machine init --now monorepo
-                echo "$?"
-                echo "><><><><><><><><><><><><><"
-
-                echo ">>>>>>>>>>>>>>>>>>>>>>>>>> setting podman system connection default to monorepo"
-                podman system connection default monorepo
-              fi
-
+              ./devx/scripts/start_podman.sh
 
               # ---------------------------------------------------------------
               # If minikube is not running start it.
