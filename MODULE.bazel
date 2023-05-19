@@ -9,7 +9,7 @@ bazel_dep(name = "bazel_skylib_gazelle_plugin", dev_dependency = True, version =
 bazel_dep(name = "rules_go", version = "0.39.1")
 bazel_dep(name = "gazelle", version = "0.30.0")
 bazel_dep(name = "rules_proto", version = "5.3.0-21.7")
-bazel_dep(name = "rules_oci", version = "0.6.2")
+bazel_dep(name = "rules_oci", version = "1.0.0-rc1")
 bazel_dep(name = "aspect_bazel_lib", version = "1.28.0")
 
 ###############################################################################
@@ -26,6 +26,11 @@ _BASE_IMAGES = [
         "debian",
         "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
         "debian",
+    ),
+    (
+        "distroless_node",
+        "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
+        "gcr.io/distroless/nodejs20-debian11",
     ),
 ]
 
@@ -65,7 +70,7 @@ _BASE_IMAGES = [
 # >>> ASPECT JS STUFF
 ###############################################################################
 
-bazel_dep(name = "aspect_rules_js", version = "1.25.0")
+bazel_dep(name = "aspect_rules_js", version = "1.26.1")
 
 ####### Node.js version #########
 # By default you get the node version from DEFAULT_NODE_VERSION in @rules_nodejs//nodejs:repositories.bzl
