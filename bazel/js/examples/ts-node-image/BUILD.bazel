@@ -2,6 +2,30 @@ load("//bazel/js:exports.bzl", "js_binary", "js_image_layer", "ts_project")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
 load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
 
+# -----------------------------------------------------------------------------
+# Platform generic can move out to workspace root
+# -----------------------------------------------------------------------------
+
+platform(
+    name = "linux_amd64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+platform(
+    name = "linux_arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+# -----------------------------------------------------------------------------
+# Source
+# -----------------------------------------------------------------------------
+
 ts_project(
     name = "project",
     srcs = ["index.ts"],
@@ -12,6 +36,10 @@ js_binary(
     data = [":project"],
     entry_point = "index.js",
 )
+
+# -----------------------------------------------------------------------------
+# Image
+# -----------------------------------------------------------------------------
 
 js_image_layer(
     name = "layers",
@@ -24,40 +52,30 @@ js_image_layer(
 # https://github.com/bazel-contrib/rules_oci/issues/117
 oci_image(
     name = "image",
-    # architecture = select({
-    #     "@platforms//cpu:arm64": "arm64",
-    #     "@platforms//cpu:x86_64": "amd64",
-    # }),
     base = "@debian",
     # This is going to be /{root of js_image_layer}/{package_name()}/{name of js_binary}
     cmd = ["/app/bazel/js/examples/ts-node-image/bin"],
     entrypoint = ["bash"],
-    # os = "linux",
     tars = [
         ":layers",
     ],
     visibility = ["//visibility:public"],
 )
 
-platform(
-    name = "linux_arm64",
-    constraint_values = [
-        "@platforms//os:linux",
-        "@platforms//cpu:arm64",
-    ],
-)
-
 platform_transition_filegroup(
-    name = "transitioned_layers",
+    name = "transitioned_image",
     srcs = [":image"],
-    target_platform = ":linux_arm64",
+    target_platform = select({
+        "@platforms//cpu:arm64": ":linux_arm64",
+        "@platforms//cpu:x86_64": ":linux_amd64",
+    }),
 )
 
 # bazel build //bazel/js/examples/ts-node-image:tarball
-# docker load --input $(bazel cquery --output=files //bazel/js/examples/ts-node-image:tarball)
-# docker run --rm example:latest
+# podman load --input $(bazel cquery --output=files //bazel/js/examples/ts-node-image:tarball)
+# podman run --rm example:latest
 oci_tarball(
     name = "tarball",
-    image = ":transitioned_layers",
-    repotags = ["example:latest"],
+    image = ":image",
+    repo_tags = ["example:latest"],
 )
