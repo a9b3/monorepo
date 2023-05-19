@@ -1,6 +1,11 @@
 # Figure out a better way to do this
 # Place to remember bazel commands
 
+# Setup the development environment by making sure podman, minikube instances
+# are up and running.
+devenv:
+	@./devx/scripts/devenv.sh
+
 list:
 	@echo "====================================================================="
 	@echo "Welcome to the monorepo"
@@ -9,6 +14,7 @@ list:
 	@echo "====================================================================="
 	@echo ""
 	@bazel query 'kind("alias", //...)'
+
 
 k8s-exec-shell:
 	kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
