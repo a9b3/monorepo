@@ -5,5 +5,5 @@ alias(
 
 alias(
     name = "go",
-    actual = "@go_sdk//:bin/go",
+    actual = "@rules_go//go",
 )
