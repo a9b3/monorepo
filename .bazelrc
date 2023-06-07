@@ -12,6 +12,7 @@ test --enable_runfiles
 # Set bzlmod which uses MODULE.bazel to set workspace dependencies instead of
 # the WORKSPACE file.
 common --enable_bzlmod
+common --experimental_allow_unresolved_symlinks
 
 test --test_output=all
 

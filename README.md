@@ -23,3 +23,5 @@ All system binaries are managed by nix via shell.nix
     ```
 
 3.  [Install docker](https://docs.docker.com/desktop/mac/install/)
+
+##
