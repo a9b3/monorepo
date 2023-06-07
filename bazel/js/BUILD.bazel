@@ -10,7 +10,7 @@ alias(
 
 alias(
     name = "npm",
-    actual = "@npm//:npm",
+    actual = "@nodejs_darwin_arm64//:npm_bin",
 )
 
 alias(

@@ -89,9 +89,6 @@
               pkgs.bazelisk
               pkgs.bazel-buildtools
 
-              pkgs.qemu
-              pkgs.podman
-
               # cli
               pkgs.gnupg
               pkgs.awscli2

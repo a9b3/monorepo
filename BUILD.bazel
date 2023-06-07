@@ -1,21 +1,12 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
 
-ts_config(
-    name = "tsconfig_root",
-    src = "tsconfig.json",
-    visibility = [":__subpackages__"],
-)
-
-ts_config(
-    name = "tsconfig_svelte",
-    src = "tsconfig.svelte.json",
-    visibility = [":__subpackages__"],
-)
-
-# load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
+# -----------------------------------------------------------------------------
+# Gazelle Configs
+# -----------------------------------------------------------------------------
+load("@gazelle//:defs.bzl", "gazelle")
 
 # gazelle:prefix github.com/publiclabel/monorepo
-
+gazelle(name = "gazelle")
 # -----------------------------------------------------------------------------
 # Go
 # -----------------------------------------------------------------------------
@@ -44,7 +35,7 @@ ts_config(
 #
 # gazelle:exclude bazel-out
 # gazelle:exclude bazel-bin
-# gazelle:exclude bazel-monorepo-2
+# gazelle:exclude bazel-monorepo
 # gazelle:exclude bazel-testlogs
 # gazelle:exclude external
 # gazelle:exclude bazel/go/scripts/lib
@@ -66,34 +57,9 @@ ts_config(
 # Gazelle generates go_proto_library + go_library rules both with the same
 # importpath causing a matches multiple rules error.
 
-# gazelle(
-#     name = "gazelle",
-#     gazelle = ":gazelle-protobuf",
-# )
-#
-# gazelle_binary(
-#     name = "gazelle-protobuf",
-#     languages = DEFAULT_LANGUAGES + [
-#         # must be after the proto extension (order matters)
-#         "@build_stack_rules_proto//language/protobuf",
-#     ],
-# )
-#
-# gazelle(
-#     name = "gazelle-update-repos",
-#     args = [
-#         "-from_file=go.mod",
-#         "-to_macro=deps.bzl%go_dependencies",
-#         "-prune",
-#     ],
-#     command = "update-repos",
-# )
-
-# load("@com_github_bazelbuild_buildtools//buildifier:def.bzl", "buildifier")
-#
-# buildifier(
-#     name = "buildifier",
-# )
+# -----------------------------------------------------------------------------
+# General Files
+# -----------------------------------------------------------------------------
 
 exports_files([
     ".swcrc",
@@ -102,27 +68,21 @@ exports_files([
     "package.json",
 ])
 
-# xcode_version(
-#     name = "11",
-#     aliases = [
-#         "11.0",
-#         "11",
-#     ],
-#     version = "11.0",
-# )
-#
-# # Error: Invoking xcodebuild failed, developer dir: /Applications/Xcode.app/Contents/Developer ,return code 1, stderr: xcodebuild: error: SDK "" cannot be located. , stdout:
-# xcode_config(
-#     name = "host_xcodes",
-#     default = ":11",
-#     versions = [":11"],
-# )
-#
-# available_xcodes(
-#     name = "host_available_xcodes",
-#     default = ":11",
-#     versions = [":11"],
-# )
+# -----------------------------------------------------------------------------
+# JS Stuff
+# -----------------------------------------------------------------------------
+
+ts_config(
+    name = "tsconfig_root",
+    src = "tsconfig.json",
+    visibility = [":__subpackages__"],
+)
+
+ts_config(
+    name = "tsconfig_svelte",
+    src = "tsconfig.svelte.json",
+    visibility = [":__subpackages__"],
+)
 
 load("@npm//:defs.bzl", "npm_link_all_packages")
 
