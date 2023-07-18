@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/publiclabel/monorepo/libs/go/logger"
-	"github.com/publiclabel/monorepo/orgs/examples/go_server/internal/sqlc/models"
+	"github.com/publiclabel/monorepo/repos/examples/go_server/internal/sqlc/models"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
-	pb "github.com/publiclabel/monorepo/orgs/examples/proto"
+	pb "github.com/publiclabel/monorepo/repos/examples/proto"
 	"google.golang.org/grpc"
 )
 
