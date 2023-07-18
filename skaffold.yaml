@@ -10,7 +10,7 @@ build:
   artifacts:
     - image: go-server
       bazel:
-        target: //orgs/examples/go_server:go_image.tar
+        target: //repos/examples/go_server:go_image.tar
 deploy:
   # If you want to add a service to the development cluster you need to add the
   # k8s manifest location here.
@@ -18,4 +18,4 @@ deploy:
   # create a kustomize directory named "local".
   kustomize:
     paths:
-      - ./orgs/examples/go_server/k8s/local
+      - ./repos/examples/go_server/k8s/local

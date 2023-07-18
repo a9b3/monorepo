@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/publiclabel/monorepo/orgs/examples/go_server/internal/rpc"
+	"github.com/publiclabel/monorepo/repos/examples/go_server/internal/rpc"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

@@ -1,7 +1,7 @@
 package models
 
 import (
-	pb "github.com/publiclabel/monorepo/orgs/examples/proto"
+	pb "github.com/publiclabel/monorepo/repos/examples/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
