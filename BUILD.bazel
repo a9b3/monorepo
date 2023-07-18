@@ -3,27 +3,13 @@ load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
 # -----------------------------------------------------------------------------
 # Gazelle Configs
 # -----------------------------------------------------------------------------
-load("@gazelle//:defs.bzl", "gazelle")
+load("@gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix github.com/publiclabel/monorepo
 gazelle(name = "gazelle")
 # -----------------------------------------------------------------------------
 # Go
 # -----------------------------------------------------------------------------
-
-# gazelle:proto_plugin protoc-gen-go implementation golang:protobuf:protoc-gen-go
-# gazelle:proto_plugin protoc-gen-go-grpc implementation grpc:grpc-go:protoc-gen-go-grpc
-
-# gazelle:proto_rule proto_compile implementation stackb:rules_proto:proto_compile
-# gazelle:proto_rule proto_compiled_sources implementation stackb:rules_proto:proto_compiled_sources
-# gazelle:proto_rule proto_go_library implementation stackb:rules_proto:proto_go_library
-# gazelle:proto_rule proto_go_library deps @org_golang_google_protobuf//reflect/protoreflect
-# gazelle:proto_rule proto_go_library deps @org_golang_google_protobuf//runtime/protoimpl
-# gazelle:proto_rule proto_go_library visibility //visibility:public
-
-# gazelle:proto_language go plugin protoc-gen-go
-# gazelle:proto_language go plugin protoc-gen-go-grpc
-# gazelle:proto_language go rule proto_compile
 
 # https://github.com/bazelbuild/rules_go/blob/eb03b81312c3d459fb1ffdb18da9aa122e649905/proto/core.rst#option-2-use-pre-generated-pb-go-files
 #

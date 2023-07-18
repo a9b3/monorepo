@@ -7,7 +7,7 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/publiclabel/monorepo/repos/examples/go_server",
     visibility = ["//visibility:private"],
-    deps = ["//repos/examples/go_server/cmd:cmd_lib"],
+    deps = ["//repos/examples/go_server/cmd"],
 )
 
 go_binary(

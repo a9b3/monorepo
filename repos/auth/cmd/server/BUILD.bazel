@@ -1,0 +1,8 @@
+load("//bazel/go:exports.bzl", "go_library")
+
+go_library(
+    name = "server",
+    srcs = ["main.go"],
+    importpath = "github.com/publiclabel/monorepo/repos/auth/cmd/server",
+    visibility = ["//visibility:public"],
+)
