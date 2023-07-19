@@ -4,6 +4,8 @@
   # See link for inputs schema
   # https://nixos.wiki/wiki/Flakes#Basic_project_usage
   inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
