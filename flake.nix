@@ -4,8 +4,10 @@
   # See link for inputs schema
   # https://nixos.wiki/wiki/Flakes#Basic_project_usage
   inputs = {
+    # Use unstable channel for nixpkgs. This channel gets version bumps
+    # automatically, keeps the system tools updated but might cause versioning
+    # issues.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
