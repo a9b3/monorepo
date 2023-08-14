@@ -103,6 +103,9 @@
               pkgs.fd
               pkgs.sd
 
+              # A tool for exploring each layer in a docker image
+              pkgs.dive
+
               # linters
               pkgs.sqlfluff
               pkgs.yamllint

@@ -27,3 +27,8 @@ run --ui_event_filters=-info,-stdout,-stderr --noshow_progress
 # to the actions they create.
 # See https://github.com/bazelbuild/bazel/issues/7766
 build --incompatible_allow_tags_propagation
+
+# Ensures that bazel build will use go build goos linux and goarch amd64, this
+# will allow the image produced by bazel to be able to run the produced
+# executable.
+build --platforms=@rules_go//go/toolchain:linux_amd64
