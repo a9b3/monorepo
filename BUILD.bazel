@@ -1,4 +1,5 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+load("@rules_oci//oci:defs.bzl", "oci_tarball")
 
 # -----------------------------------------------------------------------------
 # Gazelle Configs
@@ -74,4 +75,18 @@ load("@npm//:defs.bzl", "npm_link_all_packages")
 
 npm_link_all_packages(
     name = "node_modules",
+)
+
+# -----------------------------------------------------------------------------
+# This is needed for now because skaffold doesn't handle rules_oci tarballs yet.
+# REMOVE LATER
+# https://github.com/GoogleContainerTools/skaffold/issues/8886
+# -----------------------------------------------------------------------------
+
+oci_tarball(
+    name = "ts-own-packagejson.tar",
+    image = "//bazel/js/examples/ts-own-packagejson:image",
+    repo_tags = [
+        "bazel:ts-own-packagejson",
+    ],
 )

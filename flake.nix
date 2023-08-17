@@ -33,12 +33,12 @@
                   };
                   "aarch64-darwin" = {
                     "key" = "darwin-arm64";
-                    "sha256" = "e47329560a557f0f01d7902eae01ab8d40210b40644758f957f071ab8df2ac44";
+                    "sha256" = "1f69d86416acdd17a2ecf8977cd429e4e10dc5d95e3515aa321e387febb7df3e";
                   };
                 }."${stdenv.system}";
                 key = systemKey.key;
                 sha256 = systemKey.sha256;
-                version = "v1.38.0";
+                version = "v2.6.3";
               in
               with pkgs; stdenv.mkDerivation rec {
                 name = "skaffold";
@@ -117,8 +117,8 @@
               # source management
               # pkgs.pre-commit
 
-              # skaffold
               skaffold
+              # pkgs.skaffold
               pkgs.kubectl
               pkgs.minikube
             ];
@@ -127,6 +127,9 @@
               echo "Run the following to setup dev environment."
               echo "make devenv"
               echo "----------------------------------------------------------"
+
+
+              eval $(minikube docker-env)
             '';
           };
         }
