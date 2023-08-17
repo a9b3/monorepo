@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ts-own-packagejson
+---
+# A service is a mechanism to allow for a stable DNS name for a set of
+# dynamically allocated pods with dynamic IPs.
+kind: Service
+apiVersion: v1
+metadata:
+  name: ts-own-packagejson
+  labels:
+    app: ts-own-packagejson
+spec:
+  selector:
+    app: ts-own-packagejson
+  ports:
+    - name: ts-own-packagejson
+      port: 80
+      targetPort: 50051
+---
+# The deployment manages the set of running pods, they will all have dynamic IPs
+# since the pods are ephemeral.
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: ts-own-packagejson
+spec:
+  selector:
+    matchLabels:
+      app: ts-own-packagejson
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ts-own-packagejson
+    spec:
+      containers:
+        - name: ts-own-packagejson
+          image: Neverson
+          imagePullPolicy: 'Never'
+          ports:
+            - containerPort: 50051

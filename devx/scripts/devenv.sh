@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "----------------------------------------------------------"
-echo "Welcome to the monorepo"
+echo "welcome to the monorepo"
 echo "----------------------------------------------------------"
 echo ""
 
