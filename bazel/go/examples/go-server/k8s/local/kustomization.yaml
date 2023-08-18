@@ -1,0 +1,4 @@
+# Used by skaffold.yaml for local development
+namespace: go-server
+bases:
+  - ../base

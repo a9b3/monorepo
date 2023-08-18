@@ -13,13 +13,14 @@ test --enable_runfiles
 # the WORKSPACE file.
 common --enable_bzlmod
 
+# Remove all extraneous bazel logs when running bazel commands
+# common --ui_event_filters=-info,-stdout,-stderr,-debug,-warning --noshow_progress
+
 build --experimental_allow_unresolved_symlinks
 run --experimental_allow_unresolved_symlinks
 test --experimental_allow_unresolved_symlinks
 
 test --test_output=all
-
-run --ui_event_filters=-info,-stdout,-stderr --noshow_progress
 
 # ensure that tags applied in your BUILD file, like tags = ["no-remote"] get
 # propagated to actions created by the rule. Without this option, you rely on

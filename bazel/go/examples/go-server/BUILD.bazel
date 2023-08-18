@@ -3,19 +3,15 @@ load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 go_library(
-    name = "go-image_lib",
+    name = "go-server_lib",
     srcs = ["main.go"],
-    importpath = "github.com/publiclabel/monorepo/bazel/go/examples/go-image",
+    importpath = "github.com/publiclabel/monorepo/bazel/go/examples/go-server",
     visibility = ["//visibility:private"],
 )
 
 go_binary(
     name = "app",
-    embed = [":go-image_lib"],
-    #  These are required to be able to run the executable in the oci_image
-    #  below. But this will make it not possible to bazel run this in arm64.
-    # goarch = "amd64",
-    # goos = "linux",
+    embed = [":go-server_lib"],
     visibility = ["//visibility:public"],
 )
 
