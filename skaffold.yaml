@@ -15,11 +15,9 @@ kind: Config
 build:
   platforms: ['linux/amd64']
   artifacts:
-    - image: ts-own-packagejson
+    - image: go-server
       bazel:
-        target: //:ts-own-packagejson.tar
-  # local:
-  #   useDockerCLI: true
+        target: //:go-server.tar
 deploy:
   # If you want to add a service to the development cluster you need to add the
   # k8s manifest location here.
@@ -27,5 +25,4 @@ deploy:
   # create a kustomize directory named "local".
   kustomize:
     paths:
-      # - ./repos/examples/go_server/k8s/local
-      - ./bazel/js/examples/ts-own-packagejson/k8s/local
+      - ./bazel/go/examples/go-server/k8s/local

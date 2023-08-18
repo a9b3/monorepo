@@ -90,3 +90,11 @@ oci_tarball(
         "bazel:ts-own-packagejson",
     ],
 )
+
+oci_tarball(
+    name = "go-server.tar",
+    image = "//bazel/go/examples/go-server:image",
+    repo_tags = [
+        "bazel:go-server",
+    ],
+)

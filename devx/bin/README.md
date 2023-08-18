@@ -1,3 +1,5 @@
+# devx/bin
+
 Add shell aliases here.
 
 The project root .envrc contains a directive to add devx/bin to PATH. All files
