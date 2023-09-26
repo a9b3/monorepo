@@ -1,0 +1,591 @@
+{
+  "id": "VariableCollectionId:1820:5715",
+  "name": "Primatives",
+  "modes": { "1820:0": "Mode 1" },
+  "variableIds": [
+    "VariableID:2175:19533",
+    "VariableID:2080:16592",
+    "VariableID:2080:13162",
+    "VariableID:2080:13161",
+    "VariableID:2080:13160",
+    "VariableID:2080:13159",
+    "VariableID:2080:13158",
+    "VariableID:2080:13157",
+    "VariableID:2175:19720",
+    "VariableID:2080:13156",
+    "VariableID:2080:13155",
+    "VariableID:2080:13153",
+    "VariableID:2080:13152",
+    "VariableID:2080:13149",
+    "VariableID:2080:13146",
+    "VariableID:2080:13144",
+    "VariableID:2080:13136",
+    "VariableID:2080:13154",
+    "VariableID:2080:13143",
+    "VariableID:2080:13142",
+    "VariableID:2080:13141",
+    "VariableID:2080:13138",
+    "VariableID:2080:13150",
+    "VariableID:2080:13145",
+    "VariableID:2080:13137",
+    "VariableID:2080:13148",
+    "VariableID:2080:13140",
+    "VariableID:2080:13151"
+  ],
+  "variables": [
+    {
+      "id": "VariableID:2080:13136",
+      "name": "spacing/1",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 8 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 8, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13137",
+      "name": "spacing/2",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 12.944000244140625 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 12.944000244140625, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13138",
+      "name": "spacing/3",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 20.943391799926758 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 20.943391799926758, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13140",
+      "name": "spacing/5",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 54.828208923339844 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 54.828208923339844, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13141",
+      "name": "spacing/6",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 88.71204376220703 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 88.71204376220703, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13142",
+      "name": "spacing/4",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 33.886409759521484 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 33.886409759521484, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13143",
+      "name": "spacing/7",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 143.5360870361328 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 143.5360870361328, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13144",
+      "name": "spacing/8",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 232.2413787841797 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 232.2413787841797, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13145",
+      "name": "spacing/-5",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 4.944375991821289 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 4.944375991821289, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13146",
+      "name": "spacing/-25",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 3.055856466293335 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 3.055856466293335, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13148",
+      "name": "colors/grey/50",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.9708333611488342,
+          "g": 0.9737499356269836,
+          "b": 1,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.9708333611488342,
+            "g": 0.9737499356269836,
+            "b": 1,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13149",
+      "name": "radius/xs",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": {
+        "1820:0": { "type": "VARIABLE_ALIAS", "id": "VariableID:2080:13146" }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": 3.055856466293335,
+          "alias": "VariableID:2080:13146",
+          "aliasName": "spacing/-25"
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13150",
+      "name": "radius/sm",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": {
+        "1820:0": { "type": "VARIABLE_ALIAS", "id": "VariableID:2080:13145" }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": 4.944375991821289,
+          "alias": "VariableID:2080:13145",
+          "aliasName": "spacing/-5"
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13151",
+      "name": "radius/md",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": {
+        "1820:0": { "type": "VARIABLE_ALIAS", "id": "VariableID:2080:13136" }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": 8,
+          "alias": "VariableID:2080:13136",
+          "aliasName": "spacing/1"
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13152",
+      "name": "radius/lg",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": {
+        "1820:0": { "type": "VARIABLE_ALIAS", "id": "VariableID:2080:13137" }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": 12.944000244140625,
+          "alias": "VariableID:2080:13137",
+          "aliasName": "spacing/2"
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13153",
+      "name": "radius/xl",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": {
+        "1820:0": { "type": "VARIABLE_ALIAS", "id": "VariableID:2080:13138" }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": 20.943391799926758,
+          "alias": "VariableID:2080:13138",
+          "aliasName": "spacing/3"
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13154",
+      "name": "colors/grey/200",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.7488541603088379,
+          "g": 0.7503708004951477,
+          "b": 0.7583333253860474,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.7488541603088379,
+            "g": 0.7503708004951477,
+            "b": 0.7583333253860474,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13155",
+      "name": "colors/grey/400",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.5225520730018616,
+          "g": 0.5251979231834412,
+          "b": 0.5291666388511658,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.5225520730018616,
+            "g": 0.5251979231834412,
+            "b": 0.5291666388511658,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13156",
+      "name": "colors/grey/600",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.16333332657814026,
+          "g": 0.16729992628097534,
+          "b": 0.17499999701976776,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.16333332657814026,
+            "g": 0.16729992628097534,
+            "b": 0.17499999701976776,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13157",
+      "name": "colors/grey/800",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.0989583358168602,
+          "g": 0.09947913885116577,
+          "b": 0.1041666641831398,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.0989583358168602,
+            "g": 0.09947913885116577,
+            "b": 0.1041666641831398,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13158",
+      "name": "colors/grey/900",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.07673610746860504,
+          "g": 0.07805554568767548,
+          "b": 0.0833333358168602,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.07673610746860504,
+            "g": 0.07805554568767548,
+            "b": 0.0833333358168602,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13159",
+      "name": "colors/brand/Purple",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": { "r": 0.5000000596046448, "g": 0, "b": 1, "a": 1 }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": { "r": 0.5000000596046448, "g": 0, "b": 1, "a": 1 },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13160",
+      "name": "colors/brand/Green",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": { "r": 0.1401267945766449, "g": 1, "b": 0, "a": 1 }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": { "r": 0.1401267945766449, "g": 1, "b": 0, "a": 1 },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13161",
+      "name": "colors/brand/BloodOrange",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.8291666507720947,
+          "g": 0.20383679866790771,
+          "b": 0.20383679866790771,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.8291666507720947,
+            "g": 0.20383679866790771,
+            "b": 0.20383679866790771,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:13162",
+      "name": "colors/brand/Yellow",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.8541666865348816,
+          "g": 0.6134539842605591,
+          "b": 0.2491319477558136,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.8541666865348816,
+            "g": 0.6134539842605591,
+            "b": 0.2491319477558136,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2080:16592",
+      "name": "spacing/-50",
+      "description": "",
+      "type": "FLOAT",
+      "valuesByMode": { "1820:0": 1.8912237882614136 },
+      "resolvedValuesByMode": {
+        "1820:0": { "resolvedValue": 1.8912237882614136, "alias": null }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2175:19533",
+      "name": "colors/grey/700",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.12611110508441925,
+          "g": 0.12611110508441925,
+          "b": 0.13333334028720856,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.12611110508441925,
+            "g": 0.12611110508441925,
+            "b": 0.13333334028720856,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    },
+    {
+      "id": "VariableID:2175:19720",
+      "name": "colors/grey/500",
+      "description": "",
+      "type": "COLOR",
+      "valuesByMode": {
+        "1820:0": {
+          "r": 0.33027777075767517,
+          "g": 0.3359721302986145,
+          "b": 0.34166666865348816,
+          "a": 1
+        }
+      },
+      "resolvedValuesByMode": {
+        "1820:0": {
+          "resolvedValue": {
+            "r": 0.33027777075767517,
+            "g": 0.3359721302986145,
+            "b": 0.34166666865348816,
+            "a": 1
+          },
+          "alias": null
+        }
+      },
+      "scopes": ["ALL_SCOPES"],
+      "hiddenFromPublishing": false,
+      "codeSyntax": {}
+    }
+  ]
+}

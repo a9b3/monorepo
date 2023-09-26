@@ -1,26 +1,13 @@
-import path from 'path'
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
-import { VitePWA } from 'vite-plugin-pwa'
+import * as path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    svelte(),
-    // VitePWA({
-    //   srcDir: 'src',
-    //   strategies: 'injectManifest',
-    // }),
-  ],
+  plugins: [svelte()],
   resolve: {
     alias: {
-      src: path.resolve('src/'),
-      daw: path.resolve('src/daw'),
+      '@monorepo': path.resolve(__dirname, './node_modules/@monorepo'),
     },
-  },
-  define: {
-    // global: '({})',
-    // global: {},
-    process: { env: {} },
   },
 })

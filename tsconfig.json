@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "declaration": true,
-    "noImplicitAny": true,
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true,
-    "rootDir": ".",
-    "esModuleInterop": true,
     "baseUrl": ".",
+    "declaration": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "rootDir": ".",
+    "sourceMap": true,
     "paths": {
       "@monorepo/*": ["./*"],
       "*": [
