@@ -19,6 +19,7 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
-    "@monorepo/web-core/example": "workspace:*"
+    "@monorepo/web-core/styles": "workspace:*",
+    "svelte-routing": "^2.4.0"
   }
 }

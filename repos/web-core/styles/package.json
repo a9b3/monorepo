@@ -1,0 +1,13 @@
+{
+  "name": "@monorepo/web-core/styles",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "devDependencies": {
+    "@types/cheerio": "^0.22.32",
+    "cheerio": "1.0.0-rc.12"
+  },
+  "scripts": {
+    "gen-svg-data": "node ./convertSvgs.cjs"
+  }
+}

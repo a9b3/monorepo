@@ -1,1 +1,0 @@
-export { loadPrimatives } from './loadPrimatives'
