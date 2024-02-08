@@ -1,4 +1,3 @@
-import _svgData from './svgData.json'
-
-export { loadPrimatives, primatives } from './loadPrimatives'
-export const svgData: typeof _svgData = _svgData
+export { default as svgData } from './generated/svgData'
+export { default as primatives } from './generated/primatives'
+export { loadPrimatives } from './loadPrimatives'

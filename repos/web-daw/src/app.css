@@ -1,31 +1,86 @@
-/* RESET */
-body {
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,300');
+
+/*
+  1. Use a more-intuitive box-sizing model.
+*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+/*
+  2. Remove default margin
+*/
+* {
   margin: 0;
 }
+/*
+  Typographic tweaks!
+  3. Add accessible line-height
+  4. Improve text rendering
+*/
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+/*
+  5. Improve media defaults
+*/
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+/*
+  6. Remove built-in form typography styles
+*/
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+/*
+  7. Avoid text overflows
+*/
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+/*
+  8. Create a root stacking context
+*/
+#root,
+#__next {
+  isolation: isolate;
+}
 
+/* RESET */
 html {
   box-sizing: border-box;
-  touch-action: none;
-  overscroll-behavior-x: none;
+  background: var(--pv_colors_grey_900);
+  color: var(--pv_colors_grey_200);
+  font-family: Open Sans;
+  font: 10px 'Open Sans', san-serif;
 }
-/* *, */
-/* *:before, */
-/* *:after { */
-/*   overscroll-behavior-x: none; */
-/*   box-sizing: inherit; */
-/*   cursor: default; */
-/*   user-select: none; */
-/* } */
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
 a {
   all: unset;
 }
 
 body {
-  justify-content: center;
-  align-items: center;
-  background: var(--primatives_colors_grey_900);
-  display: flex;
-  height: 100vh;
   padding: 0;
   margin: 0;
 }
@@ -33,6 +88,5 @@ body {
 #app {
   width: 100vw;
   height: 100vh;
-  background: var(--primatives_colors_grey_900);
 }
 /* END RESET */

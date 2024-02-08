@@ -8,6 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@monorepo': path.resolve(__dirname, './node_modules/@monorepo'),
+      src: path.resolve('src/'),
     },
   },
 })
