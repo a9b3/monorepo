@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import Icon from 'src/lib/web-core-styles/Icon.svelte'
-  import Text from 'src/lib/web-core-styles/Text.svelte'
-  import Row from 'src/lib/web-core-styles/Row.svelte'
-  import Input from 'src/lib/web-core-styles/Input.svelte'
+  import Icon from 'src/lib/web-core-styles/Icon/Icon.svelte'
+  import Text from 'src/lib/web-core-styles/Text/Text.svelte'
+  import Row from 'src/lib/web-core-styles/Row/Row.svelte'
+  import Input from 'src/lib/web-core-styles/Input/Input.svelte'
 
   // -------------------------------------------------------------------------
   // Props
