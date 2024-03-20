@@ -1,15 +1,15 @@
 load(
-  "@rules_pkg//:pkg.bzl",
-  "pkg_tar",
+    "@rules_pkg//:pkg.bzl",
+    "pkg_tar",
 )
 load(
-  "@rules_oci//oci:defs.bzl",
-  "oci_image",
-  "oci_tarball",
+    "@rules_oci//oci:defs.bzl",
+    "oci_image",
+    "oci_tarball",
 )
 load(
-  "//bazel/image/server_image_test:server_image_test.bzl",
-  "server_image_test",
+    "//bazel/image/server_image_test:server_image_test.bzl",
+    "server_image_test",
 )
 
 """
@@ -62,6 +62,7 @@ Example:
     )
 In this example, the server_image_package macro generates a set of rules to package the :bin_amd64 and :bin_arm64 targets into OCI images, and then test the :bin_amd64 server application.
 """
+
 def server_image_package(name, expected_response, endpoint, tar_path_root, port, platform_targets):
     for platform_target in platform_targets:
         platform = platform_target["platform"].replace("/", "_")
@@ -90,12 +91,12 @@ def server_image_package(name, expected_response, endpoint, tar_path_root, port,
         )
 
         if create_test:
-          server_image_test(
-              name = "%s_test_%s" % (name, platform),
-              bazel_target = ":%s_tarball_%s" % (name, platform),
-              docker_tag = "%s:latest" % name,
-              expected_response = expected_response,
-              endpoint = endpoint,
-              tar_path = "{}/{}_tarball_{}/tarball.tar".format(tar_path_root, name, platform),
-              port = port,
-          )
+            server_image_test(
+                name = "%s_test_%s" % (name, platform),
+                bazel_target = ":%s_tarball_%s" % (name, platform),
+                docker_tag = "%s:latest" % name,
+                expected_response = expected_response,
+                endpoint = endpoint,
+                tar_path = "{}/{}_tarball_{}/tarball.tar".format(tar_path_root, name, platform),
+                port = port,
+            )

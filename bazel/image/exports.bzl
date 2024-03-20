@@ -1,11 +1,11 @@
 load(
-  "@rules_oci//oci:defs.bzl",
-  _oci_image = "oci_image",
-  _oci_tarball = "oci_tarball",
+    "@rules_oci//oci:defs.bzl",
+    _oci_image = "oci_image",
+    _oci_tarball = "oci_tarball",
 )
 load(
-  "@rules_pkg//:pkg.bzl",
-  _pkg_tar = "pkg_tar",
+    "@rules_pkg//:pkg.bzl",
+    _pkg_tar = "pkg_tar",
 )
 load("//bazel/image/server_image_test:server_image_test.bzl", _server_image_test = "server_image_test")
 load("//bazel/image:server_image_package.bzl", _server_image_package = "server_image_package")
