@@ -1,9 +1,18 @@
-load("//bazel/js:exports.bzl", "js_binary")
+load("//bazel/js:exports.bzl", "js_binary", "jest_test")
 
 js_binary(
-    name = "js-bin",
+    name = "bin",
     data = [
         "index.js",
     ],
     entry_point = "index.js",
+)
+
+jest_test(
+    name = "test",
+    node_modules = "//:node_modules",
+    data = [
+      ":bin",
+      "index.test.js",
+    ],
 )

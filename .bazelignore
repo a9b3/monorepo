@@ -2,8 +2,11 @@
 node_modules
 
 bazel/js/examples/js-bin-with-dep/node_modules
-bazel/js/examples/js-lib/node_modules
 bazel/js/examples/js-lib-consumer/node_modules
-repos/scaffold/templates/svelte-template/node_modules
-repos/web-daw/node_modules
+bazel/js/examples/js-lib/node_modules
+bazel/js/examples/ts-own-packagejson/node_modules
+repos/_old-web-daw/node_modules
 repos/examples/svelte-app/node_modules
+repos/scaffold/templates/svelte-template/node_modules
+repos/web-core/styles/node_modules
+repos/web-daw/node_modules

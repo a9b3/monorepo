@@ -1,13 +1,13 @@
-import { defaults } from 'jest-config'
+const { defaults } = require('jest-config')
 
 const config = {
   testEnvironment: 'node',
   haste: {
-    enableSymlinks: true,
+    enableSymlinks: false,
   },
   verbose: true,
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx'],
   testMatch: ['**/*.test.js'],
 }
 
-export default config
+module.exports = config
