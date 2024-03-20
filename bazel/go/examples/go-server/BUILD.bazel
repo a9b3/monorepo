@@ -1,39 +1,56 @@
-load("//bazel/go:exports.bzl", "go_binary", "go_library")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("//bazel/go:exports.bzl", "go_binary", "go_library", "go_test")
+load("//bazel/image:exports.bzl", "oci_image", "oci_tarball", "pkg_tar", "server_image_package")
 
 go_library(
-    name = "go-server_lib",
+    name = "lib",
     srcs = ["main.go"],
     importpath = "github.com/publiclabel/monorepo/bazel/go/examples/go-server",
     visibility = ["//visibility:private"],
 )
 
+go_test(
+    name = "test",
+    srcs = ["main_test.go"],
+    embed = [":lib"],
+    target_compatible_with = select({
+      "//conditions:default": ["@platforms//cpu:arm64"],
+    }),
+)
+
 go_binary(
-    name = "app",
-    embed = [":go-server_lib"],
+    name = "bin_arm64",
+    embed = [":lib"],
     visibility = ["//visibility:public"],
 )
 
-pkg_tar(
-    name = "tar",
-    srcs = [":app"],
-)
-
-oci_image(
-    name = "image",
-    base = "@distroless_base",
-    entrypoint = ["/app"],
-    tars = [":tar"],
+go_binary(
+    name = "bin_amd64",
+    embed = [":lib"],
     visibility = ["//visibility:public"],
+    goarch = "amd64",
+    goos = "linux",
 )
 
-# bazel build //bazel/go/examples/go-image:tarball
-# docker load --input $(bazel cquery --output=files //bazel/go/examples/go-image:tarball)
-# docker run --rm example-go-image:latest
-
-oci_tarball(
-    name = "tarball",
-    image = ":image",
-    repo_tags = ["example-go-image:latest"],
+server_image_package(
+    name = "server",
+    expected_response = "Hello what, test!",
+    endpoint = "test",
+    tar_path_root = "bazel/go/examples/go-server/",
+    port = 8080,
+    platform_targets = [
+      {
+        "platform": "linux/amd64",
+        "target": ":bin_amd64",
+        "entrypoint": ["/bin_amd64"],
+        "base": "@distroless_base_linux_amd64",
+        "create_test": True,
+      },
+      {
+        "platform": "linux/arm64",
+        "target": ":bin_arm64",
+        "entrypoint": ["/bin_arm64"],
+        "base": "@distroless_base_linux_arm64",
+        "create_test": False,
+      },
+    ],
 )

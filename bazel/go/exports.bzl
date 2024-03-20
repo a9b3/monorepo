@@ -5,6 +5,7 @@ load(
     _go_binary = "go_binary",
     _go_library = "go_library",
     _go_test = "go_test",
+    _go_cross_binary = "go_cross_binary",
 )
 load(
     "@rules_go//proto:def.bzl",
@@ -15,3 +16,4 @@ go_binary = _go_binary
 go_library = _go_library
 go_proto_library = _go_proto_library
 go_test = _go_test
+go_cross_binary = _go_cross_binary
