@@ -8,11 +8,10 @@ bazel_dep(name = "bazel_skylib", version = "1.4.1")
 
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.4.1", dev_dependency = True)
 
-bazel_dep(name = "rules_go", version = "0.39.1")
+bazel_dep(name = "rules_go", version = "0.46.0")
 bazel_dep(name = "gazelle", version = "0.31.0")
 
-# bazel_dep(name = "rules_proto", version = "5.3.0-21.7")
-bazel_dep(name = "rules_oci", version = "1.2.0")
+bazel_dep(name = "rules_oci", version = "1.7.4")
 bazel_dep(name = "aspect_bazel_lib", version = "1.28.0")
 bazel_dep(name = "rules_pkg", version = "0.8.1")
 
@@ -23,66 +22,44 @@ bazel_dep(name = "rules_pkg", version = "0.8.1")
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
 oci.toolchains(crane_version = "v0.14.0")
 
-# ( name, digest, image )
-_BASE_IMAGES = [
-    (
-        "debian",
-        "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
-        "debian",
-        [
-            "linux/amd64",
-            "linux/arm64/v8",
-        ],
-    ),
-    (
-        "distroless_node",
-        "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
-        "gcr.io/distroless/nodejs20-debian11",
-        [
-            "linux/amd64",
-            "linux/arm64/v8",
-        ],
-    ),
-    (
-        "distroless_base",
-        # docker pull gcr.io/distroless/base:debug
-        # docker inspect --format='{{index .RepoDigests 0}}' gcr.io/distroless/base:debug
-        # "sha256:e431944c6b21b3ec487638d170a2ef73e0c548eac3abed8075124c29f8decda0",
+oci.pull(
+  name = "debian",
+  digest = "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
+  image = "debian",
+  platforms = [
+    "linux/amd64",
+    "linux/arm64/v8",
+  ],
+)
+use_repo(oci, "debian")
+use_repo(oci, "debian_linux_amd64")
+use_repo(oci, "debian_linux_arm64_v8")
 
-        # OLD
-        "sha256:ccaef5ee2f1850270d453fdf700a5392534f8d1a8ca2acda391fbb6a06b81c86",
-        "gcr.io/distroless/base",
-        [
-            "linux/amd64",
-            "linux/arm64",
-        ],
-    ),
-]
+oci.pull(
+  name = "distroless_node",
+  digest = "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
+  image = "gcr.io/distroless/nodejs20-debian11",
+  platforms = [
+    "linux/amd64",
+    "linux/arm64/v8",
+  ],
+)
+use_repo(oci, "distroless_node")
+use_repo(oci, "distroless_node_linux_amd64")
+use_repo(oci, "distroless_node_linux_arm64_v8")
 
-[
-    oci.pull(
-        name = image[0],
-        digest = image[1],
-        image = image[2],
-        # DOES NOT WORK
-        # https://github.com/bazelbuild/bazel/issues/17655
-        # all the aliases for platforms are listed here
-        # https://github.com/bazel-contrib/rules_oci/blob/2e7ca44886f5dae977408c55f0a7be8743e6db08/oci/pull.bzl#L334
-        #
-        # slack convo regarding unknown repo platforms
-        # https://bazelbuild.slack.com/archives/CA3NW13MH/p1683306040074659
-        platforms = image[3],
-    )
-    for image in _BASE_IMAGES
-]
-
-[
-    use_repo(
-        oci,
-        image[0],
-    )
-    for image in _BASE_IMAGES
-]
+oci.pull(
+  name = "distroless_base",
+  digest = "sha256:ccaef5ee2f1850270d453fdf700a5392534f8d1a8ca2acda391fbb6a06b81c86",
+  image = "gcr.io/distroless/base",
+  platforms = [
+    "linux/arm64",
+    "linux/amd64",
+  ],
+)
+use_repo(oci, "distroless_base")
+use_repo(oci, "distroless_base_linux_arm64")
+use_repo(oci, "distroless_base_linux_amd64")
 
 ###############################################################################
 # <<< END OCI STUFF
