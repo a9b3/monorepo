@@ -1,6 +1,5 @@
 load("//bazel/go:exports.bzl", "go_binary", "go_library", "go_test")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("//bazel/image:exports.bzl", "oci_image", "oci_tarball", "pkg_tar")
 
 go_library(
     name = "go-image_lib",
