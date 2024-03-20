@@ -1,13 +1,9 @@
-## Go
+## Modules
 
-Documentation for working with the go language in this repo.
+All external dependencies should reside in go.mod in the root of the project.
+Just add modules as an import statement in your code and run `go mod tidy`.
 
-### Package Manager
-
-This repository has one copy of go.mod in the workspace root, external
-dependencies are added to this file.
-
-### Packages
+## Internal Dependencies
 
 All package names are prefixed with the module value in the root go.mod. Which
 is currently set to `github.com/publiclabel/monorepo`. The path should be
