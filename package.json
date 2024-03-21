@@ -6,7 +6,7 @@
     "@bazel/ibazel": "^0.16.2",
     "@bazel/typescript": "^5.5.4",
     "@tsconfig/svelte": "^3.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "eslint": "^8.14.0",
@@ -18,7 +18,7 @@
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-react-hooks": "^4.4.0",
     "eslint-plugin-svelte3": "^4.0.0",
-    "jest-cli": "^27.5.1",
+    "jest-cli": "^29.7.0",
     "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.7.0",
     "svelte-check": "^2.9.0",
@@ -29,7 +29,7 @@
     "typescript-svelte-plugin": "^0.3.9"
   },
   "dependencies": {
-    "jest-config": "^27.5.1",
+    "jest-config": "^29.7.0",
     "jest-junit": "^16.0.0"
   }
 }
