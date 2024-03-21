@@ -3,7 +3,7 @@ load("//bazel/go:exports.bzl", "go_library")
 go_library(
     name = "logger",
     srcs = ["logger.go"],
-    importpath = "github.com/publiclabel/monorepo/libs/go/logger",
+    importpath = "github.com/publiclabel/monorepo/repos/libs/go/logger",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_rs_zerolog//:zerolog",

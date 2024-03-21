@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/publiclabel/monorepo/libs/go/logger"
+	"github.com/publiclabel/monorepo/repos/libs/go/logger"
 )
 
 // connStr := "postgres://username:password@localhost:5432/database_name"

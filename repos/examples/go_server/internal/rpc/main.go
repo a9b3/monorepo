@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 
-	"github.com/publiclabel/monorepo/libs/go/logger"
+	"github.com/publiclabel/monorepo/repos/libs/go/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

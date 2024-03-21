@@ -3,8 +3,8 @@ package rpc
 import (
 	"context"
 
-	"github.com/publiclabel/monorepo/libs/go/logger"
 	"github.com/publiclabel/monorepo/repos/examples/go_server/internal/sqlc/models"
+	"github.com/publiclabel/monorepo/repos/libs/go/logger"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
