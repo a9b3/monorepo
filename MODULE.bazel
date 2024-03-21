@@ -23,39 +23,39 @@ oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
 oci.toolchains(crane_version = "v0.14.0")
 
 oci.pull(
-  name = "debian",
-  digest = "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
-  image = "debian",
-  platforms = [
-    "linux/amd64",
-    "linux/arm64/v8",
-  ],
+    name = "debian",
+    digest = "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
+    image = "debian",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64/v8",
+    ],
 )
 use_repo(oci, "debian")
 use_repo(oci, "debian_linux_amd64")
 use_repo(oci, "debian_linux_arm64_v8")
 
 oci.pull(
-  name = "distroless_node",
-  digest = "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
-  image = "gcr.io/distroless/nodejs20-debian11",
-  platforms = [
-    "linux/amd64",
-    "linux/arm64/v8",
-  ],
+    name = "distroless_node",
+    digest = "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
+    image = "gcr.io/distroless/nodejs20-debian11",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64/v8",
+    ],
 )
 use_repo(oci, "distroless_node")
 use_repo(oci, "distroless_node_linux_amd64")
 use_repo(oci, "distroless_node_linux_arm64_v8")
 
 oci.pull(
-  name = "distroless_base",
-  digest = "sha256:ccaef5ee2f1850270d453fdf700a5392534f8d1a8ca2acda391fbb6a06b81c86",
-  image = "gcr.io/distroless/base",
-  platforms = [
-    "linux/arm64",
-    "linux/amd64",
-  ],
+    name = "distroless_base",
+    digest = "sha256:ccaef5ee2f1850270d453fdf700a5392534f8d1a8ca2acda391fbb6a06b81c86",
+    image = "gcr.io/distroless/base",
+    platforms = [
+        "linux/arm64",
+        "linux/amd64",
+    ],
 )
 use_repo(oci, "distroless_base")
 use_repo(oci, "distroless_base_linux_arm64")
@@ -74,9 +74,9 @@ bazel_dep(name = "aspect_rules_js", version = "1.39.1")
 ####### Node.js version #########
 # By default you get the node version from DEFAULT_NODE_VERSION in @rules_nodejs//nodejs:repositories.bzl
 # Optionally you can pin a different node version:
-bazel_dep(name = "rules_nodejs", version = "5.8.2")
+bazel_dep(name = "rules_nodejs", version = "6.0.5")
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
-node.toolchain(node_version = "16.14.2")
+node.toolchain(node_version = "20.11.1")
 #################################
 
 npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)
