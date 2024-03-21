@@ -1,6 +1,14 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
 load("@rules_oci//oci:defs.bzl", "oci_tarball")
 
+exports_files([
+    ".swcrc",
+    "tsconfig.json",
+    "jest.config.json",
+    "package.json",
+    "swc.config.json",
+])
+
 # -----------------------------------------------------------------------------
 # Gazelle Configs
 # -----------------------------------------------------------------------------
@@ -47,13 +55,6 @@ gazelle(name = "gazelle")
 # -----------------------------------------------------------------------------
 # General Files
 # -----------------------------------------------------------------------------
-
-exports_files([
-    ".swcrc",
-    "tsconfig.json",
-    "jest.config.json",
-    "package.json",
-])
 
 # -----------------------------------------------------------------------------
 # JS Stuff

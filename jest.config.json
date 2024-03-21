@@ -14,8 +14,17 @@
     "tsx"
   ],
   "testMatch": [
+    "**/*.test.ts",
     "**/*.test.js",
     "**/*.test.mjs"
   ],
-  "transform": {}
+  "transform": {
+    "^.+\\.(t)sx?$": [
+      "@swc/jest"
+    ]
+  },
+  "extensionsToTreatAsEsm": [
+    ".ts",
+    ".tsx"
+  ]
 }

@@ -1,11 +1,41 @@
 {
+  "sourceMaps": true,
   "module": {
-    "type": "commonjs"
+    "type": "commonjs",
+    "strictMode": true,
+    "noInterop": false
   },
   "jsc": {
+    "externalHelpers": false,
+    "target": "es3",
     "parser": {
-      "syntax": "typescript"
+      "syntax": "typescript",
+      "tsx": true,
+      "decorators": false,
+      "dynamicImport": true
     },
-    "target": "es2020"
+    "transform": {
+      "legacyDecorator": true,
+      "decoratorMetadata": false,
+      "react": {
+        "throwIfNamespace": false,
+        "useBuiltins": false,
+        "pragma": "React.createElement",
+        "pragmaFrag": "React.Fragment",
+        "importSource": "react"
+      }
+    },
+    "keepClassNames": false,
+    "paths": {
+      "@monorepo/*": [
+        "./*"
+      ],
+      "*": [
+        "./node_modules/*",
+        "./bazel/js/backend/node_modules/*",
+        "./bazel/js/backend/node_modules/@types/*"
+      ]
+    },
+    "baseUrl": "./"
   }
 }

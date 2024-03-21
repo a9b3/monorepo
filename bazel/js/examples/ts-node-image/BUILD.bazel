@@ -1,10 +1,5 @@
+load("//bazel/image:exports.bzl", "run_image")
 load("//bazel/js:exports.bzl", "js_binary", "js_image_layer", "ts_project")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
-load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
-
-# -----------------------------------------------------------------------------
-# Source
-# -----------------------------------------------------------------------------
 
 ts_project(
     name = "project",
@@ -24,10 +19,6 @@ js_binary(
     node_toolchain = "@nodejs_linux_amd64//:node_toolchain",
 )
 
-# -----------------------------------------------------------------------------
-# Image
-# -----------------------------------------------------------------------------
-
 js_image_layer(
     name = "layers",
     binary = ":dockerbin",
@@ -35,30 +26,33 @@ js_image_layer(
     visibility = ["//visiblity:__pkg__"],
 )
 
-# oci_image isn't setting arch in image config section
-# https://github.com/bazel-contrib/rules_oci/issues/117
-oci_image(
-    name = "image",
-    # Since js_binary depends on bash we have to bring in a base image that has bash
-    base = "@debian",
-    # This is going to be /{root of js_image_layer}/{package_name()}/{name of js_binary}
+run_image(
+    name = "ts_node_image",
+    tar_path_root = "bazel/js/examples/ts-node-image/",
     cmd = ["/app/bazel/js/examples/ts-node-image/dockerbin"],
-    entrypoint = ["bash"],
-    tars = [
-        ":layers",
-    ],
-    visibility = ["//visibility:public"],
+    tars = [":layers"],
 )
-
-# bazel build //bazel/js/examples/ts-node-image:tarball
-# docker load --input $(bazel cquery --output=files //bazel/js/examples/ts-node-image:tarball)
-# docker run --rm example:latest
+# oci_image(
+#     name = "image",
+#     base = "@debian_linux_amd64",
+#     # This is going to be /{root of js_image_layer}/{package_name()}/{name of js_binary}
+#     cmd = ["/app/bazel/js/examples/ts-node-image/dockerbin"],
+#     entrypoint = ["bash"],
+#     tars = [
+#         ":layers",
+#     ],
+#     visibility = ["//visibility:public"],
+# )
 #
-#   one line
-#
-# bazel build //bazel/js/examples/ts-node-image:tarball && docker load --input $(bazel cquery --output=files //bazel/js/examples/ts-node-image:tarball) && docker run --rm example:latest
-oci_tarball(
-    name = "tarball",
-    image = ":image",
-    repo_tags = ["example:latest"],
-)
+# # bazel build //bazel/js/examples/ts-node-image:tarball
+# # docker load --input $(bazel cquery --output=files //bazel/js/examples/ts-node-image:tarball)
+# # docker run --rm example:latest
+# #
+# #   one line
+# #
+# # bazel build //bazel/js/examples/ts-node-image:tarball && docker load --input $(bazel cquery --output=files //bazel/js/examples/ts-node-image:tarball) && docker run --rm example:latest
+# oci_tarball(
+#     name = "tarball",
+#     image = ":image",
+#     repo_tags = ["example:latest"],
+# )
