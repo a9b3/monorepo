@@ -1,3 +1,15 @@
+# @monorepo/web-core/styles
+
+Design system tokens and utility functions for working with tokens from javascript.
+
+## Usage
+
+```js
+import { primatives } from '@monorepo/web-core/styles'
+
+console.log(primatives.color.primary)
+```
+
 ## Install
 
 1. Add workspace dependency to consuming `package.json`

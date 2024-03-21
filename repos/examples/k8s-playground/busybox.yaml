@@ -7,7 +7,7 @@ spec:
   containers:
     - name: test-container
       image: k8s.gcr.io/busybox
-      command: ["/bin/sh", "-c", "env"]
+      command: ['/bin/sh', '-c', 'env']
       # envFrom:
       #   - configMapRef:
       #       name: special-config
@@ -44,6 +44,6 @@ spec:
       containers:
         - name: nginx
           image: nginx
-          imagePullPolicy: "Always"
+          imagePullPolicy: 'Always'
           ports:
             - containerPort: 80

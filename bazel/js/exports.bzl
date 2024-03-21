@@ -13,6 +13,7 @@ load(
     _js_library = "js_library",
     _nodejs_binary = "js_binary",
 )
+load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load(
     "@aspect_rules_ts//ts:defs.bzl",
     _ts_project = "ts_project",
@@ -23,8 +24,17 @@ load(
 )
 
 def _jest_test_override(name, **kwargs):
+    native.genrule(
+        name = "gen_config",
+        testonly = True,
+        srcs = ["//:jest.config.js"],
+        outs = ["jest.config.js"],
+        cmd = "cp $(location //:jest.config.js) \"$@\"",
+    )
+
     _jest_test(
         name = name,
+        config = ":gen_config",
         node_options = [
             "--experimental-vm-modules",
         ],
@@ -49,3 +59,4 @@ js_library = _js_library
 js_binary = _nodejs_binary
 js_image_layer = _js_image_layer
 npm_link_all_packages = _npm_link_all_packages
+npm_package = _npm_package

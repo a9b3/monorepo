@@ -24,4 +24,3 @@ create-migration:
 
 sqlc-generate:
 	sqlc generate --file ./internal/sqlc/sqlc.yaml
-
