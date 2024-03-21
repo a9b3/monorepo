@@ -1,7 +1,5 @@
-load("//bazel/js:exports.bzl", "js_binary", "ts_project")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
-load("@npm//:defs.bzl", "npm_link_all_packages")
-load("@aspect_rules_js//js:defs.bzl", "js_image_layer")
+load("//bazel/image:exports.bzl", "run_image")
+load("//bazel/js:exports.bzl", "js_binary", "js_image_layer", "npm_link_all_packages", "ts_project")
 
 npm_link_all_packages(name = "node_modules")
 
@@ -27,51 +25,19 @@ js_binary(
         ":project",
     ],
     entry_point = "index.js",
-    # The available toolchains are found in the project root MODULE.bazel
-    # Without this option set it will default to the host platform, but we need
-    # this to run inside an amd arch docker image
     node_toolchain = "@nodejs_linux_amd64//:node_toolchain",
-)
-
-platform(
-    name = "amd64_linux",
-    constraint_values = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-    ],
 )
 
 js_image_layer(
     name = "layers",
     binary = ":dockerbin",
-    platform = ":amd64_linux",
     root = "/app",
     visibility = ["//visibility:__pkg__"],
 )
 
-oci_image(
-    name = "image",
-    # Since js_binary depends on bash we have to bring in a base image that has bash
-    base = "@debian",
-    # This is going to be /{root of js_image_layer}/{package_name()}/{name of js_binary}
+run_image(
+    name = "ts_own_image",
+    tar_path_root = "bazel/js/examples/ts-own-packagejson/",
     cmd = ["/app/bazel/js/examples/ts-own-packagejson/dockerbin"],
-    entrypoint = ["bash"],
-    tars = [
-        ":layers",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-# bazel build //bazel/js/examples/ts-own-packagejson:tarball
-# docker load --input $(bazel cquery --output=files //bazel/js/examples/ts-own-packagejson:tarball)
-# docker run --rm ts-own-packagejson:latest
-#
-#   or one line
-#
-# bazel build //bazel/js/examples/ts-own-packagejson:tarball && docker load --input $(bazel cquery --output=files //bazel/js/examples/ts-own-packagejson:tarball) && docker run --rm ts-own-packagejson:latest
-
-oci_tarball(
-    name = "tarball",
-    image = ":image",
-    repo_tags = ["ts-own-packagejson:latest"],
+    tars = [":layers"],
 )

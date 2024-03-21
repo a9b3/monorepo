@@ -32,27 +32,3 @@ run_image(
     cmd = ["/app/bazel/js/examples/ts-node-image/dockerbin"],
     tars = [":layers"],
 )
-# oci_image(
-#     name = "image",
-#     base = "@debian_linux_amd64",
-#     # This is going to be /{root of js_image_layer}/{package_name()}/{name of js_binary}
-#     cmd = ["/app/bazel/js/examples/ts-node-image/dockerbin"],
-#     entrypoint = ["bash"],
-#     tars = [
-#         ":layers",
-#     ],
-#     visibility = ["//visibility:public"],
-# )
-#
-# # bazel build //bazel/js/examples/ts-node-image:tarball
-# # docker load --input $(bazel cquery --output=files //bazel/js/examples/ts-node-image:tarball)
-# # docker run --rm example:latest
-# #
-# #   one line
-# #
-# # bazel build //bazel/js/examples/ts-node-image:tarball && docker load --input $(bazel cquery --output=files //bazel/js/examples/ts-node-image:tarball) && docker run --rm example:latest
-# oci_tarball(
-#     name = "tarball",
-#     image = ":image",
-#     repo_tags = ["example:latest"],
-# )
