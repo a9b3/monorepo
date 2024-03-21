@@ -28,7 +28,6 @@
     "libs",
     "./bazel/js/backend/node_modules",
     "repos",
-    "bazel",
-    "jest.config.js",
+    "bazel"
   ]
 }

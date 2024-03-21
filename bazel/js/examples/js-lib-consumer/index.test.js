@@ -1,18 +1,15 @@
 import { jest } from '@jest/globals'
 
-let { default: foo } = await import('@monorepo/examples-js-lib')
-
-beforeEach(async () => {
-  foo = jest.fn()
-})
-
-afterEach(() => {
-  foo = foo.original
+beforeEach(() => {
+  jest.unstable_mockModule('@monorepo/examples-js-lib', () => ({
+    default: jest.fn(),
+  }))
 })
 
 describe('Test index.js', () => {
   it('should call foo function', async () => {
     const consoleSpy = jest.spyOn(console, 'log')
+    const { default: foo } = await import('@monorepo/examples-js-lib')
     await import('./index.js')
     expect(foo).toHaveBeenCalled()
     expect(consoleSpy).toHaveBeenCalledWith(foo())

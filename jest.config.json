@@ -1,0 +1,21 @@
+{
+  "testEnvironment": "node",
+  "haste": {
+    "enableSymlinks": false
+  },
+  "verbose": true,
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "jsx",
+    "node",
+    "mjs",
+    "ts",
+    "tsx"
+  ],
+  "testMatch": [
+    "**/*.test.js",
+    "**/*.test.mjs"
+  ],
+  "transform": {}
+}

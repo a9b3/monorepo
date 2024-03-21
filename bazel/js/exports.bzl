@@ -23,18 +23,20 @@ load(
     _npm_link_all_packages = "npm_link_all_packages",
 )
 
+# https://docs.aspect.build/rulesets/aspect_rules_jest/docs/jest_test/
 def _jest_test_override(name, **kwargs):
     native.genrule(
         name = "gen_config",
         testonly = True,
-        srcs = ["//:jest.config.js"],
-        outs = ["jest.config.js"],
-        cmd = "cp $(location //:jest.config.js) \"$@\"",
+        srcs = ["//:jest.config.json"],
+        outs = ["jest.config.json"],
+        cmd = "cp $(location //:jest.config.json) \"$@\"",
     )
 
     _jest_test(
         name = name,
         config = ":gen_config",
+        node_modules = "//:node_modules",
         node_options = [
             "--experimental-vm-modules",
         ],
