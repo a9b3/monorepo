@@ -5,6 +5,8 @@
   "devDependencies": {
     "@bazel/ibazel": "^0.16.2",
     "@bazel/typescript": "^5.5.4",
+    "@swc/cli": "^0.3.10",
+    "@swc/core": "^1.4.8",
     "@tsconfig/svelte": "^3.0.0",
     "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
