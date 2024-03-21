@@ -6,8 +6,9 @@ const config = {
     enableSymlinks: false,
   },
   verbose: true,
-  moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx'],
-  testMatch: ['**/*.test.js'],
+  moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx', 'mjs'],
+  testMatch: ['**/*.test.js', '**/*.test.mjs'],
+  transform: {},
 }
 
 module.exports = config

@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "declaration": true,
     "resolveJsonModule": true,
+    "module": "CommonJS",
     "esModuleInterop": true,
     "moduleResolution": "node",
     "noImplicitAny": true,
@@ -12,7 +13,9 @@
     "rootDir": ".",
     "sourceMap": true,
     "paths": {
-      "@monorepo/*": ["./*"],
+      "@monorepo/*": [
+        "./*"
+      ],
       "*": [
         "./node_modules/*",
         "./bazel/js/backend/node_modules/*",
@@ -25,6 +28,7 @@
     "libs",
     "./bazel/js/backend/node_modules",
     "repos",
-    "bazel"
+    "bazel",
+    "jest.config.js",
   ]
 }

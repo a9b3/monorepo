@@ -51,6 +51,7 @@ gazelle(name = "gazelle")
 exports_files([
     ".swcrc",
     "tsconfig.json",
+    "jest.config.js",
     "package.json",
 ])
 
