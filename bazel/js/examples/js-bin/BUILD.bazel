@@ -1,4 +1,4 @@
-load("//bazel/js:exports.bzl", "js_binary", "jest_test")
+load("//bazel/js:exports.bzl", "jest_test", "js_binary")
 
 js_binary(
     name = "bin",
@@ -12,7 +12,7 @@ jest_test(
     name = "test",
     node_modules = "//:node_modules",
     data = [
-      ":bin",
-      "index.test.js",
+        ":bin",
+        "index.test.js",
     ],
 )

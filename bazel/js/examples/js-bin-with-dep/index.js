@@ -1,3 +1,3 @@
-import chalk from 'chalk'
+import cowsay from 'cowsay'
 
-console.log(chalk.blue('Hello world!'))
+console.log(cowsay.say({ text: 'Hello world!' }))
