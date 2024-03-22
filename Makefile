@@ -6,3 +6,8 @@ list:
 	@echo "====================================================================="
 	@echo ""
 	@bazel query 'kind("alias", //...)'
+
+# Run everytimne you update go.mod
+updated-go-deps:
+	@bazel run //:gazelle-update-repos
+	@bazel run //:gazelle

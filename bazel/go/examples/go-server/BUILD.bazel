@@ -54,3 +54,9 @@ server_image_package(
     port = 8080,
     tar_path_root = "bazel/go/examples/go-server/",
 )
+
+go_test(
+    name = "go-server_test",
+    srcs = ["main_test.go"],
+    embed = [":go-server_lib"],
+)
