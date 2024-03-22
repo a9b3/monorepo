@@ -1,6 +1,6 @@
 # @monorepo/web-core/styles
 
-Design system tokens and utility functions for working with tokens from javascript.
+Design system tokens and utility functions for working with tokens.
 
 ## Usage
 
