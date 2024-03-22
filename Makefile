@@ -1,3 +1,6 @@
+setup-repo:
+	@pre-commit install
+
 list:
 	@echo "====================================================================="
 	@echo "Welcome to the monorepo"

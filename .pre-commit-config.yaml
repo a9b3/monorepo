@@ -31,6 +31,7 @@ repos:
         language: system
         types: ['yaml']
         pass_filenames: true
+        exclude: pnpm-lock\.yaml$
       - id: eslint
         name: eslint
         entry: './devx/pre-commit/eslint-hook.sh'
