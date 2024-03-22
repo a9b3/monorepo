@@ -2,10 +2,3 @@ sh_binary(
     name = "zsh_completions",
     srcs = ["zsh_completions.sh"],
 )
-
-sh_binary(
-    name = "touch",
-    srcs = ["touch.sh"],
-)
-
-exports_files(["sh_binary_cwd.sh"])

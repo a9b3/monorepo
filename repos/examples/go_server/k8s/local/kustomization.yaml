@@ -1,8 +1,0 @@
-# Used by skaffold.yaml for local development
-namespace: go-server
-bases:
-  - ../base
-resources:
-  - ./database.yaml
-patchesStrategicMerge:
-  - ./patch.yaml

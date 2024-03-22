@@ -4,27 +4,10 @@
     "enableSymlinks": false
   },
   "verbose": true,
-  "moduleFileExtensions": [
-    "js",
-    "json",
-    "jsx",
-    "node",
-    "mjs",
-    "ts",
-    "tsx"
-  ],
-  "testMatch": [
-    "**/*.test.ts",
-    "**/*.test.js",
-    "**/*.test.mjs"
-  ],
+  "moduleFileExtensions": ["js", "json", "jsx", "node", "mjs", "ts", "tsx"],
+  "testMatch": ["**/*.test.ts", "**/*.test.js", "**/*.test.mjs"],
   "transform": {
-    "^.+\\.(t)sx?$": [
-      "@swc/jest"
-    ]
+    "^.+\\.(t)sx?$": ["@swc/jest"]
   },
-  "extensionsToTreatAsEsm": [
-    ".ts",
-    ".tsx"
-  ]
+  "extensionsToTreatAsEsm": [".ts", ".tsx"]
 }

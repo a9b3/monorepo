@@ -13,9 +13,7 @@
     "baseUrl": ".",
     "checkJs": true,
     "paths": {
-      "@monorepo/*": [
-        "./*"
-      ],
+      "@monorepo/*": ["./*"],
       "*": [
         "./node_modules/*",
         "./bazel/js/backend/node_modules/*",
@@ -23,9 +21,5 @@
       ]
     }
   },
-  "include": [
-    "orgs",
-    "libs",
-    "./bazel/js/backend/node_modules"
-  ]
+  "include": ["orgs", "libs", "./bazel/js/backend/node_modules"]
 }

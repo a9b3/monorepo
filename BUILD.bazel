@@ -1,5 +1,6 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
-load("@rules_oci//oci:defs.bzl", "oci_tarball")
+load("@gazelle//:def.bzl", "gazelle")
+load("@npm//:defs.bzl", "npm_link_all_packages")
 
 exports_files([
     ".swcrc",
@@ -12,7 +13,6 @@ exports_files([
 # -----------------------------------------------------------------------------
 # Gazelle Configs
 # -----------------------------------------------------------------------------
-load("@gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix github.com/publiclabel/monorepo
 gazelle(name = "gazelle")
@@ -72,30 +72,6 @@ ts_config(
     visibility = [":__subpackages__"],
 )
 
-load("@npm//:defs.bzl", "npm_link_all_packages")
-
 npm_link_all_packages(
     name = "node_modules",
-)
-
-# -----------------------------------------------------------------------------
-# This is needed for now because skaffold doesn't handle rules_oci tarballs yet.
-# REMOVE LATER
-# https://github.com/GoogleContainerTools/skaffold/issues/8886
-# -----------------------------------------------------------------------------
-
-oci_tarball(
-    name = "ts-own-packagejson.tar",
-    image = "//bazel/js/examples/ts-own-packagejson:image",
-    repo_tags = [
-        "bazel:ts-own-packagejson",
-    ],
-)
-
-oci_tarball(
-    name = "go-server.tar",
-    image = "//bazel/go/examples/go-server:image",
-    repo_tags = [
-        "bazel:go-server",
-    ],
 )

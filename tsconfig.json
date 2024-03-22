@@ -13,9 +13,7 @@
     "rootDir": ".",
     "sourceMap": true,
     "paths": {
-      "@monorepo/*": [
-        "./*"
-      ],
+      "@monorepo/*": ["./*"],
       "*": [
         "./node_modules/*",
         "./bazel/js/backend/node_modules/*",

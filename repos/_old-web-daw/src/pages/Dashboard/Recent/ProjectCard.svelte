@@ -32,10 +32,7 @@
     navigate(`/project/${project.id}`, { replace: true })
   }}
 >
-  <div
-    class="cover"
-    style={project.color || ''}
-  />
+  <div class="cover" style={project.color || ''} />
   <div class="info">
     <div
       style={objectStyle({
