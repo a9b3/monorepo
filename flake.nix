@@ -20,21 +20,6 @@
           devShell = pkgs.mkShell {
             buildInputs =
               let
-                sqlc = with pkgs; stdenv.mkDerivation {
-                  name = "sqlc";
-                  # Need to provide a custom builder since the default assumes there's a
-                  # makefile in the source
-                  builder = pkgs.writeText "builder.sh" ''
-                    source $stdenv/setup
-                    mkdir -p $out/bin
-                    cp $src/sqlc $out/bin/sqlc
-                    chmod +x $out/bin/sqlc
-                  '';
-                  src = fetchzip {
-                    url = "https://github.com/kyleconroy/sqlc/releases/download/v1.13.0/sqlc_1.13.0_darwin_amd64.zip";
-                    sha256 = "sha256-izOrdNg8ZxXMwSEA0dv5IKOap+POwsM94+Eu9T1Xco4=";
-                  };
-                };
                 terraform = with pkgs; stdenv.mkDerivation {
                   name = "terraform";
                   # Need to provide a custom builder since the default assumes there's a
@@ -73,13 +58,11 @@
                 pkgs.dive
 
                 # linters
-                pkgs.sqlfluff
                 pkgs.yamllint
 
                 # go tools
                 pkgs.gopls
                 pkgs.go-migrate
-                sqlc
 
                 # source management
                 pkgs.pre-commit

@@ -9,6 +9,11 @@ bazel_dep(name = "bazel_skylib", version = "1.4.1")
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.4.1", dev_dependency = True)
 
 bazel_dep(name = "rules_go", version = "0.46.0")
+
+# TODO this should be temporary
+# https://github.com/bazelbuild/buildtools/issues/1204#issuecomment-1955867708
+bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
+
 bazel_dep(name = "gazelle", version = "0.35.0")
 bazel_dep(name = "rules_oci", version = "1.7.4")
 bazel_dep(name = "aspect_bazel_lib", version = "1.28.0")

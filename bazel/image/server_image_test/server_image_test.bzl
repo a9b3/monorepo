@@ -44,4 +44,3 @@ def server_image_test(name, bazel_target, docker_tag, expected_response, endpoin
         ],
         tags = tags,
     )
-
