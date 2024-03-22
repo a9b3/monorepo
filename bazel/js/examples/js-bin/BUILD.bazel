@@ -11,7 +11,7 @@ js_binary(
 jest_test(
     name = "test",
     data = [
-        ":bin",
         "index.test.js",
+        ":bin",
     ],
 )

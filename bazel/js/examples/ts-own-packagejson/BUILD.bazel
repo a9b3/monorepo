@@ -37,7 +37,7 @@ js_image_layer(
 
 run_image(
     name = "ts_own_image",
-    tar_path_root = "bazel/js/examples/ts-own-packagejson/",
     cmd = ["/app/bazel/js/examples/ts-own-packagejson/dockerbin"],
+    tar_path_root = "bazel/js/examples/ts-own-packagejson/",
     tars = [":layers"],
 )

@@ -9,19 +9,17 @@ bazel_dep(name = "bazel_skylib", version = "1.4.1")
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.4.1", dev_dependency = True)
 
 bazel_dep(name = "rules_go", version = "0.46.0")
-bazel_dep(name = "gazelle", version = "0.31.0")
-
+bazel_dep(name = "gazelle", version = "0.35.0")
 bazel_dep(name = "rules_oci", version = "1.7.4")
 bazel_dep(name = "aspect_bazel_lib", version = "1.28.0")
 bazel_dep(name = "rules_pkg", version = "0.7.0")
 
 ###############################################################################
-# >>> OCI STUFF
+# >>> OCI
 ###############################################################################
 
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
 oci.toolchains(crane_version = "v0.14.0")
-
 oci.pull(
     name = "debian",
     digest = "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
@@ -34,7 +32,6 @@ oci.pull(
 use_repo(oci, "debian")
 use_repo(oci, "debian_linux_amd64")
 use_repo(oci, "debian_linux_arm64_v8")
-
 oci.pull(
     name = "distroless_node",
     digest = "sha256:63d62ae233b588d6b426b7b072d79d1306bfd02a72bff1fc045b8511cc89ee09",
@@ -47,7 +44,6 @@ oci.pull(
 use_repo(oci, "distroless_node")
 use_repo(oci, "distroless_node_linux_amd64")
 use_repo(oci, "distroless_node_linux_arm64_v8")
-
 oci.pull(
     name = "distroless_base",
     digest = "sha256:ccaef5ee2f1850270d453fdf700a5392534f8d1a8ca2acda391fbb6a06b81c86",
@@ -62,11 +58,7 @@ use_repo(oci, "distroless_base_linux_arm64")
 use_repo(oci, "distroless_base_linux_amd64")
 
 ###############################################################################
-# <<< END OCI STUFF
-###############################################################################
-
-###############################################################################
-# >>> ASPECT JS STUFF
+# >>> JAVASCRIPT
 ###############################################################################
 
 bazel_dep(name = "aspect_rules_js", version = "1.39.1")
@@ -75,12 +67,12 @@ bazel_dep(name = "aspect_rules_js", version = "1.39.1")
 # By default you get the node version from DEFAULT_NODE_VERSION in @rules_nodejs//nodejs:repositories.bzl
 # Optionally you can pin a different node version:
 bazel_dep(name = "rules_nodejs", version = "6.0.5")
+
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
 node.toolchain(node_version = "20.11.1")
 #################################
 
 npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)
-
 npm.npm_translate_lock(
     name = "npm",
     pnpm_lock = "//:pnpm-lock.yaml",
@@ -119,11 +111,7 @@ use_repo(rules_ts_ext, "npm_typescript")
 bazel_dep(name = "aspect_rules_swc", version = "1.2.2")
 
 ###############################################################################
-# <<< END ASPECT JS STUFF
-###############################################################################
-
-###############################################################################
-# >>> GO LANG STUFF
+# >>> GOLANG
 ###############################################################################
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
@@ -131,24 +119,6 @@ go_sdk.download(version = "1.20.3")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
-
-# All *direct* Go dependencies of the module have to be listed explicitly.
-use_repo(
-    go_deps,
-    "com_github_code_hex_neo_cowsay_v2",
-    "com_github_golang_migrate_migrate_v4",
-    "com_github_google_uuid",
-    "com_github_iancoleman_strcase",
-    "com_github_jackc_pgconn",
-    "com_github_jackc_pgx_v4",
-    "com_github_otiai10_copy",
-    "com_github_rs_zerolog",
-    "com_github_spf13_cobra",
-    "com_github_spf13_viper",
-    "com_github_urfave_cli_v2",
-    "org_golang_google_grpc",
-    "org_golang_google_protobuf",
-)
 
 ###############################################################################
 # <<< END GO LANG STUFF

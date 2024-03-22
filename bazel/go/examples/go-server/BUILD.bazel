@@ -1,5 +1,5 @@
 load("//bazel/go:exports.bzl", "go_binary", "go_library", "go_test")
-load("//bazel/image:exports.bzl", "oci_image", "oci_tarball", "pkg_tar", "server_image_package")
+load("//bazel/image:exports.bzl", "server_image_package")
 
 go_library(
     name = "lib",
@@ -26,17 +26,15 @@ go_binary(
 go_binary(
     name = "bin_amd64",
     embed = [":lib"],
-    visibility = ["//visibility:public"],
     goarch = "amd64",
     goos = "linux",
+    visibility = ["//visibility:public"],
 )
 
 server_image_package(
     name = "server",
-    expected_response = "Hello what, test!",
     endpoint = "test",
-    tar_path_root = "bazel/go/examples/go-server/",
-    port = 8080,
+    expected_response = "Hello what, test!",
     platform_targets = [
         {
             "base": "@distroless_base_linux_amd64",
@@ -53,4 +51,6 @@ server_image_package(
             "target": ":bin_arm64",
         },
     ],
+    port = 8080,
+    tar_path_root = "bazel/go/examples/go-server/",
 )

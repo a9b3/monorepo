@@ -10,24 +10,9 @@ exports_files([
     "swc.config.json",
 ])
 
-# -----------------------------------------------------------------------------
-# Gazelle Configs
-# -----------------------------------------------------------------------------
-
 # gazelle:prefix github.com/publiclabel/monorepo
 gazelle(name = "gazelle")
-# -----------------------------------------------------------------------------
-# Go
-# -----------------------------------------------------------------------------
 
-# https://github.com/bazelbuild/rules_go/blob/eb03b81312c3d459fb1ffdb18da9aa122e649905/proto/core.rst#option-2-use-pre-generated-pb-go-files
-#
-# gazelle:go_generate_proto false
-
-# -----------------------------------------------------------------------------
-# Excludes
-# -----------------------------------------------------------------------------
-#
 # gazelle:exclude bazel-out
 # gazelle:exclude bazel-bin
 # gazelle:exclude bazel-monorepo
@@ -35,30 +20,26 @@ gazelle(name = "gazelle")
 # gazelle:exclude external
 # gazelle:exclude bazel/go/scripts/lib
 #
-# -----------------------------------------------------------------------------
-# Map Kinds
-# -----------------------------------------------------------------------------
-#
 # gazelle:map_kind go_binary go_binary //bazel/go:exports.bzl
 # gazelle:map_kind go_library go_library //bazel/go:exports.bzl
-# gazelle:map_kind go_proto_library go_proto_library //bazel/go:exports.bzl
 # gazelle:map_kind go_test go_test //bazel/go:exports.bzl
-#
-# gazelle:map_kind proto_library proto_library //bazel/protobuf:exports.bzl
-#
-# -----------------------------------------------------------------------------
-# Resolves
-# -----------------------------------------------------------------------------
-# Gazelle generates go_proto_library + go_library rules both with the same
-# importpath causing a matches multiple rules error.
 
-# -----------------------------------------------------------------------------
-# General Files
-# -----------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------
-# JS Stuff
-# -----------------------------------------------------------------------------
+# Here's a typical workflow:
+#
+# 1. Modify the `go.mod` file to add or remove dependencies.
+# 2. Run `bazel run //:gazelle-update-repos` to update the `deps.bzl` file.
+# 3. Run `bazel run //:gazelle` to update the BUILD.bazel files.
+#
+# This workflow ensures that your Bazel build files are always up-to-date with your Go dependencies.
+gazelle(
+    name = "gazelle-update-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)
 
 ts_config(
     name = "tsconfig_root",

@@ -28,7 +28,7 @@ js_image_layer(
 
 run_image(
     name = "ts_node_image",
-    tar_path_root = "bazel/js/examples/ts-node-image/",
     cmd = ["/app/bazel/js/examples/ts-node-image/dockerbin"],
+    tar_path_root = "bazel/js/examples/ts-node-image/",
     tars = [":layers"],
 )
