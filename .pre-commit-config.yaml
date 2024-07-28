@@ -1,34 +1,32 @@
----
 repos:
-  # Define our own hooks using repo "local". To use third party hooks you can
-  # create a separate repo entry with it's github url.
-  #
-  # Valid types are found here
-  # https://github.com/pre-commit/identify/blob/main/identify/extensions.py
   - repo: local
     hooks:
       - id: gazelle
         name: gazelle
         entry: './devx/pre-commit/gazelle-update.sh'
         language: system
+        stages: ['push']
         types: ['go', 'proto']
         pass_filenames: false
       - id: buildifier
         name: buildifier
         entry: 'bazel run //:buildifier'
         language: system
+        stages: ['push']
         types: ['bazel']
         pass_filenames: false
       - id: golang
         name: golang
         entry: './devx/pre-commit/golang-hook.sh'
         language: system
+        stages: ['push']
         types: ['go']
         pass_filenames: true
       - id: yaml
         name: yaml
         entry: './devx/pre-commit/yaml-hook.sh'
         language: system
+        stages: ['push']
         types: ['yaml']
         pass_filenames: true
         exclude: pnpm-lock\.yaml$
@@ -36,6 +34,7 @@ repos:
         name: eslint
         entry: './devx/pre-commit/eslint-hook.sh'
         language: system
+        stages: ['push']
         files: \.(svelte|js|ts)$
         types: [file]
         pass_filenames: true
@@ -43,6 +42,7 @@ repos:
         name: prettier
         entry: './devx/pre-commit/prettier-hook.sh'
         language: system
+        stages: ['push']
         files: \.(svelte|js|ts|json)$
         types: [file]
         pass_filenames: true
@@ -50,6 +50,7 @@ repos:
         name: tsc
         entry: './devx/pre-commit/tsc-hook.sh'
         language: system
+        stages: ['push']
         files: \.(svelte|js|ts)$
         types: [file]
         pass_filenames: true
