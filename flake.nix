@@ -35,6 +35,28 @@
                     sha256 = "sha256-KzKA/ORUui/0GHvTO2ox0EV6MM9QWV9n1Lw5OdgP4C4=";
                   };
                 };
+                nvm = with pkgs; stdenv.mkDerivation {
+                  name = "nvm";
+                  # Need to provide a custom builder since the default assumes there's a
+                  # makefile in the source
+                  builder = pkgs.writeText "builder.sh" ''
+                    source $stdenv/setup
+                    mkdir -p $out/bin
+                    cp $src/nvm.sh $out/bin/nvm
+                    chmod +x $out/bin/nvm
+                  '';
+                  postFixup = ''
+                    substituteInPlace $out/share/nvm/nvm.sh \
+                          --replace "NVM_DIR=''${NVM_DIR-''${HOME}/.nvm}"
+                          "NVM_DIR=''${NVM_DIR-$out/share/nvm}"
+                  '';
+                  src = fetchFromGitHub {
+                    owner = "nvm-sh";
+                    repo = "nvm";
+                    rev = "v0.39.3";
+                    sha256 = "sha256-ElP9vSj1CpC4Tkwu8W2JDF8f1P5wcxtunPX8TSR9ViE=";
+                  };
+                };
               in
               [
                 # A wrapper around bazel that will invoke the version specified in
@@ -75,6 +97,7 @@
                 # Lang Support
                 # ---------------------------------------------------------------
                 pkgs.go
+                nvm
                 pkgs.nodejs_20
                 pkgs.nodejs_20.pkgs.pnpm
               ];
