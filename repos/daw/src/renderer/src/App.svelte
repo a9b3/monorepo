@@ -3,6 +3,8 @@
   import Searchbar from './components/Searchbar.svelte'
   import Results from './components/Results.svelte'
   import TextBox from './components/TextBox.svelte'
+
+  window.api.note.searchNotes({ query: 'hi' }).then(console.log)
 </script>
 
 <main>

@@ -3,7 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin({ include: ['better-sqlite3'] })]
   },
   preload: {
     plugins: [externalizeDepsPlugin()]
