@@ -1,8 +1,28 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import searchIcon from '../assets/icons/search.svg'
+  import Results from './Results.svelte'
 
   let searchQuery = ''
+  let res: any
+
+  $: searchQuery, search(searchQuery)
+
+  async function search(q: string) {
+    res = await window.api.note.searchNotes({ query: q })
+    return res
+  }
+
+  async function handleSubmit(e: Event) {
+    e.preventDefault()
+    const res = await search(searchQuery)
+    if (res.length === 0) {
+      await window.api.note.upsertNote({ title: searchQuery, body: '' })
+      search(searchQuery)
+    } else {
+      alert('Note already exists')
+    }
+  }
 
   // -------------------------------------------------------------------------
   // Props
@@ -16,10 +36,11 @@
   onDestroy(() => {})
 </script>
 
-<search class="main">
+<form class="main" on:submit={handleSubmit}>
   <img src={searchIcon} alt="Search" width="14rem" height="14rem" />
   <input type="text" placeholder="Search or Create..." bind:value={searchQuery} />
-</search>
+</form>
+<Results results={res} />
 
 <style>
   .main {

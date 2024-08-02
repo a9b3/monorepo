@@ -1,7 +1,7 @@
 export interface upsertNoteArgs {
   id?: string
   title: string
-  content: string
+  body: string
   // ISO8601 strings
   // YYYY-MM-DD hh:mm:ss
   lastModified?: string

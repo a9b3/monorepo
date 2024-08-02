@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
 
-  const results = [{ id: 1, title: 'Result 1' }]
-
   // -------------------------------------------------------------------------
   // Props
   // -------------------------------------------------------------------------
+
+  export let results: any = []
 
   // -------------------------------------------------------------------------
   // Internal
@@ -15,7 +15,9 @@
   onDestroy(() => {})
 </script>
 
-<div class="main"></div>
+<div class="main">
+  {JSON.stringify(results)}
+</div>
 
 <style>
   .main {

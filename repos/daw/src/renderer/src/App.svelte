@@ -4,7 +4,13 @@
   import Results from './components/Results.svelte'
   import TextBox from './components/TextBox.svelte'
 
-  window.api.note.searchNotes({ query: 'hi' }).then(console.log)
+  async function foolp() {
+    await window.api.note.upsertNote({ title: 'hi', body: 'hello' })
+    const res = await window.api.note.searchNotes({ query: 'hi' })
+    console.log(res)
+  }
+
+  // foolp()
 </script>
 
 <main>

@@ -25,7 +25,7 @@ function runMigration(db: Database.Database) {
   // db.exec(migrationFile)
   const statement = `
     CREATE TABLE IF NOT EXISTS notes(
-      id TEXT PRIMARY KEY,
+      id INTEGER PRIMARY KEY,
       title TEXT NOT NULL,
       body TEXT NOT NULL,
       lastModified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
