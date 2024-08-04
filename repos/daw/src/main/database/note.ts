@@ -39,7 +39,18 @@ export const handlers = {
     ipcMain.handle(SEARCH_NOTES, async (_, args: searchNotesArgs) => {
       const statement = args.query
         ? `
-        SELECT * FROM notes_fts WHERE notes_fts MATCH '${args.query}*' ORDER BY bm25(notes_fts, 1.0, 0.5, 0.0) DESC;
+WITH fuzzy_matches AS (
+  SELECT word, distance
+  FROM spellfix1
+  WHERE word MATCH '${args.query}*'
+  ORDER BY distance
+  LIMIT 5
+)
+SELECT notes.*, fuzzy_matches.distance
+FROM notes_fts
+JOIN notes ON notes.id = notes_fts.rowid
+JOIN fuzzy_matches ON notes_fts MATCH fuzzy_matches.word
+ORDER BY fuzzy_matches.distance, bm25(notes_fts, 1.0, 0.5, 0.0) DESC;
         `
         : `SELECT * FROM notes;`
 

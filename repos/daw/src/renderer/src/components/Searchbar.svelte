@@ -4,7 +4,7 @@
   import Results from './Results.svelte'
 
   let searchQuery = ''
-  let res: any
+  let res: any = []
 
   $: searchQuery, search(searchQuery)
 

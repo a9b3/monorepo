@@ -1,7 +1,6 @@
 <script lang="ts">
   import TitleBar from './components/TitleBar.svelte'
   import Searchbar from './components/Searchbar.svelte'
-  import Results from './components/Results.svelte'
   import TextBox from './components/TextBox.svelte'
 
   async function foolp() {
@@ -16,14 +15,13 @@
 <main>
   <TitleBar />
   <Searchbar />
-  <Results />
   <TextBox />
 </main>
 
 <style>
   main {
     display: grid;
-    grid-template-rows: auto 200px 1fr;
+    grid-template-rows: auto auto 200px 1fr;
     height: 100vh;
     width: 100vw;
     gap: calc(var(--spacing-s) * 1px);

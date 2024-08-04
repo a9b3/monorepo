@@ -1,12 +1,10 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import ResultsRow from './ResultsRow.svelte'
 
   // -------------------------------------------------------------------------
   // Props
   // -------------------------------------------------------------------------
-
-  export let results: any = []
+  export let result: any
 
   // -------------------------------------------------------------------------
   // Internal
@@ -17,16 +15,19 @@
 </script>
 
 <div class="main">
-  {#each results as item, index}
-    <ResultsRow result={item} />
-  {/each}
+  <div>
+    {result.title}
+  </div>
+  <div>
+    {result.body.substring(0, 50)}
+  </div>
 </div>
 
 <style>
   .main {
-    background: var(--semantic-colors-background1);
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
     width: 100%;
+    padding: 0 calc(var(--spacing-s) * 1px);
   }
 </style>

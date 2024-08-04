@@ -1,5 +1,12 @@
 {
   "name": "daw2",
+  "build": {
+    "extraResources": [
+      "./src/main/database/spellfix.so",
+      "./src/main/database/spellfix.dll",
+      "./src/main/database/spellfix.dylib"
+    ]
+  },
   "version": "1.0.0",
   "description": "An Electron application with Svelte and TypeScript",
   "main": "./out/main/index.js",
