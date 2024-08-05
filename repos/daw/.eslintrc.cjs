@@ -19,5 +19,18 @@ module.exports = {
   ],
   rules: {
     'svelte/no-unused-svelte-ignore': 'off'
+  },
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [
+          ['@ipc', './src/ipc'],
+          ['@main', './src/main'],
+          ['@preload', './src/preload'],
+          ['@renderer', './src/renderer']
+        ],
+        extensions: ['.ts', '.js', '.jsx', '.json', '.svelte']
+      }
+    }
   }
 }

@@ -2,45 +2,44 @@
   import { onMount, onDestroy } from 'svelte'
   import searchIcon from '../assets/icons/search.svg'
   import Results from './Results.svelte'
+  import { noteStore } from '../lib/stores/noteStore'
+  import type { Note } from '@ipc/notes'
+
+  let notes: Note[]
+  noteStore.subscribe((value) => {
+    notes = value
+  })
+
+  async function searchNotes(query: string) {
+    return await noteStore.searchNotes({ query })
+    // The store will be automatically updated with the search
+    // results
+  }
 
   let searchQuery = ''
-  let res: any = []
 
-  $: searchQuery, search(searchQuery)
-
-  async function search(q: string) {
-    res = await window.api.note.searchNotes({ query: q })
-    return res
-  }
+  $: searchQuery, searchNotes(searchQuery)
 
   async function handleSubmit(e: Event) {
     e.preventDefault()
-    const res = await search(searchQuery)
+    const res = await searchNotes(searchQuery)
     if (res.length === 0) {
-      await window.api.note.upsertNote({ title: searchQuery, body: '' })
-      search(searchQuery)
+      await noteStore.upsertNote({
+        title: searchQuery,
+        body: ''
+      })
+      await searchNotes(searchQuery)
     } else {
       alert('Note already exists')
     }
   }
-
-  // -------------------------------------------------------------------------
-  // Props
-  // -------------------------------------------------------------------------
-
-  // -------------------------------------------------------------------------
-  // Internal
-  // -------------------------------------------------------------------------
-
-  onMount(() => {})
-  onDestroy(() => {})
 </script>
 
 <form class="main" on:submit={handleSubmit}>
   <img src={searchIcon} alt="Search" width="14rem" height="14rem" />
   <input type="text" placeholder="Search or Create..." bind:value={searchQuery} />
 </form>
-<Results results={res} />
+<Results results={notes} />
 
 <style>
   .main {
