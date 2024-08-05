@@ -26,7 +26,8 @@
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "npm run build && electron-builder --linux",
-    "rebuild": "electron-rebuild -f -m ./node_modules/better-sqlite3"
+    "rebuild": "electron-rebuild -f -m ./node_modules/better-sqlite3",
+    "sqlite": "sqlite3 demo.db -cmd '.load ./src/main/database/spellfix' --unsafe-testing"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
