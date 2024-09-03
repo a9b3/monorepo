@@ -10,6 +10,6 @@ body {
   font-family: 'Proggy', sans-serif;
   line-height: 1.2;
   color: var(--semantic-colors-system-font);
-  background: var(--semantic-colors-background);
-  background-size: cover;
+  /* background: var(--semantic-colors-background); */
+  /* background-size: cover; */
 }

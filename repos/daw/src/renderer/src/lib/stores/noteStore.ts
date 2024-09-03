@@ -9,38 +9,57 @@ import type {
 } from '@ipc/notes'
 
 function createNoteStore() {
-  const { subscribe, update, set } = writable<Note[]>([])
+  const { subscribe, update, set } = writable<{
+    notes: Note[]
+    selectedNoteId: string | null
+    selectedNote: Note | null
+  }>({
+    notes: [],
+    selectedNoteId: null,
+    selectedNote: null
+  })
 
-  const api: ApiMethods = {
+  const api: ApiMethods & { setSelectedNoteId: (id: string | null) => void } = {
     upsertNote: async (args: UpsertNoteArgs): Promise<UpsertNoteArgs> => {
       const result = await window.api.note.upsertNote(args)
-      update((notes) => {
-        const index = notes.findIndex((note) => note.id === result.id)
+      update((state) => {
+        const index = state.notes.findIndex((note) => note.id === result.id)
         if (index !== -1) {
-          notes[index] = result as Note
+          state.notes[index] = result as Note
         } else {
-          notes.push(result as Note)
+          state.notes.push(result as Note)
         }
-        return notes
+        return state
       })
       return result
     },
 
     searchNotes: async (args: SearchNotesArgs): Promise<UpsertNoteArgs[]> => {
       const results = await window.api.note.searchNotes(args)
-      console.log(`searchNotes: ${JSON.stringify(results, ' ', 2)}`)
-      set(results as Note[])
+      update((state) => ({ ...state, notes: results as Note[] }))
       return results
     },
 
     deleteNote: async (args: DeleteNoteArgs): Promise<void> => {
       await window.api.note.deleteNote(args)
-      update((notes) => notes.filter((note) => note.id !== args.id))
+      update((state) => ({
+        ...state,
+        notes: state.notes.filter((note) => note.id !== args.id),
+        selectedNoteId: state.selectedNoteId === args.id ? null : state.selectedNoteId
+      }))
     },
 
     getNote: async (args: GetNoteArgs): Promise<Note> => {
       const result = await window.api.note.getNote(args)
       return result
+    },
+
+    setSelectedNoteId: (id: string | null) => {
+      update((state) => ({
+        ...state,
+        selectedNoteId: id,
+        selectedNote: state.notes.find((note) => note.id === id)
+      }))
     }
   }
 

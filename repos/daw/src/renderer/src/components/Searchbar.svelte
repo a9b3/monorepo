@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
   import searchIcon from '../assets/icons/search.svg'
   import Results from './Results.svelte'
-  import { noteStore } from '../lib/stores/noteStore'
+  import { noteStore } from '@renderer/src/lib/stores/noteStore'
   import type { Note } from '@ipc/notes'
 
   let notes: Note[]
   noteStore.subscribe((value) => {
-    notes = value
+    notes = value.notes
   })
 
   async function searchNotes(query: string) {
@@ -36,7 +35,7 @@
 </script>
 
 <form class="main" on:submit={handleSubmit}>
-  <img src={searchIcon} alt="Search" width="14rem" height="14rem" />
+  <img src={searchIcon} alt="Search" width="10rem" height="10rem" />
   <input type="text" placeholder="Search or Create..." bind:value={searchQuery} />
 </form>
 <Results results={notes} />
@@ -45,6 +44,7 @@
   .main {
     display: flex;
     align-items: center;
+    justify-content: center;
     width: 100%;
     height: 30px;
     color: var(--semantic-colors-surface2);
@@ -58,6 +58,17 @@
     outline: none;
     background: none;
     caret-color: var(--semantic-colors-surface2);
-    color: var(--semantic-colors-surface1);
+    color: var(--semantic-colors-surface2);
+    font-family: 'Proggy';
+    font-size: 1rem;
+  }
+
+  input::placeholder {
+    color: var(--semantic-colors-surface2);
+  }
+
+  img {
+    fill: red;
+    margin-right: calc(var(--spacing-xs) * 1px);
   }
 </style>

@@ -17,7 +17,7 @@
 </script>
 
 <div class="main">
-  {#each results as item, index}
+  {#each results as item}
     <ResultsRow result={item} />
   {/each}
 </div>
