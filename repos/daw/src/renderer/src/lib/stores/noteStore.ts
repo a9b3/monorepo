@@ -9,7 +9,7 @@ import type {
 } from '@ipc/notes'
 
 function createNoteStore() {
-  const { subscribe, update, set } = writable<{
+  const { subscribe, update } = writable<{
     notes: Note[]
     selectedNoteId: string | null
     selectedNote: Note | null

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
+  import { onMount } from 'svelte'
   import { noteStore } from '@renderer/src/lib/stores/noteStore'
   import TitleBar from './components/TitleBar.svelte'
   import Searchbar from './components/Searchbar.svelte'
