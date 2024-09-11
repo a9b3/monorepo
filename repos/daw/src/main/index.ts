@@ -44,8 +44,6 @@ function createWindow(): void {
       mainWindow.show()
     }
   })
-
-  mainWindow.setSize(601, 670)
 }
 
 // This method will be called when Electron has finished

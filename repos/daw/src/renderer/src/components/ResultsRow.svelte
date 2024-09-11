@@ -1,6 +1,6 @@
 <script lang="ts">
   export let result: any
-  import { noteStore } from '@renderer/src/lib/stores/noteStore'
+  import { noteStore } from '@renderer/src/stores/noteStore'
   import type { Note } from '@ipc/notes'
 
   let selectedNote: Note

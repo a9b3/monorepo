@@ -28,5 +28,6 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    box-shadow: inset 0 0 0 1px black;
   }
 </style>

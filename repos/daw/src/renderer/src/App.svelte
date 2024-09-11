@@ -1,9 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { noteStore } from '@renderer/src/lib/stores/noteStore'
+  import { noteStore } from '@renderer/src/stores/noteStore'
   import TitleBar from './components/TitleBar.svelte'
   import Searchbar from './components/Searchbar.svelte'
   import TextBox from './components/TextBox.svelte'
+  import CSSVariables from './components/CSSVariables.svelte'
 
   let alreadyAdded = false
   function setup() {
@@ -17,9 +18,9 @@
           if (state.selectedNote) {
             const selectedIndex = state.notes.findIndex((note) => note.id === state.selectedNote.id)
             const nextIndex = (selectedIndex + 1) % state.notes.length
-            api.setSelectedNoteId(state.notes[nextIndex].id)
+            noteStore.setSelectedNoteId(state.notes[nextIndex].id)
           } else if (state.notes.length > 0) {
-            api.setSelectedNoteId(state.notes[0].id)
+            noteStore.setSelectedNoteId(state.notes[0].id)
           } else {
           }
         }
@@ -32,9 +33,9 @@
       alreadyAdded = true
     })
   }
-  setup()
 
   onMount(() => {
+    setup()
     noteStore.subscribe((state) => {
       console.log(`state: ${JSON.stringify(state)}`)
     })
@@ -42,19 +43,26 @@
 </script>
 
 <main>
+  <CSSVariables />
   <TitleBar />
   <Searchbar />
   <TextBox />
+  <div class="bottom" />
 </main>
 
 <style>
   main {
     display: grid;
     grid-template-rows: auto auto 200px 1fr;
-    height: 100vh;
-    width: 100vw;
-    gap: calc(var(--spacing-s) * 1px);
+    height: 100%;
+    width: 100%;
+    gap: calc(var(--spacing-xs) * 1px);
     user-select: none;
-    padding: 10px;
+    background: var(--semantic-colors-background1);
+    padding: 2px 0;
+  }
+
+  .bottom {
+    height: 0px;
   }
 </style>
