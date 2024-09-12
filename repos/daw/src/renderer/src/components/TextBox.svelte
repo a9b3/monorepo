@@ -17,7 +17,6 @@
 <style>
   .main {
     background: var(--semantic-colors-background1);
-    cursor: text;
     padding: calc(var(--spacing-s) * 1px);
     border: none;
     font-family: var(--semantic-font-family);

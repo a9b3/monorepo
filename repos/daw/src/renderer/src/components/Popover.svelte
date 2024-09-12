@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher, onMount, onDestroy } from 'svelte'
 
   export let position = 'bottom'
   export let open = false
 
-  let triggerElement
-  let popoverElement
+  let triggerElement: HTMLDivElement
+  let popoverElement: HTMLDivElement
 
   const dispatch = createEventDispatcher()
 
@@ -36,7 +36,7 @@
     const triggerRect = triggerElement.getBoundingClientRect()
     const popoverRect = popoverElement.getBoundingClientRect()
 
-    let top, left
+    let top: number, left: number
 
     switch (position) {
       case 'top':
@@ -75,7 +75,14 @@
 </script>
 
 <div class="popover-container">
-  <div bind:this={triggerElement} on:click={togglePopover} class="trigger">
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div
+    bind:this={triggerElement}
+    on:click={togglePopover}
+    class="trigger"
+    role="menu"
+    tabindex="-1"
+  >
     <slot name="trigger">
       <button type="button">Open Popover</button>
     </slot>
@@ -93,7 +100,8 @@
 <style>
   .popover-container {
     position: relative;
-    display: inline-block;
+    display: flex;
+    justify-content: center;
   }
 
   .trigger {

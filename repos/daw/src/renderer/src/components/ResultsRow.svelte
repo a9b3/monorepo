@@ -36,7 +36,7 @@
     display: grid;
     grid-template-columns: 1fr 3fr 1fr;
     width: 100%;
-    padding: 0 calc(var(--spacing-s) * 1px);
+    padding: 0px 8px;
     grid-gap: calc(var(--spacing-s) * 1px);
   }
 

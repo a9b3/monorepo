@@ -1,6 +1,11 @@
 <script lang="ts">
   export let data = []
-  export let columns = []
+  export let columns: {
+    field: string
+    header: string
+    cellRenderer?: any
+    passProps?: (row: any) => any
+  }[] = []
   export let tableHeight = '300px'
   export let tableWidth = '100%'
 </script>
@@ -38,25 +43,22 @@
     display: grid;
     grid-template-columns: repeat(var(--column-count), 1fr);
     gap: 1px;
-    background-color: #ddd;
-    border: 1px solid #ddd;
+    border: 1px solid black;
   }
 
   .grid-table-header,
   .grid-table-cell {
     padding: 0 4px;
-    background-color: #fff;
   }
 
   .grid-table-header {
     font-weight: bold;
-    background-color: #f0f0f0;
     position: sticky;
     top: 0;
     z-index: 1;
+    border-bottom: 1px solid black;
   }
 
   .grid-table-cell:nth-child(even) {
-    background-color: #f9f9f9;
   }
 </style>

@@ -3,11 +3,9 @@
   import CSSVars from '@renderer/src/state/CSSVars'
   import shortcutManager from '@renderer/src/state/shortcutManager'
   import GenericTable from '@renderer/src/components/GenericTable.svelte'
-  import Value from '@renderer/src/components/CSSVariables/Value.svelte'
+  import Value from './Value.svelte'
 
   let show = false
-
-  const columns = []
 
   onMount(() => {
     CSSVars.applyVariables()
@@ -55,17 +53,8 @@
 <style>
   main {
     position: absolute;
-    background: black;
-    user-select: text;
     height: 100%;
     overflow: auto;
-  }
-
-  .variables {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    padding: 1rem;
-    color: white;
+    background-color: var(--semantic-colors-background1);
   }
 </style>

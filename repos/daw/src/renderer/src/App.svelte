@@ -4,7 +4,7 @@
   import TitleBar from './components/TitleBar.svelte'
   import Searchbar from './components/Searchbar.svelte'
   import TextBox from './components/TextBox.svelte'
-  import CSSVariables from './components/CSSVariables.svelte'
+  import CSSVariables from './components/CSSVariables/CSSVariables.svelte'
 
   let alreadyAdded = false
   function setup() {
@@ -54,8 +54,8 @@
   main {
     display: grid;
     grid-template-rows: auto auto 200px 1fr;
-    height: 100%;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
     gap: calc(var(--spacing-xs) * 1px);
     user-select: none;
     background: var(--semantic-colors-background1);

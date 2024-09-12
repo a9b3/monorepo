@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
-  import searchIcon from '../assets/icons/search.svg'
+  import searchIcon from '../assets/icons/search.svg?raw'
   import Results from './Results.svelte'
   import { noteStore } from '@renderer/src/stores/noteStore'
   import type { Note } from '@ipc/notes'
@@ -59,7 +59,9 @@
 </script>
 
 <form class="main" on:submit={handleSubmit}>
-  <img src={searchIcon} alt="Search" width="10rem" height="10rem" />
+  <div class="icon-wrapper">
+    {@html searchIcon}
+  </div>
   <input
     type="text"
     placeholder="Search or Create..."
@@ -75,10 +77,9 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 30px;
     color: var(--semantic-colors-surface2);
     background: var(--semantic-colors-background1);
-    padding: 0 calc(var(--spacing-s) * 1px);
+    padding: 0px 8px;
   }
   .main:focus-within {
     box-shadow: inset 0 0 0 2px var(--semantic-colors-surface2);
@@ -99,8 +100,18 @@
     color: var(--semantic-colors-surface2);
   }
 
-  img {
-    fill: red;
-    margin-right: calc(var(--spacing-xs) * 1px);
+  .icon-wrapper {
+    padding-top: 2px;
+    margin-right: 4px;
+  }
+
+  .icon-wrapper :global(svg path) {
+    fill: black;
+    fill-opacity: 1;
+  }
+
+  .icon-wrapper :global(svg) {
+    width: 10px;
+    height: 10px;
   }
 </style>

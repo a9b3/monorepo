@@ -30,6 +30,7 @@
       hexColor = rgbToHex(red, green, blue)
     }
     if (hexColor !== value) {
+      value = hexColor
       dispatch('change', hexColor)
     }
   }
