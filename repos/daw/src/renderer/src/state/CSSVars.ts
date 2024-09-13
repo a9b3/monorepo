@@ -2,7 +2,6 @@ import { EventEmitter } from 'events'
 
 class CSSVars extends EventEmitter {
   variables: { [key: string]: string } = {
-    // Primative colors
     '--primative-colors-grey1': '#343434',
     '--primative-colors-grey2': '#343434',
     '--primative-colors-grey3': '#393939',
@@ -10,29 +9,28 @@ class CSSVars extends EventEmitter {
     '--primative-colors-grey5': '#808080',
     '--primative-colors-grey6': '#dddddd',
     '--primative-colors-grey7': '#000000',
-    '--primative-colors-green1': '#27c840',
+    '--primative-colors-green1': '#030e04',
     '--primative-colors-yellow1': '#febb2e',
     '--primative-colors-red1': '#ff5f57',
     '--primative-colors-blue1': '#3894ff',
     '--primative-colors-white1': '#ffffff',
 
-    // Semantic colors
-    '--semantic-colors-system-background': 'var(--primative-colors-grey7)',
-    '--semantic-colors-system-font': 'var(--primative-colors-green1)',
-    '--semantic-colors-system-green': 'var(--primative-colors-green1)',
-    '--semantic-colors-system-yellow': 'var(--primative-colors-yellow1)',
-    '--semantic-colors-system-red': 'var(--primative-colors-red1)',
-    '--semantic-colors-background': 'var(--primative-colors-grey7)',
-    '--semantic-colors-background1': 'var(--primative-colors-white1)',
-    '--semantic-colors-surface': 'var(--primative-colors-grey1)',
-    '--semantic-colors-surface1': 'var(--primative-colors-grey2)',
-    '--semantic-colors-surface2': 'var(--primative-colors-grey3)',
-    '--semantic-colors-link': 'var(--primative-colors-blue1)',
-    '--semantic-font-family': 'Proggy, sans-serif',
-
-    // Spacing
-    '--spacing-s': '1',
-    '--spacing-xs': '1'
+    // Semantics
+    '--colors-bg': 'var(--primative-colors-white1)',
+    '--colors-fg': 'var(--primative-colors-grey1)',
+    '--colors-fg2': 'var(--primative-colors-grey3)',
+    '--colors-fg3': 'var(--primative-colors-grey6)',
+    '--colors-link': 'var(--primative-colors-blue1)',
+    '--font-family': 'Proggy, sans-serif',
+    '--base-font-size': '16px',
+    '--base-line-height': 'calc(1rem * .9)',
+    '--scale-ratio': '1.5',
+    '--spacing-xs': 'calc(1rem / var(--scale-ratio))',
+    '--spacing-s': 'calc(1rem * var(--scale-ratio))',
+    '--spacing-m': 'calc(1rem * var(--scale-ratio) * 2)',
+    '--spacing-l': 'calc(1rem * var(--scale-ratio) * 3)',
+    '--spacing-xl': 'calc(1rem * var(--scale-ratio) * 4)',
+    '--border': '1px solid var(--colors-fg)'
   }
 
   set(key: string, value: string) {
@@ -49,6 +47,10 @@ class CSSVars extends EventEmitter {
     for (const [key, value] of Object.entries(this.variables)) {
       rootEl.style.setProperty(key, value)
     }
+  }
+
+  toJSON() {
+    return JSON.stringify(this.variables)
   }
 }
 

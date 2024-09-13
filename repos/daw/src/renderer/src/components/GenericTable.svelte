@@ -1,11 +1,19 @@
 <script lang="ts">
-  export let data = []
+  export let data: {
+    id: string
+    name: string
+    value: string
+  }[] = []
   export let columns: {
     field: string
     header: string
-    cellRenderer?: any
+    cellComponent?: any
+    headerComponent?: any
     passProps?: (row: any) => any
+    cellProps?: any
   }[] = []
+  export let onRowClick: (row: any) => void = () => {}
+  export let highlightRows: string[] = []
   export let tableHeight = '300px'
   export let tableWidth = '100%'
 </script>
@@ -17,19 +25,31 @@
 >
   <div class="grid-table">
     {#each columns as column}
-      <div class="grid-table-header">{column.header}</div>
+      <div class="grid-table-header">
+        {#if column.headerComponent}
+          <svelte:component this={column.headerComponent} value={column.header} />
+        {:else}
+          {column.header}
+        {/if}
+      </div>
     {/each}
 
     {#each data as row}
-      {#each columns as column}
-        <div class="grid-table-cell">
-          {#if column.cellRenderer}
-            <svelte:component this={column.cellRenderer} {...column.passProps(row)} />
-          {:else}
-            {row[column.field]}
-          {/if}
-        </div>
-      {/each}
+      <div
+        class="grid-row"
+        class:highlight={highlightRows.includes(row.id)}
+        on:click={() => onRowClick(row)}
+      >
+        {#each columns as column}
+          <div class="grid-table-cell" {...column.cellProps || {}}>
+            {#if column.cellComponent}
+              <svelte:component this={column.cellComponent} {...column.passProps(row)} />
+            {:else}
+              {row[column.field]}
+            {/if}
+          </div>
+        {/each}
+      </div>
     {/each}
   </div>
 </div>
@@ -42,21 +62,29 @@
   .grid-table {
     display: grid;
     grid-template-columns: repeat(var(--column-count), 1fr);
-    gap: 1px;
-    border: 1px solid black;
+    /* gap: 1px; */
   }
 
   .grid-table-header,
   .grid-table-cell {
-    padding: 0 4px;
+    padding: 0 var(--spacing-xs);
   }
 
   .grid-table-header {
-    font-weight: bold;
     position: sticky;
     top: 0;
     z-index: 1;
-    border-bottom: 1px solid black;
+    border-bottom: var(--border);
+  }
+
+  .grid-row {
+    display: contents;
+  }
+  .grid-row.highlight > .grid-table-cell {
+    background: blue;
+  }
+  .grid-row:hover:not(.grid-row.highlight) > .grid-table-cell {
+    background: rgba(0, 0, 0, 0.1);
   }
 
   .grid-table-cell:nth-child(even) {

@@ -5,6 +5,7 @@
 
   let selectedNote: Note
   let body = ''
+
   noteStore.subscribe((value) => {
     selectedNote = value.selectedNote
   })
@@ -12,21 +13,26 @@
   $: selectedNote && (body = selectedNote.body || '')
 </script>
 
-<textarea class="main" bind:value={body} />
+{#if selectedNote}
+  <textarea class="main" bind:value={$noteStore.selectedNote.body} />
+{/if}
 
 <style>
   .main {
-    background: var(--semantic-colors-background1);
-    padding: calc(var(--spacing-s) * 1px);
+    height: 100%;
+    width: 100%;
+    background: var(--colors-bg);
+    padding: 0 var(--spacing-xs);
     border: none;
-    font-family: var(--semantic-font-family);
-    font-size: 1rem;
-    color: var(--semantic-colors-surface2);
+    font-family: var(--font-family);
+    line-height: var(--base-line-height);
+    font-size: var(--base-font-size);
+    color: var(--colors-fg2);
     resize: none;
   }
 
   .main:focus {
     outline: none;
-    box-shadow: inset 0 0 0 2px var(--semantic-colors-surface2);
+    /* box-shadow: inset 0 0 0 2px var(--colors-fg2); */
   }
 </style>

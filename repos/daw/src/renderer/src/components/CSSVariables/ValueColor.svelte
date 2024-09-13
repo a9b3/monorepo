@@ -5,15 +5,15 @@
 
   export let value: string = ''
   export let onChange: (value: string) => void = () => {}
-
-  let popoverOpen = false
 </script>
 
 <div class="main">
-  <Popover bind:open={popoverOpen} position="bottom">
+  <Popover position="bottom">
     <div class="preview" style="background-color: {value}" slot="trigger"></div>
 
-    <ColorPicker bind:value on:change={(event) => onChange(event.detail)} />
+    <div slot="content">
+      <ColorPicker bind:value on:change={(event) => onChange(event.detail)} />
+    </div>
   </Popover>
 
   <Input bind:value />

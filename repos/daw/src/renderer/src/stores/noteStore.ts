@@ -60,6 +60,58 @@ function createNoteStore() {
         selectedNoteId: id,
         selectedNote: state.notes.find((note) => note.id === id)
       }))
+    },
+
+    nextNote: () => {
+      update((state) => {
+        const index = state.notes.findIndex((note) => note.id === state.selectedNoteId)
+        if (index === -1) {
+          if (state.notes.length > 0) {
+            return {
+              ...state,
+              selectedNoteId: state.notes[0].id,
+              selectedNote: state.notes[0]
+            }
+          }
+          return state
+        }
+        const nextIndex = index + 1
+        if (nextIndex >= state.notes.length) {
+          return state
+        }
+        const nextNote = state.notes[nextIndex]
+        return {
+          ...state,
+          selectedNoteId: nextNote.id,
+          selectedNote: nextNote
+        }
+      })
+    },
+
+    prevNote: () => {
+      update((state) => {
+        const index = state.notes.findIndex((note) => note.id === state.selectedNoteId)
+        if (index === -1) {
+          if (state.notes.length > 0) {
+            return {
+              ...state,
+              selectedNoteId: state.notes[0].id,
+              selectedNote: state.notes[0]
+            }
+          }
+          return state
+        }
+        const prevIndex = index - 1
+        if (prevIndex < 0) {
+          return state
+        }
+        const prevNote = state.notes[prevIndex]
+        return {
+          ...state,
+          selectedNoteId: prevNote.id,
+          selectedNote: prevNote
+        }
+      })
     }
   }
 

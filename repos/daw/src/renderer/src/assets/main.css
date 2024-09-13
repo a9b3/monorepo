@@ -2,9 +2,10 @@
 
 body {
   overflow: hidden;
-  font-family: var(--semantic-font-family);
-  line-height: 1.2;
-  color: var(--semantic-colors-system-font);
+  font-family: var(--font-family);
+  line-height: var(--base-line-height);
+  color: var(--colors-fg);
+  font-size: var(--base-font-size);
   height: 100vh;
   width: 100vw;
   display: flex;

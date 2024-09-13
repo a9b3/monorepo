@@ -39,7 +39,7 @@
         {
           field: 'value',
           header: 'Value',
-          cellRenderer: Value,
+          cellComponent: Value,
           passProps: (row) => ({
             value: row.value,
             onChange: (value) => CSSVars.setAndApply(row.name, value)
@@ -47,6 +47,13 @@
         }
       ]}
     />
+    <button
+      on:click={() => {
+        navigator.clipboard.writeText(CSSVars.toJSON())
+      }}
+    >
+      Click to copy values
+    </button>
   </main>
 {/if}
 
@@ -55,6 +62,6 @@
     position: absolute;
     height: 100%;
     overflow: auto;
-    background-color: var(--semantic-colors-background1);
+    background-color: var(--colors-bg);
   }
 </style>

@@ -50,8 +50,8 @@ function eventToShortcutKey(event: KeyboardEvent): string {
 
 export default class ShortcutManager {
   listening = false
-  private shortcuts: Map<string, ShortcutGroup> = new Map()
-  private contextStack: string[] = []
+  shortcuts: Map<string, ShortcutGroup> = new Map()
+  contextStack: string[] = []
 
   /**
    * Map of token to action the key is the parsed key.

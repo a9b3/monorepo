@@ -1,96 +1,88 @@
-<script lang="ts">
-  import { createEventDispatcher, onMount, onDestroy } from 'svelte'
+<script>
+  import { onMount, afterUpdate } from 'svelte'
 
   export let position = 'bottom'
-  export let open = false
 
-  let triggerElement: HTMLDivElement
-  let popoverElement: HTMLDivElement
-
-  const dispatch = createEventDispatcher()
+  let isOpen = false
+  let popoverElement
+  let triggerElement
 
   function togglePopover() {
-    open = !open
-    if (open) {
-      dispatch('open')
-    } else {
-      dispatch('close')
-    }
+    isOpen = !isOpen
   }
 
   function handleClickOutside(event) {
     if (
-      open &&
       popoverElement &&
       !popoverElement.contains(event.target) &&
+      triggerElement &&
       !triggerElement.contains(event.target)
     ) {
-      open = false
-      dispatch('close')
+      isOpen = false
     }
-  }
-
-  function positionPopover() {
-    if (!triggerElement || !popoverElement) return
-
-    const triggerRect = triggerElement.getBoundingClientRect()
-    const popoverRect = popoverElement.getBoundingClientRect()
-
-    let top: number, left: number
-
-    switch (position) {
-      case 'top':
-        top = -popoverRect.height - 10
-        left = (triggerRect.width - popoverRect.width) / 2
-        break
-      case 'bottom':
-        top = triggerRect.height + 10
-        left = (triggerRect.width - popoverRect.width) / 2
-        break
-      case 'left':
-        top = (triggerRect.height - popoverRect.height) / 2
-        left = -popoverRect.width - 10
-        break
-      case 'right':
-        top = (triggerRect.height - popoverRect.height) / 2
-        left = triggerRect.width + 10
-        break
-    }
-
-    popoverElement.style.top = `${top}px`
-    popoverElement.style.left = `${left}px`
   }
 
   onMount(() => {
-    document.addEventListener('click', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
   })
 
-  onDestroy(() => {
-    document.removeEventListener('click', handleClickOutside)
-  })
+  function getPopoverStyle() {
+    if (!triggerElement || !popoverElement) return ''
 
-  $: if (open) {
-    setTimeout(positionPopover, 0)
+    const triggerRect = triggerElement.getBoundingClientRect()
+    const popoverRect = popoverElement.getBoundingClientRect()
+    let top, left
+
+    const gap = 10 // Gap between trigger and popover
+
+    switch (position) {
+      case 'top':
+        top = triggerRect.top - popoverRect.height - gap
+        left = triggerRect.left + triggerRect.width / 2 - popoverRect.width / 2
+        break
+      case 'bottom':
+        top = triggerRect.bottom + gap
+        left = triggerRect.left + triggerRect.width / 2 - popoverRect.width / 2
+        break
+      case 'left':
+        top = triggerRect.top + triggerRect.height / 2 - popoverRect.height / 2
+        left = triggerRect.left - popoverRect.width - gap
+        break
+      case 'right':
+        top = triggerRect.top + triggerRect.height / 2 - popoverRect.height / 2
+        left = triggerRect.right + gap
+        break
+      default:
+        top = triggerRect.bottom + gap
+        left = triggerRect.left + triggerRect.width / 2 - popoverRect.width / 2
+    }
+
+    // Ensure the popover stays within the viewport
+    top = Math.max(gap, Math.min(top, window.innerHeight - popoverRect.height - gap))
+    left = Math.max(gap, Math.min(left, window.innerWidth - popoverRect.width - gap))
+
+    return `position: fixed; top: ${top}px; left: ${left}px; z-index: 1000;`
   }
+
+  afterUpdate(() => {
+    if (isOpen && popoverElement) {
+      popoverElement.style = getPopoverStyle()
+    }
+  })
 </script>
 
 <div class="popover-container">
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div
-    bind:this={triggerElement}
-    on:click={togglePopover}
-    class="trigger"
-    role="menu"
-    tabindex="-1"
-  >
+  <div bind:this={triggerElement} on:click={togglePopover}>
     <slot name="trigger">
-      <button type="button">Open Popover</button>
+      <button>Open Popover</button>
     </slot>
   </div>
-
-  {#if open}
-    <div bind:this={popoverElement} class="popover" class:open>
-      <slot>
+  {#if isOpen}
+    <div bind:this={popoverElement} class="popover-content">
+      <slot name="content">
         <p>Default popover content</p>
       </slot>
     </div>
@@ -99,27 +91,13 @@
 
 <style>
   .popover-container {
-    position: relative;
-    display: flex;
-    justify-content: center;
-  }
-
-  .trigger {
     display: inline-block;
+    position: relative;
   }
 
-  .popover {
-    position: absolute;
-    z-index: 1000;
-    background-color: white;
-    border: 1px solid #ccc;
+  .popover-content {
+    border: 1px solid black;
     border-radius: 4px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-  }
-
-  .popover.open {
-    opacity: 1;
   }
 </style>

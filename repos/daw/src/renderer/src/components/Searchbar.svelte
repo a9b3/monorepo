@@ -3,19 +3,12 @@
   import searchIcon from '../assets/icons/search.svg?raw'
   import Results from './Results.svelte'
   import { noteStore } from '@renderer/src/stores/noteStore'
-  import type { Note } from '@ipc/notes'
   import shortcutManager from '@renderer/src/state/shortcutManager'
 
   let inputEl = null
-  let notes: Note[]
-  noteStore.subscribe((value) => {
-    notes = value.notes
-  })
 
   async function searchNotes(query: string) {
     return await noteStore.searchNotes({ query })
-    // The store will be automatically updated with the search
-    // results
   }
 
   let searchQuery = ''
@@ -69,7 +62,9 @@
     bind:this={inputEl}
   />
 </form>
-<Results results={notes} />
+{#if $noteStore.notes}
+  <Results results={$noteStore.notes} />
+{/if}
 
 <style>
   .main {
@@ -77,12 +72,13 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    color: var(--semantic-colors-surface2);
-    background: var(--semantic-colors-background1);
-    padding: 0px 8px;
+    color: var(--colors-fg2);
+    background: var(--colors-bg);
+    padding: 0px var(--spacing-xs);
+    border-bottom: var(--border);
   }
   .main:focus-within {
-    box-shadow: inset 0 0 0 2px var(--semantic-colors-surface2);
+    /* box-shadow: inset 0 0 0 2px var(--colors-fg2); */
   }
 
   input {
@@ -90,14 +86,14 @@
     border: none;
     outline: none;
     background: none;
-    caret-color: var(--semantic-colors-surface2);
-    color: var(--semantic-colors-surface2);
-    font-family: var(--semantic-font-family);
-    font-size: 1rem;
+    caret-color: var(--colors-fg2);
+    color: var(--colors-fg2);
+    font-family: var(--font-family);
+    font-size: var(--base-font-size);
   }
 
   input::placeholder {
-    color: var(--semantic-colors-surface2);
+    color: var(--colors-fg3);
   }
 
   .icon-wrapper {
@@ -111,7 +107,7 @@
   }
 
   .icon-wrapper :global(svg) {
-    width: 10px;
-    height: 10px;
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
   }
 </style>
