@@ -26,9 +26,9 @@
   <div class="main">
     {#each Array.from(shortcutManager.shortcuts) as [key, value]}
       <div>
-        <h3>{context.title}</h3>
+        <h3>{value.title}</h3>
         <ul>
-          {#each context.shortcuts as shortcut}
+          {#each value.shortcuts as shortcut}
             <li>
               <span>{shortcut.key}</span>
               <span>{shortcut.description}</span>
@@ -43,15 +43,13 @@
 <style>
   .main {
     z-index: 2000;
-    width: 100px;
-    height: 100px;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 8px;
-    background: black;
-    border: 1px solid black;
+    background: white;
+    border: var(--border);
     border-radius: 4px;
   }
 </style>

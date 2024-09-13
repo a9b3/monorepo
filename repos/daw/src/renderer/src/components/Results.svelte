@@ -14,12 +14,14 @@
       shortcuts: [
         {
           key: 'meta+j',
+          description: 'Next note',
           action: () => {
             noteStore.nextNote()
           }
         },
         {
           key: 'meta+k',
+          description: 'Prev note',
           action: () => {
             noteStore.prevNote()
           }
@@ -51,7 +53,8 @@
   .main {
     background: var(--colors-bg);
     width: 100%;
-    min-height: 100px;
+    height: 120px;
+    max-height: 120px;
     border-bottom: var(--border);
   }
 </style>

@@ -14,7 +14,7 @@
   }[] = []
   export let onRowClick: (row: any) => void = () => {}
   export let highlightRows: string[] = []
-  export let tableHeight = '300px'
+  export let tableHeight = '100%'
   export let tableWidth = '100%'
 </script>
 
@@ -75,6 +75,7 @@
     top: 0;
     z-index: 1;
     border-bottom: var(--border);
+    background: var(--colors-bg);
   }
 
   .grid-row {
@@ -84,7 +85,7 @@
     background: blue;
   }
   .grid-row:hover:not(.grid-row.highlight) > .grid-table-cell {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.05);
   }
 
   .grid-table-cell:nth-child(even) {
