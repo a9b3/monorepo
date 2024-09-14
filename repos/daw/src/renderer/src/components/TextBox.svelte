@@ -14,7 +14,7 @@
 </script>
 
 {#if selectedNote}
-  <textarea class="main" bind:value={$noteStore.selectedNote.body} />
+  <div class="main" bind:innerHTML={$noteStore.selectedNote.body} contenteditable />
 {/if}
 
 <style>

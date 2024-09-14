@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { afterUpdate } from 'svelte'
+
   export let data: {
     id: string
     name: string
@@ -16,10 +18,28 @@
   export let highlightRows: string[] = []
   export let tableHeight = '100%'
   export let tableWidth = '100%'
+
+  let container: HTMLElement
+
+  afterUpdate(() => {
+    // scroll to the selected row keeping the selected row in the middle
+    const hlCell = container.querySelector('.grid-row.highlight > .grid-table-cell')
+    const headerCell = container.querySelector('.grid-table-header')
+    if (hlCell) {
+      const { top, bottom } = hlCell.getBoundingClientRect()
+      const { top: containerTop, bottom: containerBottom } = container.getBoundingClientRect()
+      if (top < containerTop) {
+        container.scrollTop -= containerTop - top + headerCell.clientHeight
+      } else if (bottom > containerBottom) {
+        container.scrollTop += bottom - containerBottom + headerCell.clientHeight
+      }
+    }
+  })
 </script>
 
 <div
   class="table-container"
+  bind:this={container}
   style="max-height: {tableHeight}; width:
 {tableWidth}; --column-count: {columns.length}"
 >

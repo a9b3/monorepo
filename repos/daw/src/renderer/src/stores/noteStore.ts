@@ -20,6 +20,10 @@ function createNoteStore() {
   })
 
   const api: ApiMethods & { setSelectedNoteId: (id: string | null) => void } = {
+    set(state: { notes: Note[]; selectedNoteId: string | null }) {
+      console.log(`set state: ${JSON.stringify(state)}`)
+    },
+
     upsertNote: async (args: UpsertNoteArgs): Promise<UpsertNoteArgs> => {
       const result = await window.api.note.upsertNote(args)
       update((state) => {
