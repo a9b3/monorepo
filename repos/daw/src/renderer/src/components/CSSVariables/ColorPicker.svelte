@@ -1,16 +1,22 @@
-<script>
-  import { createEventDispatcher, onMount, afterUpdate } from 'svelte'
+<script lang="ts">
+  import { createEventDispatcher, onMount } from 'svelte'
 
   export let value = '#ff0000' // Default to red
   const dispatch = createEventDispatcher()
 
-  let hue, saturation, brightness, red, green, blue, hexColor
+  let hue: number,
+    saturation: number,
+    brightness: number,
+    red: any,
+    green: any,
+    blue: any,
+    hexColor: string
   let prevValue = value
 
-  let colorWheel
-  let valueSlider
-  let wheelRadius
-  let wheelCenter
+  let colorWheel: Element
+  let valueSlider: HTMLDivElement
+  let wheelRadius: number
+  let wheelCenter: number
 
   $: {
     if (value !== prevValue) {
@@ -19,7 +25,7 @@
     }
   }
 
-  function updateFromHex(hex) {
+  function updateFromHex(hex: any) {
     hexColor = hex
     ;[red, green, blue] = hexToRgb(hexColor)
     ;[hue, saturation, brightness] = rgbToHsv(red, green, blue)
@@ -35,14 +41,14 @@
     }
   }
 
-  function hexToRgb(hex) {
+  function hexToRgb(hex: string) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
     return result
       ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
       : [0, 0, 0]
   }
 
-  function rgbToHex(r, g, b) {
+  function rgbToHex(r: any, g: any, b: any) {
     return (
       '#' +
       [r, g, b]
@@ -54,11 +60,11 @@
     )
   }
 
-  function hsvToRgb(h, s, v) {
+  function hsvToRgb(h: number, s: number, v: number) {
     h /= 360
     s /= 100
     v /= 100
-    let r, g, b
+    let r: number, g: number, b: number
     const i = Math.floor(h * 6)
     const f = h * 6 - i
     const p = v * (1 - s)
@@ -87,12 +93,12 @@
     return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)]
   }
 
-  function rgbToHsv(r, g, b) {
+  function rgbToHsv(r: number, g: number, b: number) {
     ;(r /= 255), (g /= 255), (b /= 255)
     const max = Math.max(r, g, b),
       min = Math.min(r, g, b)
-    let h,
-      s,
+    let h: number,
+      s: number,
       v = max
     const d = max - min
     s = max === 0 ? 0 : d / max
@@ -115,7 +121,7 @@
     return [Math.round(h * 360), Math.round(s * 100), Math.round(v * 100)]
   }
 
-  function updateColorWheel(e) {
+  function updateColorWheel(e: { clientX: number; clientY: number }) {
     const rect = colorWheel.getBoundingClientRect()
     const centerX = rect.left + wheelCenter
     const centerY = rect.top + wheelCenter
@@ -133,14 +139,14 @@
     updateColor()
   }
 
-  function updateValue(e) {
+  function updateValue(e: { clientY: number }) {
     const rect = valueSlider.getBoundingClientRect()
     brightness = 100 - Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100))
     ;[red, green, blue] = hsvToRgb(hue, saturation, brightness)
     updateColor()
   }
 
-  function getCursorPosition(hue, saturation) {
+  function getCursorPosition(hue: number, saturation: number) {
     const angle = (hue + 270) * (Math.PI / 180) // Add 90 degrees to match wheel calculation
     const distance = (saturation / 100) * wheelRadius
     const x = Math.cos(angle) * distance
@@ -162,7 +168,12 @@
 
     resizeObserver.observe(colorWheel)
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: {
+      buttons?: any
+      target?: any
+      clientX?: number
+      clientY?: number
+    }) => {
       if (e.buttons > 0) {
         if (colorWheel.contains(e.target)) {
           updateColorWheel(e)

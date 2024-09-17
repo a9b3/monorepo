@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte'
   import CSSVars from '@renderer/src/state/CSSVars'
   import shortcutManager from '@renderer/src/state/shortcutManager'
-  import GenericTable from '@renderer/src/components/GenericTable.svelte'
+  import Table from '@renderer/src/components/generic/Table.svelte'
   import Value from './Value.svelte'
 
   let show = false
@@ -29,8 +29,7 @@
 
 {#if show}
   <main>
-    <GenericTable
-      tableHeight="100%"
+    <Table
       data={Object.entries(CSSVars.variables).map(([key, value]) => {
         return { id: key, name: key, value }
       })}

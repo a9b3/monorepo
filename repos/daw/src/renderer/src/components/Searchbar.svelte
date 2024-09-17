@@ -6,17 +6,19 @@
   import shortcutManager from '@renderer/src/state/shortcutManager'
 
   let inputEl = null
-
-  async function searchNotes(query: string) {
-    return await noteStore.searchNotes({ query })
-  }
-
   let searchQuery = ''
 
-  $: searchQuery, searchNotes(searchQuery)
+  function searchNotes(query: string) {
+    return noteStore.searchNotes({ query })
+  }
+
+  $: {
+    searchNotes(searchQuery)
+  }
 
   async function handleSubmit(e: Event) {
     e.preventDefault()
+
     const res = await searchNotes(searchQuery)
     if (res.length === 0) {
       await noteStore.upsertNote({
@@ -33,7 +35,7 @@
     shortcutManager.register({
       context: 'search',
       title: 'Search',
-      description: 'Search for notes',
+      description: '',
       shortcuts: [
         {
           key: 'meta+l',
@@ -62,9 +64,8 @@
     bind:this={inputEl}
   />
 </form>
-{#if $noteStore.notes}
-  <Results results={$noteStore.notes} />
-{/if}
+
+<Results results={$noteStore.notes} />
 
 <style>
   .main {

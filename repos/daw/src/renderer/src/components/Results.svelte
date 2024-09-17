@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import { noteStore } from '@renderer/src/stores/noteStore'
-  import GenericTable from './GenericTable.svelte'
+  import Table from '@renderer/src/components/generic/Table.svelte'
   import shortcutManager from '@renderer/src/state/shortcutManager'
 
   export let results: any = []
@@ -37,7 +37,7 @@
 </script>
 
 <div class="main">
-  <GenericTable
+  <Table
     data={results}
     onRowClick={(row) => noteStore.setSelectedNoteId(row.id)}
     highlightRows={[$noteStore.selectedNoteId]}

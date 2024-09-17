@@ -27,8 +27,8 @@ export interface GetNoteArgs {
 }
 
 export interface ApiMethods {
-  upsertNote: (args: UpsertNoteArgs) => Promise<UpsertNoteArgs>
-  searchNotes: (args: SearchNotesArgs) => Promise<UpsertNoteArgs[]>
+  upsertNote: (args: UpsertNoteArgs) => Promise<Note>
+  searchNotes: (args: SearchNotesArgs) => Promise<Note[]>
   deleteNote: (args: DeleteNoteArgs) => Promise<void>
   getNote: (args: GetNoteArgs) => Promise<Note>
 }

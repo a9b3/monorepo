@@ -1,15 +1,10 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
-  "include": [
-    "electron.vite.config.*",
-    "src/main/**/*",
-    "src/preload/**/*",
-    "src/ipc/**/*"
-  ],
   "compilerOptions": {
     "composite": true,
     "types": [
-      "electron-vite/node"
+      "electron-vite/node",
+      "jest"
     ],
     "baseUrl": ".",
     "paths": {
@@ -26,5 +21,13 @@
         "src/renderer/*"
       ]
     }
-  }
+  },
+  "include": [
+    "electron.vite.config.*",
+    "src/preload/**/*",
+    "src/preload/*.d.ts",
+    "src/main/**/*",
+    "src/ipc/**/*",
+    "src/renderer/**/*",
+  ]
 }

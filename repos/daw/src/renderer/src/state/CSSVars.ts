@@ -26,10 +26,10 @@ class CSSVars extends EventEmitter {
     '--base-line-height': 'calc(1rem * .9)',
     '--scale-ratio': '1.5',
     '--spacing-xs': 'calc(1rem / var(--scale-ratio))',
-    '--spacing-s': 'calc(1rem * var(--scale-ratio))',
-    '--spacing-m': 'calc(1rem * var(--scale-ratio) * 2)',
-    '--spacing-l': 'calc(1rem * var(--scale-ratio) * 3)',
-    '--spacing-xl': 'calc(1rem * var(--scale-ratio) * 4)',
+    '--spacing-s': 'calc(1rem)',
+    '--spacing-m': 'calc(1rem * var(--scale-ratio))',
+    '--spacing-l': 'calc(1rem * var(--scale-ratio) * 2)',
+    '--spacing-xl': 'calc(1rem * var(--scale-ratio) * 3)',
     '--border': '1px solid var(--colors-fg)'
   }
 

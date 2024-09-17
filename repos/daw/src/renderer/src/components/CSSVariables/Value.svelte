@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
   import { determineCssValueType } from './determineCSSValueType'
   import ValueColor from './ValueColor.svelte'
   import Input from './Input.svelte'

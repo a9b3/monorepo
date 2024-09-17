@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { noteStore } from '@renderer/src/stores/noteStore'
   import TitleBar from './components/TitleBar.svelte'
   import Searchbar from './components/Searchbar.svelte'
   import TextBox from './components/TextBox.svelte'

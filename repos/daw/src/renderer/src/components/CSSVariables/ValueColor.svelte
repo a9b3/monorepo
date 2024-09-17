@@ -1,6 +1,6 @@
 <script lang="ts">
+  import Popover from '@renderer/src/components/generic/Popover.svelte'
   import ColorPicker from './ColorPicker.svelte'
-  import Popover from '../Popover.svelte'
   import Input from './Input.svelte'
 
   export let value: string = ''
