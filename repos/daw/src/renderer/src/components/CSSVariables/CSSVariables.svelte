@@ -1,15 +1,15 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import CSSVars from '@renderer/src/state/CSSVars'
-  import shortcutManager from '@renderer/src/state/shortcutManager'
+  import cssVarStore from '@renderer/src/stores/cssVars'
+  import shortcutManager from '@renderer/src/stores/shortcutManager'
   import Table from '@renderer/src/components/generic/Table.svelte'
   import Value from './Value.svelte'
 
   let show = false
 
   onMount(() => {
-    CSSVars.applyVariables()
-    shortcutManager.register({
+    $cssVarStore.cssVars.applyVariables()
+    $shortcutManager.manager.register({
       context: 'CSSVariables',
       title: 'CSS Variables',
       description: 'Shortcuts for CSS Variables',
@@ -22,7 +22,7 @@
         }
       ]
     })
-    shortcutManager.pushActiveContext('CSSVariables')
+    $shortcutManager.manager.pushActiveContext('CSSVariables')
   })
   onDestroy(() => {})
 </script>
@@ -30,7 +30,7 @@
 {#if show}
   <main>
     <Table
-      data={Object.entries(CSSVars.variables).map(([key, value]) => {
+      data={Object.entries($cssVarStore.cssVars.variables).map(([key, value]) => {
         return { id: key, name: key, value }
       })}
       columns={[
@@ -41,14 +41,14 @@
           cellComponent: Value,
           passProps: (row) => ({
             value: row.value,
-            onChange: (value) => CSSVars.setAndApply(row.name, value)
+            onChange: (value) => $cssVarStore.cssVars.setAndApply(row.name, value)
           })
         }
       ]}
     />
     <button
       on:click={() => {
-        navigator.clipboard.writeText(CSSVars.toJSON())
+        navigator.clipboard.writeText($cssVarStore.cssVars.toJSON())
       }}
     >
       Click to copy values
@@ -58,9 +58,15 @@
 
 <style>
   main {
-    position: absolute;
-    height: 100%;
+    z-index: 2000;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: var(--border);
+    width: 500px;
+    border-radius: 4px;
     overflow: auto;
-    background-color: var(--colors-bg);
   }
 </style>

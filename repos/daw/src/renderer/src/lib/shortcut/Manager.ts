@@ -17,8 +17,8 @@ function isMetaKey(s: string) {
 }
 
 function parseShortcutKey(key: string) {
-  const metaKeys = []
-  const keys = []
+  const metaKeys: string[] = []
+  const keys: string[] = []
   const arr = key.split('+')
   for (let index = 0; index < arr.length; index++) {
     const element = arr[index]
@@ -32,7 +32,7 @@ function parseShortcutKey(key: string) {
 }
 
 function eventToShortcutKey(event: KeyboardEvent): string {
-  const metaKeys = []
+  const metaKeys: string[] = []
   if (event.altKey) {
     metaKeys.push('alt')
   }
@@ -60,11 +60,9 @@ export default class ShortcutManager {
 
   keyhandler = (event: KeyboardEvent): void => {
     const token = eventToShortcutKey(event)
-    if (this.tokenToAction.has(token)) {
-      const { context, action } = this.tokenToAction.get(token)
-      if (action && this.contextStack.includes(context)) {
-        action()
-      }
+    const { context = '', action } = this.tokenToAction.get(token) || {}
+    if (action && this.contextStack.includes(context)) {
+      action()
     }
   }
 

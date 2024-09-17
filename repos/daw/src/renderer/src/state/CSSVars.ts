@@ -1,7 +1,9 @@
 import { EventEmitter } from 'events'
+import PubSub from './pubsub/pubsub'
 
 class CSSVars extends EventEmitter {
-  variables: { [key: string]: string } = {
+  pubsub = new PubSub()
+  variables: { [key: string]: string } = this.pubsub.createProxy({
     '--primative-colors-grey1': '#343434',
     '--primative-colors-grey2': '#343434',
     '--primative-colors-grey3': '#393939',
@@ -20,6 +22,7 @@ class CSSVars extends EventEmitter {
     '--colors-fg': 'var(--primative-colors-grey1)',
     '--colors-fg2': 'var(--primative-colors-grey3)',
     '--colors-fg3': 'var(--primative-colors-grey6)',
+    '--colors-hl': 'var(--primative-colors-yellow1)',
     '--colors-link': 'var(--primative-colors-blue1)',
     '--font-family': 'Proggy, sans-serif',
     '--base-font-size': '16px',
@@ -31,7 +34,7 @@ class CSSVars extends EventEmitter {
     '--spacing-l': 'calc(1rem * var(--scale-ratio) * 2)',
     '--spacing-xl': 'calc(1rem * var(--scale-ratio) * 3)',
     '--border': '1px solid var(--colors-fg)'
-  }
+  })
 
   set(key: string, value: string) {
     this.variables[key] = value

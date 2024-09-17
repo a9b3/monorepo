@@ -9,19 +9,28 @@ const { subscribe, update } = writable<{
   selectedNoteId: null
 })
 
-const upsertNote = async (args: UpsertNoteArgs): Promise<Note> => {
-  const result = await window.api.note.upsertNote(args)
-  update((state) => {
-    const index = state.notes.findIndex((note) => note.id === result.id)
-    if (index !== -1) {
-      state.notes[index] = result as Note
-    } else {
-      state.notes.push(result as Note)
+const upsertNote = (() => {
+  let fetching = false
+
+  return async (args: UpsertNoteArgs): Promise<Note> => {
+    if (fetching) {
+      return {} as Note
     }
-    return state
-  })
-  return result
-}
+    fetching = true
+    const result = await window.api.note.upsertNote(args)
+    update((state) => {
+      const index = state.notes.findIndex((note) => note.id === result.id)
+      if (index !== -1) {
+        state.notes[index] = result as Note
+      } else {
+        state.notes.push(result as Note)
+      }
+      return state
+    })
+    fetching = false
+    return result
+  }
+})()
 
 const searchNotes = async (args: SearchNotesArgs): Promise<Note[]> => {
   const results = await window.api.note.searchNotes(args)

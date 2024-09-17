@@ -1,11 +1,12 @@
 <script>
-  import { onMount, afterUpdate } from 'svelte'
+  import { onMount, afterUpdate, onDestroy } from 'svelte'
+  import Portal from './Portal.svelte'
 
   export let position = 'bottom'
-
   let isOpen = false
   let popoverElement
   let triggerElement
+  let portalContainer
 
   function togglePopover() {
     isOpen = !isOpen
@@ -24,18 +25,25 @@
 
   onMount(() => {
     document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+
+    // Create a container for the portal
+    portalContainer = document.createElement('div')
+    portalContainer.id = 'popover-portal'
+    document.body.appendChild(portalContainer)
+  })
+
+  onDestroy(() => {
+    document.removeEventListener('mousedown', handleClickOutside)
+    if (portalContainer && document.body.contains(portalContainer)) {
+      document.body.removeChild(portalContainer)
     }
   })
 
   function getPopoverStyle() {
     if (!triggerElement || !popoverElement) return ''
-
     const triggerRect = triggerElement.getBoundingClientRect()
     const popoverRect = popoverElement.getBoundingClientRect()
     let top, left
-
     const gap = 10 // Gap between trigger and popover
 
     switch (position) {
@@ -64,7 +72,7 @@
     top = Math.max(gap, Math.min(top, window.innerHeight - popoverRect.height - gap))
     left = Math.max(gap, Math.min(left, window.innerWidth - popoverRect.width - gap))
 
-    return `position: fixed; top: ${top}px; left: ${left}px; z-index: 1000;`
+    return `position: fixed; top: ${top}px; left: ${left}px; z-index: 5000;`
   }
 
   afterUpdate(() => {
@@ -74,30 +82,32 @@
   })
 </script>
 
-<div class="popover-container">
+<div class="popover-trigger">
   <div bind:this={triggerElement} on:click={togglePopover}>
     <slot name="trigger">
       <button>Open Popover</button>
     </slot>
   </div>
-  {#if isOpen}
+</div>
+
+{#if isOpen && portalContainer}
+  <Portal target={portalContainer}>
     <div bind:this={popoverElement} class="popover-content">
       <slot name="content">
         <p>Default popover content</p>
       </slot>
     </div>
-  {/if}
-</div>
+  </Portal>
+{/if}
 
 <style>
-  .popover-container {
+  .popover-trigger {
     display: inline-block;
-    position: relative;
   }
-
   .popover-content {
     border: 1px solid black;
     border-radius: 4px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
   }
 </style>

@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import { noteStore } from '@renderer/src/stores/noteStore'
+  import shortcutManager from '@renderer/src/stores/shortcutManager'
   import Table from '@renderer/src/components/generic/Table.svelte'
-  import shortcutManager from '@renderer/src/state/shortcutManager'
 
   export let results: any = []
 
   onMount(() => {
-    shortcutManager.register({
+    $shortcutManager.manager.register({
       context: 'results',
       title: 'Results',
       description: 'Results of the search query',
@@ -28,17 +28,22 @@
         }
       ]
     })
-    shortcutManager.pushActiveContext('results')
+    $shortcutManager.manager.pushActiveContext('results')
   })
 
   onDestroy(() => {
-    shortcutManager.popActiveContext('results')
+    $shortcutManager.manager.popActiveContext('results')
   })
 </script>
 
 <div class="main">
   <Table
-    data={results}
+    data={results.map((note) => ({
+      id: note.id,
+      title: note.title,
+      body: note.body,
+      lastModified: note.lastModified
+    }))}
     onRowClick={(row) => noteStore.setSelectedNoteId(row.id)}
     highlightRows={[$noteStore.selectedNoteId]}
     columns={[

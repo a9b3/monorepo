@@ -3,7 +3,7 @@
   import searchIcon from '../assets/icons/search.svg?raw'
   import Results from './Results.svelte'
   import { noteStore } from '@renderer/src/stores/noteStore'
-  import shortcutManager from '@renderer/src/state/shortcutManager'
+  import shortcutManager from '@renderer/src/stores/shortcutManager'
 
   let inputEl = null
   let searchQuery = ''
@@ -32,7 +32,7 @@
   }
 
   onMount(() => {
-    shortcutManager.register({
+    $shortcutManager.manager.register({
       context: 'search',
       title: 'Search',
       description: '',
@@ -45,11 +45,11 @@
         }
       ]
     })
-    shortcutManager.pushActiveContext('search')
+    $shortcutManager.manager.pushActiveContext('search')
   })
 
   onDestroy(() => {
-    shortcutManager.popActiveContext('search')
+    $shortcutManager.manager.popActiveContext('search')
   })
 </script>
 

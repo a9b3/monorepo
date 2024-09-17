@@ -1,24 +1,36 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { noteStore } from '@renderer/src/stores/noteStore'
   import type { Note } from '@ipc/notes'
   import { parse } from './parser'
 
+  let prevId = ''
+  let prevContent = ''
   let editContent = ''
   let selectedNote: Note
-  let body = ''
 
-  noteStore.subscribe((value) => {
-    selectedNote = value.notes.find((note) => note.id === value.selectedNoteId)
-  })
-
-  $: selectedNote && (body = selectedNote.body || '')
   $: {
-    console.log(parse(body))
+    if ($noteStore.selectedNoteId !== prevId) {
+      prevId = $noteStore.selectedNoteId
+      selectedNote = $noteStore.notes.find((note) => note.id === prevId)
+      editContent = selectedNote?.body || ''
+    }
+
+    if (editContent !== prevContent) {
+      prevContent = editContent
+      if (selectedNote) {
+        noteStore.upsertNote({
+          title: selectedNote.title,
+          id: selectedNote.id,
+          body: editContent
+        })
+      }
+    }
   }
 </script>
 
 {#if selectedNote}
-  <div class="main" bind:innerHTML={selectedNote.body} contenteditable />
+  <div class="main" bind:innerHTML={editContent} contenteditable />
 {:else}
   <div class="empty">No note selected...</div>
 {/if}

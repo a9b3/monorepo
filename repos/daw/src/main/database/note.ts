@@ -100,15 +100,15 @@ export const handlers = {
 
 export const invokers: ApiMethods = {
   [UPSERT_NOTE]: async (args: UpsertNoteArgs) => {
-    return await ipcRenderer.invoke(UPSERT_NOTE, args)
+    return ipcRenderer.invoke(UPSERT_NOTE, args)
   },
   [SEARCH_NOTES]: async (args: SearchNotesArgs) => {
-    return await ipcRenderer.invoke(SEARCH_NOTES, args)
+    return ipcRenderer.invoke(SEARCH_NOTES, args)
   },
   [DELETE_NOTE]: async function (args: DeleteNoteArgs): Promise<void> {
-    return await ipcRenderer.invoke(DELETE_NOTE, args)
+    return ipcRenderer.invoke(DELETE_NOTE, args)
   },
   [GET_NOTE]: async function (args: GetNoteArgs): Promise<Note> {
-    return await ipcRenderer.invoke(GET_NOTE, args)
+    return ipcRenderer.invoke(GET_NOTE, args)
   }
 }

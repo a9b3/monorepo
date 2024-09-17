@@ -21,17 +21,22 @@
 
   let container: HTMLElement
 
+  let lastHlCell: Element
   afterUpdate(() => {
     // scroll to the selected row keeping the selected row in the middle
     const hlCell = container.querySelector('.grid-row.highlight > .grid-table-cell')
-    const headerCell = container.querySelector('.grid-table-header')
-    if (hlCell) {
-      const { top, bottom } = hlCell.getBoundingClientRect()
-      const { top: containerTop, bottom: containerBottom } = container.getBoundingClientRect()
-      if (top < containerTop) {
-        container.scrollTop -= containerTop - top + headerCell.clientHeight
-      } else if (bottom > containerBottom) {
-        container.scrollTop += bottom - containerBottom + headerCell.clientHeight
+    if (hlCell && hlCell !== lastHlCell) {
+      lastHlCell = hlCell
+
+      const headerCell = container.querySelector('.grid-table-header')
+      if (hlCell) {
+        const { top, bottom } = hlCell.getBoundingClientRect()
+        const { top: containerTop, bottom: containerBottom } = container.getBoundingClientRect()
+        if (top < containerTop) {
+          container.scrollTop -= containerTop - top + headerCell.clientHeight
+        } else if (bottom > containerBottom) {
+          container.scrollTop += bottom - containerBottom + headerCell.clientHeight
+        }
       }
     }
   })
@@ -90,6 +95,12 @@
     padding: 0 var(--spacing-xs);
   }
 
+  .grid-table-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .grid-table-header {
     position: sticky;
     top: 0;
@@ -102,7 +113,7 @@
     display: contents;
   }
   .grid-row.highlight > .grid-table-cell {
-    background: blue;
+    background: var(--colors-hl);
   }
   .grid-row:hover:not(.grid-row.highlight) > .grid-table-cell {
     background: rgba(0, 0, 0, 0.05);

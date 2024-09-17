@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import shortcutManager from '@renderer/src/state/shortcutManager'
+  import shortcutManager from '@renderer/src/stores/shortcutManager'
 
   let show = false
 
   onMount(() => {
-    shortcutManager.register({
+    $shortcutManager.manager.register({
       context: 'shortcut-legend',
       title: 'Shortcut Legend',
       description: 'Shortcut legend for the application',
@@ -18,13 +18,13 @@
         }
       ]
     })
-    shortcutManager.pushActiveContext('shortcut-legend')
+    $shortcutManager.manager.pushActiveContext('shortcut-legend')
   })
 </script>
 
 {#if show}
   <div class="main">
-    {#each Array.from(shortcutManager.shortcuts) as [key, value]}
+    {#each Array.from($shortcutManager.manager.shortcuts) as [key, value]}
       <div>
         <h3>{value.title}</h3>
         <ul>
