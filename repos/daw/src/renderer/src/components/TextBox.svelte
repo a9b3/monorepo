@@ -16,7 +16,7 @@
       editContent = selectedNote?.body || ''
     }
 
-    if (editContent !== prevContent) {
+    if (editContent !== prevContent && editContent !== selectedNote?.body) {
       prevContent = editContent
       if (selectedNote) {
         noteStore.upsertNote({

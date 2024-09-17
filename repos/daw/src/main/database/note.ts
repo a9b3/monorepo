@@ -30,7 +30,7 @@ VALUES (?, ?, ?)
 ON CONFLICT(id) DO UPDATE SET
     title = excluded.title,
     body = excluded.body,
-    lastModified = datetime('now');
+    lastModified = datetime('now', 'localtime');
 `
 
 const getStatement = `
@@ -53,7 +53,8 @@ JOIN
 WHERE
   notes_fts.title LIKE ?
   OR notes_fts.body LIKE ?
-ORDER BY notes_fts.rank
+ORDER BY notes_fts.rank, notes.lastModified DESC
+LIMIT 30
 `
 
 const getAllNotesStatement = `

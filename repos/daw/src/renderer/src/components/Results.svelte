@@ -3,6 +3,7 @@
   import { noteStore } from '@renderer/src/stores/noteStore'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
   import Table from '@renderer/src/components/generic/Table.svelte'
+  import moment from 'moment'
 
   export let results: any = []
 
@@ -42,7 +43,10 @@
       id: note.id,
       title: note.title,
       body: note.body,
-      lastModified: note.lastModified
+      // using moment to format the date to relative time
+      // lastModified: note.lastModified
+      lastModified: moment(note.lastModified, 'YYYY-MM-DD h:mm:ss').fromNow()
+      // lastModified: note.lastModified
     }))}
     onRowClick={(row) => noteStore.setSelectedNoteId(row.id)}
     highlightRows={[$noteStore.selectedNoteId]}
