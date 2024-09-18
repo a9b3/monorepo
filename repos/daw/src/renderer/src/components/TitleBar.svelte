@@ -1,5 +1,5 @@
 <script>
-  import { ipcRenderer } from 'electron'
+  let ipcRenderer = {}
 
   let isHovering = false
 

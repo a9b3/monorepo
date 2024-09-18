@@ -18,6 +18,7 @@ const upsertNote = (() => {
     }
     fetching = true
     const result = await window.api.note.upsertNote(args)
+    console.log(result)
     update((state) => {
       const index = state.notes.findIndex((note) => note.id === result.id)
       if (index !== -1) {
@@ -36,7 +37,7 @@ const searchNotes = async (args: SearchNotesArgs & { resetState?: boolean }): Pr
   const results = await window.api.note.searchNotes(args)
   update((state) => ({
     ...state,
-    notes: args.resetState ? (results as Note[]) : state.notes,
+    notes: args.resetState ? (results as Note[]) : state.notes.reverse(),
     selectedNoteId: null
   }))
   return results

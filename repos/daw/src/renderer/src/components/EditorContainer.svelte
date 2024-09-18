@@ -16,7 +16,13 @@
   }
 </script>
 
-<Searchbar onSubmit={() => textBoxRef.focus()} />
+<Searchbar
+  onSubmit={() => {
+    if (textBoxRef) {
+      textBoxRef.focus()
+    }
+  }}
+/>
 {#key $noteStore.selectedNoteId}
   <TextBox
     bind:textBoxRef

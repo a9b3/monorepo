@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { getCursorRange, setCursorRange, rememberCursorPos, getCursorPos } from './cursorPos'
+  import { getCursorRange, setCursorRange } from './cursorPos'
   import type { Note, UpsertNoteArgs } from '@ipc/notes'
 
   export let selectedNote: Note
@@ -8,6 +8,7 @@
   export let onChange: (args: UpsertNoteArgs) => void
 
   let editContent = ''
+
   onMount(() => {
     if (selectedNote) {
       editContent = selectedNote.body

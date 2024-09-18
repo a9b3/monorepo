@@ -32,6 +32,7 @@
   }
 
   onMount(() => {
+    noteStore.searchNotes({ query: '', resetState: true })
     $shortcutManager.manager.register({
       context: 'search',
       title: 'Search',

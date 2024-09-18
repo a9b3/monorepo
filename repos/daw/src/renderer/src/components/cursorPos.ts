@@ -39,7 +39,6 @@ export function setCursorRange(containerEl: any, savedSel: { start: any; end: an
       currentIndex += nodeLength
     }
 
-    console.log(walker.currentNode)
     return [walker.currentNode, index - currentIndex + walker.currentNode.length]
   }
 
@@ -55,12 +54,4 @@ export function setCursorRange(containerEl: any, savedSel: { start: any; end: an
   if (!selection) return
   selection.removeAllRanges()
   selection.addRange(range)
-}
-
-const saved = {}
-export function rememberCursorPos(id: string | number, range: any) {
-  saved[id] = range
-}
-export function getCursorPos(id: string | number) {
-  return saved[id]
 }

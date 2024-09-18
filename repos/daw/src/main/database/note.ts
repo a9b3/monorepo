@@ -43,7 +43,9 @@ JOIN
 WHERE
   notes_fts.title LIKE ?
   OR notes_fts.body LIKE ?
-ORDER BY notes_fts.rank, notes.lastModified DESC
+ORDER BY
+  notes.lastModified DESC,
+  notes_fts.rank
 LIMIT 30
 `
 
@@ -81,8 +83,13 @@ export const handlers = {
       insertSql += `, lastModified = datetime('now', 'localtime')`
       insertSql += ';'
 
-      db.prepare(insertSql).run(...keys.map((key) => args[key]))
-      return db.prepare(getStatement).get(args.id)
+      const info = db.prepare(insertSql).run(...keys.map((key) => args[key]))
+
+      if (args.id) {
+        return db.prepare(getStatement).get(args.id)
+      } else {
+        return db.prepare(getStatement).get(info.lastInsertRowid)
+      }
     })
   },
   [SEARCH_NOTES]: (db: Database.Database) => {
