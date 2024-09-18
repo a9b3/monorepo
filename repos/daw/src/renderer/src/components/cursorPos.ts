@@ -38,7 +38,9 @@ export function setCursorRange(containerEl: any, savedSel: { start: any; end: an
       }
       currentIndex += nodeLength
     }
-    return
+
+    console.log(walker.currentNode)
+    return [walker.currentNode, index - currentIndex + walker.currentNode.length]
   }
 
   const range = document.createRange()

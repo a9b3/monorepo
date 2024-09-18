@@ -3,15 +3,19 @@ export interface Note {
   title: string
   body: string
   lastModified: string
+  cursorStart: number
+  cursorEnd: number
 }
 
 export interface UpsertNoteArgs {
   id?: string
   title?: string
-  body: string
+  body?: string
   // ISO8601 strings
   // YYYY-MM-DD hh:mm:ss
   lastModified?: string
+  cursorStart?: number
+  cursorEnd?: number
 }
 
 export interface SearchNotesArgs {
@@ -29,7 +33,7 @@ export interface GetNoteArgs {
 export interface ApiMethods {
   upsertNote: (args: UpsertNoteArgs) => Promise<Note>
   searchNotes: (args: SearchNotesArgs) => Promise<Note[]>
-  deleteNote: (args: DeleteNoteArgs) => Promise<void>
+  deleteNote: (args: DeleteNoteArgs) => Promise<boolean>
   getNote: (args: GetNoteArgs) => Promise<Note>
 }
 

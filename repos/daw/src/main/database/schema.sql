@@ -3,7 +3,9 @@ CREATE TABLE IF NOT EXISTS notes(
   id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
   body TEXT NOT NULL,
-  lastModified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  lastModified TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+  cursorStart INTEGER DEFAULT 0,
+  cursorEnd INTEGER DEFAULT 0
 );
 
 -- Create the FTS5 virtual table
@@ -28,17 +30,3 @@ END;
 CREATE TRIGGER IF NOT EXISTS notes_after_delete AFTER DELETE ON notes BEGIN
   INSERT INTO notes_fts(notes_fts, rowid, title, body) VALUES ('delete', old.id, old.title, old.body);
 END;
-
-INSERT INTO notes (id, title, body)
-VALUES (1, 'First Note', 'lorem ipsum two')
-ON CONFLICT(id) DO UPDATE SET
-    title = excluded.title,
-    body = excluded.body,
-    lastModified = datetime('now');
-
-INSERT INTO notes (id, title, body)
-VALUES (2, 'Second Note', 'crazy garidos')
-ON CONFLICT(id) DO UPDATE SET
-    title = excluded.title,
-    body = excluded.body,
-    lastModified = datetime('now');

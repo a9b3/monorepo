@@ -1,34 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { noteStore } from '@renderer/src/stores/noteStore'
-  import type { Note } from '@ipc/notes'
-  import { parse } from './parser'
   import { getCursorRange, setCursorRange, rememberCursorPos, getCursorPos } from './cursorPos'
+  import type { Note, UpsertNoteArgs } from '@ipc/notes'
 
+  export let selectedNote: Note
   export let textBoxRef: HTMLDivElement
-  let prevId = ''
-  let prevContent = ''
+  export let onChange: (args: UpsertNoteArgs) => void
+
   let editContent = ''
-  let selectedNote: Note
-
-  $: {
-    if ($noteStore.selectedNoteId !== prevId) {
-      prevId = $noteStore.selectedNoteId
-      selectedNote = $noteStore.notes.find((note) => note.id === prevId)
-      editContent = selectedNote?.body || ''
+  onMount(() => {
+    if (selectedNote) {
+      editContent = selectedNote.body
     }
-
-    if (editContent !== prevContent && editContent !== selectedNote?.body) {
-      prevContent = editContent
-      if (selectedNote) {
-        noteStore.upsertNote({
-          title: selectedNote.title,
-          id: selectedNote.id,
-          body: editContent
-        })
-      }
-    }
-  }
+  })
 </script>
 
 {#if selectedNote}
@@ -36,11 +20,18 @@
     class="main"
     bind:this={textBoxRef}
     bind:innerHTML={editContent}
-    on:blur={() => {
-      rememberCursorPos(selectedNote.id, getCursorRange(textBoxRef))
+    on:input={() => {
+      const cursorRange = getCursorRange(textBoxRef)
+      onChange({
+        id: selectedNote.id,
+        title: selectedNote.title,
+        body: editContent,
+        cursorStart: cursorRange.start,
+        cursorEnd: cursorRange.end
+      })
     }}
     on:focus={() => {
-      setCursorRange(textBoxRef, getCursorPos(selectedNote.id))
+      setCursorRange(textBoxRef, { start: selectedNote.cursorStart, end: selectedNote.cursorEnd })
     }}
     contenteditable
   />

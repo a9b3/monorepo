@@ -9,8 +9,7 @@ import {
   DELETE_NOTE,
   GET_NOTE,
   DeleteNoteArgs,
-  GetNoteArgs,
-  Note
+  GetNoteArgs
 } from '@ipc/notes'
 
 export async function initNotesTable(db: Database.Database): Promise<void> {
@@ -23,15 +22,6 @@ export async function initNotesTable(db: Database.Database): Promise<void> {
     }
   }
 }
-
-const insertStatement = `
-INSERT INTO notes (id, title, body)
-VALUES (?, ?, ?)
-ON CONFLICT(id) DO UPDATE SET
-    title = excluded.title,
-    body = excluded.body,
-    lastModified = datetime('now', 'localtime');
-`
 
 const getStatement = `
 SELECT *
@@ -70,15 +60,29 @@ WHERE id = ?;
 export const handlers = {
   [UPSERT_NOTE]: (db: Database.Database) => {
     ipcMain.handle(UPSERT_NOTE, async (_, args: UpsertNoteArgs) => {
-      const insertStmt = db.prepare(insertStatement)
-      const getStmt = db.prepare(getStatement)
+      const keys = Object.keys(args)
+      // should produce something like:
+      //
+      // INSERT INTO notes (id, title, body)
+      // VALUES (?, ?, ?)
+      // ON CONFLICT(id) DO UPDATE SET
+      //     title = excluded.title,
+      //     body = excluded.body,
+      //     lastModified = datetime('now', 'localtime');
+      let insertSql = `INSERT INTO notes (${keys.join(', ')})`
+      insertSql += ` VALUES (${Object.keys(args)
+        .map(() => '?')
+        .join(', ')})`
+      insertSql += ` ON CONFLICT(id) DO UPDATE SET `
+      insertSql += keys
+        .filter((key) => ['id', 'lastModified'].indexOf(key) === -1)
+        .map((key) => `${key} = excluded.${key}`)
+        .join(', ')
+      insertSql += `, lastModified = datetime('now', 'localtime')`
+      insertSql += ';'
 
-      const info = insertStmt.run(args.id, args.title, args.body)
-      if (info.lastInsertRowid) {
-        return getStmt.get(info.lastInsertRowid)
-      }
-
-      return getStmt.get(args.id)
+      db.prepare(insertSql).run(...keys.map((key) => args[key]))
+      return db.prepare(getStatement).get(args.id)
     })
   },
   [SEARCH_NOTES]: (db: Database.Database) => {
@@ -106,10 +110,10 @@ export const invokers: ApiMethods = {
   [SEARCH_NOTES]: async (args: SearchNotesArgs) => {
     return ipcRenderer.invoke(SEARCH_NOTES, args)
   },
-  [DELETE_NOTE]: async function (args: DeleteNoteArgs): Promise<void> {
+  [DELETE_NOTE]: async function (args: DeleteNoteArgs) {
     return ipcRenderer.invoke(DELETE_NOTE, args)
   },
-  [GET_NOTE]: async function (args: GetNoteArgs): Promise<Note> {
+  [GET_NOTE]: async function (args: GetNoteArgs) {
     return ipcRenderer.invoke(GET_NOTE, args)
   }
 }
