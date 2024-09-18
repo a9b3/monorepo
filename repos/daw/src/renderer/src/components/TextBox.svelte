@@ -51,7 +51,6 @@
     line-height: var(--base-line-height);
     font-size: var(--base-font-size);
     color: var(--colors-fg2);
-    resize: none;
   }
 
   .main:focus {

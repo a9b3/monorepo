@@ -20,7 +20,6 @@ const upsertNote = (() => {
     }
     fetching = true
     const result = await window.api.note.upsertNote(args)
-    console.log(result)
     update((state) => {
       const index = state.notes.findIndex((note) => note.id === result.id)
       if (index !== -1) {
