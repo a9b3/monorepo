@@ -3,12 +3,7 @@
   import { noteStore } from '@renderer/src/stores/noteStore'
   import type { Note } from '@ipc/notes'
   import { parse } from './parser'
-  import {
-    saveCursorPosition,
-    restoreCursorPosition,
-    rememberCursorPos,
-    getCursorPos
-  } from './cursorPos'
+  import { getCursorRange, setCursorRange, rememberCursorPos, getCursorPos } from './cursorPos'
 
   export let textBoxRef: HTMLDivElement
   let prevId = ''
@@ -42,10 +37,10 @@
     bind:this={textBoxRef}
     bind:innerHTML={editContent}
     on:blur={() => {
-      rememberCursorPos(selectedNote.id, saveCursorPosition(textBoxRef))
+      rememberCursorPos(selectedNote.id, getCursorRange(textBoxRef))
     }}
     on:focus={() => {
-      restoreCursorPosition(textBoxRef, getCursorPos(selectedNote.id))
+      setCursorRange(textBoxRef, getCursorPos(selectedNote.id))
     }}
     contenteditable
   />
