@@ -3,7 +3,14 @@
   import { noteStore } from '@renderer/src/stores/noteStore'
   import type { Note } from '@ipc/notes'
   import { parse } from './parser'
+  import {
+    saveCursorPosition,
+    restoreCursorPosition,
+    rememberCursorPos,
+    getCursorPos
+  } from './cursorPos'
 
+  export let textBoxRef: HTMLDivElement
   let prevId = ''
   let prevContent = ''
   let editContent = ''
@@ -30,7 +37,18 @@
 </script>
 
 {#if selectedNote}
-  <div class="main" bind:innerHTML={editContent} contenteditable />
+  <div
+    class="main"
+    bind:this={textBoxRef}
+    bind:innerHTML={editContent}
+    on:blur={() => {
+      rememberCursorPos(selectedNote.id, saveCursorPosition(textBoxRef))
+    }}
+    on:focus={() => {
+      restoreCursorPosition(textBoxRef, getCursorPos(selectedNote.id))
+    }}
+    contenteditable
+  />
 {:else}
   <div class="empty">No note selected...</div>
 {/if}
@@ -40,7 +58,7 @@
     height: 100%;
     width: 100%;
     background: var(--colors-bg);
-    padding: 0 var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-xs);
     border: none;
     font-family: var(--font-family);
     line-height: var(--base-line-height);

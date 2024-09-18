@@ -32,11 +32,11 @@ const upsertNote = (() => {
   }
 })()
 
-const searchNotes = async (args: SearchNotesArgs): Promise<Note[]> => {
+const searchNotes = async (args: SearchNotesArgs & { resetState?: boolean }): Promise<Note[]> => {
   const results = await window.api.note.searchNotes(args)
   update((state) => ({
     ...state,
-    notes: results as Note[],
+    notes: args.resetState ? (results as Note[]) : state.notes,
     selectedNoteId: null
   }))
   return results

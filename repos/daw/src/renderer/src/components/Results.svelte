@@ -6,6 +6,7 @@
   import moment from 'moment'
 
   export let results: any = []
+  export let onSelectedNoteIdChange: (id: string) => void
 
   onMount(() => {
     $shortcutManager.manager.register({
@@ -18,6 +19,7 @@
           description: 'Next note',
           action: () => {
             noteStore.nextNote()
+            onSelectedNoteIdChange($noteStore.selectedNoteId)
           }
         },
         {
@@ -25,6 +27,7 @@
           description: 'Prev note',
           action: () => {
             noteStore.prevNote()
+            onSelectedNoteIdChange($noteStore.selectedNoteId)
           }
         }
       ]
@@ -43,10 +46,7 @@
       id: note.id,
       title: note.title,
       body: note.body,
-      // using moment to format the date to relative time
-      // lastModified: note.lastModified
       lastModified: moment(note.lastModified, 'YYYY-MM-DD h:mm:ss').fromNow()
-      // lastModified: note.lastModified
     }))}
     onRowClick={(row) => noteStore.setSelectedNoteId(row.id)}
     highlightRows={[$noteStore.selectedNoteId]}

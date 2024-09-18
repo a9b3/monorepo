@@ -1,34 +1,34 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte'
-  import searchIcon from '../assets/icons/search.svg?raw'
-  import Results from './Results.svelte'
+  import { onDestroy, onMount, tick } from 'svelte'
   import { noteStore } from '@renderer/src/stores/noteStore'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
+  import searchIcon from '../assets/icons/search.svg?raw'
+  import Results from './Results.svelte'
 
   let inputEl = null
-  let searchQuery = ''
+  export let onSubmit: () => void | undefined
 
-  function searchNotes(query: string) {
-    return noteStore.searchNotes({ query })
-  }
-
-  $: {
-    searchNotes(searchQuery)
-  }
-
+  // if there is an exact title match then select it, otherwise create a new
+  // note with the search query as the title
   async function handleSubmit(e: Event) {
     e.preventDefault()
 
-    const res = await searchNotes(searchQuery)
-    if (res.length === 0) {
-      await noteStore.upsertNote({
+    const searchQuery = e.target['0'].value
+
+    const res = await noteStore.searchNotes(searchQuery)
+    if (res.find((note) => note.title === searchQuery)) {
+      noteStore.setSelectedNoteId(res.find((note) => note.title === searchQuery).id)
+    } else {
+      const createdNote = await noteStore.upsertNote({
         title: searchQuery,
         body: ''
       })
-      await searchNotes(searchQuery)
-    } else {
-      alert('Note already exists')
+      await noteStore.searchNotes({ query: searchQuery, resetState: true })
+      noteStore.setSelectedNoteId(createdNote.id)
     }
+
+    await tick()
+    onSubmit()
   }
 
   onMount(() => {
@@ -60,12 +60,19 @@
   <input
     type="text"
     placeholder="Search or Create..."
-    bind:value={searchQuery}
     bind:this={inputEl}
+    on:focus={() => inputEl.select()}
+    on:input={(e) => noteStore.searchNotes({ query: e.target.value, resetState: true })}
   />
 </form>
 
-<Results results={$noteStore.notes} />
+<Results
+  results={$noteStore.notes}
+  onSelectedNoteIdChange={(id) => {
+    inputEl.value = $noteStore.notes.find((note) => note.id === id)?.title || ''
+    inputEl.select()
+  }}
+/>
 
 <style>
   .main {
@@ -75,7 +82,7 @@
     width: 100%;
     color: var(--colors-fg2);
     background: var(--colors-bg);
-    padding: 0px var(--spacing-xs);
+    padding: var(--spacing-xxs) var(--spacing-xs);
     border-bottom: var(--border);
   }
   .main:focus-within {
@@ -94,11 +101,12 @@
   }
 
   input::placeholder {
+    font-size: var(--base-font-size);
     color: var(--colors-fg3);
   }
 
   .icon-wrapper {
-    padding-top: 2px;
+    padding-top: calc(var(--spacing-xs) / 4);
     margin-right: 4px;
   }
 

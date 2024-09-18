@@ -4,12 +4,12 @@
   import TextBox from './components/TextBox.svelte'
   import CSSVariables from './components/CSSVariables/CSSVariables.svelte'
   import ShortcutLegend from './components/ShortcutLegend.svelte'
+  import EditorContainer from './components/EditorContainer.svelte'
 </script>
 
 <main>
   <TitleBar></TitleBar>
-  <Searchbar />
-  <TextBox />
+  <EditorContainer></EditorContainer>
   <CSSVariables />
   <ShortcutLegend />
 </main>

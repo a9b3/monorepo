@@ -92,7 +92,7 @@
 
   .grid-table-header,
   .grid-table-cell {
-    padding: 0 var(--spacing-xs);
+    padding: var(--spacing-xxs) var(--spacing-xs);
   }
 
   .grid-table-cell {
