@@ -4,9 +4,11 @@ import type { Note, UpsertNoteArgs, SearchNotesArgs, DeleteNoteArgs, GetNoteArgs
 const { subscribe, update } = writable<{
   notes: Note[]
   selectedNoteId: string | null
+  sort: { field: 'lastModified' | 'rank'; direction: 'ASC' | 'DESC' }
 }>({
   notes: [],
-  selectedNoteId: null
+  selectedNoteId: null,
+  sort: { field: 'lastModified', direction: 'DESC' }
 })
 
 const upsertNote = (() => {
@@ -34,10 +36,13 @@ const upsertNote = (() => {
 })()
 
 const searchNotes = async (args: SearchNotesArgs & { resetState?: boolean }): Promise<Note[]> => {
-  const results = await window.api.note.searchNotes(args)
+  const results = await window.api.note.searchNotes({
+    ...args,
+    sortBy: [{ field: 'lastModified', direction: 'DESC' }]
+  })
   update((state) => ({
     ...state,
-    notes: args.resetState ? (results as Note[]) : state.notes.reverse(),
+    notes: args.resetState ? (results as Note[]) : state.notes,
     selectedNoteId: null
   }))
   return results

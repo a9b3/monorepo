@@ -34,7 +34,6 @@
           key: 'meta+Backspace',
           description: 'Delete note',
           action: () => {
-            // alert('hi')
             if ($noteStore.selectedNoteId) {
               noteStore.deleteNote({ id: $noteStore.selectedNoteId })
             }

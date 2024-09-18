@@ -23,6 +23,42 @@ export async function initNotesTable(db: Database.Database): Promise<void> {
   }
 }
 
+function generateStmt({
+  command,
+  fields,
+  from,
+  where,
+  join,
+  orderBy,
+  limit
+}: {
+  command: 'select' | 'insert' | 'update' | 'delete'
+  fields: string
+  from: string
+  where?: string
+  join?: string
+  orderBy?: string
+  limit?: string
+}) {
+  let stmt = `${command.toUpperCase()} ${fields} FROM ${from}`
+
+  if (join) {
+    stmt += ` JOIN ${join}`
+  }
+  if (where) {
+    stmt += ` WHERE ${where}`
+  }
+  if (orderBy) {
+    stmt += ` ORDER BY ${orderBy}`
+  }
+  if (limit) {
+    stmt += ` LIMIT ${limit}`
+  }
+
+  stmt += ';'
+  return stmt
+}
+
 const getStatement = `
 SELECT *
 FROM notes
@@ -94,7 +130,35 @@ export const handlers = {
   },
   [SEARCH_NOTES]: (db: Database.Database) => {
     ipcMain.handle(SEARCH_NOTES, async (_, args: SearchNotesArgs) => {
-      const statement = args.query ? db.prepare(searchStatement) : db.prepare(getAllNotesStatement)
+      let stmt = ''
+      if (!args.query) {
+        stmt = generateStmt({
+          command: 'select',
+          fields: '*',
+          from: 'notes',
+          ...(args.sortBy
+            ? { orderBy: args.sortBy.map((s) => `${s.field} ${s.direction}`).join(', ') }
+            : {})
+        })
+      } else {
+        stmt = generateStmt({
+          command: 'select',
+          fields: [
+            'notes.id',
+            'notes.title',
+            'notes.body',
+            'notes.lastModified',
+            'notes_fts.rank'
+          ].join(', '),
+          from: 'notes_fts',
+          join: 'notes ON notes.id = notes_fts.rowid',
+          where: 'notes_fts.title LIKE ? OR notes_fts.body LIKE ?',
+          orderBy: 'notes.lastModified DESC, notes_fts.rank',
+          limit: '30'
+        })
+      }
+
+      const statement = db.prepare(stmt)
       return args.query ? statement.all(`%${args.query}%`, `%${args.query}%`) : statement.all()
     })
   },

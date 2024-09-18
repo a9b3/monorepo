@@ -18,8 +18,11 @@ export interface UpsertNoteArgs {
   cursorEnd?: number
 }
 
+type SortByFields = 'lastModified' | 'rank'
+type SortDirections = 'ASC' | 'DESC'
 export interface SearchNotesArgs {
   query: string
+  sortBy?: { field: SortByFields; direction: SortDirections }[]
 }
 
 export interface DeleteNoteArgs {
