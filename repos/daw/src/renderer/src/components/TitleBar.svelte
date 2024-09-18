@@ -1,13 +1,7 @@
 <script>
-  import { onMount } from 'svelte'
+  import { ipcRenderer } from 'electron'
 
-  let ipcRenderer
   let isHovering = false
-
-  onMount(async () => {
-    // Import ipcRenderer from Electron
-    ipcRenderer = window.require('electron').ipcRenderer
-  })
 
   function closeWindow() {
     ipcRenderer.send('close-window')
