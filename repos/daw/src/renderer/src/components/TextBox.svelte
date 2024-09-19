@@ -2,12 +2,28 @@
   import { onMount } from 'svelte'
   import { getCursorRange, setCursorRange } from './cursorPos'
   import type { Note, UpsertNoteArgs } from '@ipc/notes'
+  import { parse } from './parser'
 
   export let selectedNote: Note
   export let textBoxRef: HTMLDivElement
   export let onChange: (args: UpsertNoteArgs) => void
 
   let editContent = ''
+
+  function handleInput(event) {
+    const selection = window.getSelection()
+    const range = selection.getRangeAt(0)
+    const start = range.startOffset
+
+    editorContent = event.target.innerText
+
+    // Reapply the cursor position after updating the content
+    const newRange = document.createRange()
+    newRange.setStart(editor.childNodes[0], start)
+    newRange.collapse(true)
+    selection.removeAllRanges()
+    selection.addRange(newRange)
+  }
 
   onMount(() => {
     if (selectedNote) {
@@ -20,9 +36,8 @@
   <div
     class="main"
     bind:this={textBoxRef}
-    bind:innerHTML={editContent}
     on:input={() => {
-      const cursorRange = getCursorRange(textBoxRef)
+      editContent = textBoxRef.innerHTML
       onChange({
         id: selectedNote.id,
         title: selectedNote.title,
@@ -35,7 +50,9 @@
       setCursorRange(textBoxRef, { start: selectedNote.cursorStart, end: selectedNote.cursorEnd })
     }}
     contenteditable
-  />
+  >
+    {@html parse(editContent)}
+  </div>
 {:else}
   <div class="empty">No note selected...</div>
 {/if}
@@ -50,7 +67,7 @@
     font-family: var(--font-family);
     line-height: var(--base-line-height);
     font-size: var(--base-font-size);
-    color: var(--colors-fg2);
+    color: var(--colors-fg);
   }
 
   .main:focus {

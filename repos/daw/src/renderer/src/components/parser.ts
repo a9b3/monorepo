@@ -1,3 +1,3 @@
-export function parse(str: string) {
-  return str.split('\n')
+export function parse(str: string): string {
+  return str
 }
