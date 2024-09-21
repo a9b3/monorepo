@@ -4,6 +4,7 @@
   import shortcutManager from '@renderer/src/stores/shortcutManager'
   import searchIcon from '../assets/icons/search.svg?raw'
   import Results from './Results.svelte'
+  import blockApi from '@renderer/src/app/db/block'
 
   let inputEl = null
   export let onSubmit: () => void | undefined
@@ -14,6 +15,10 @@
     e.preventDefault()
 
     const searchQuery = e.target['0'].value
+
+    const blocks = blockApi.getAllBlocks({
+      filterBy: [{ field: 'properties.title', value: searchQuery }]
+    })
 
     const res = await noteStore.searchNotes(searchQuery)
     if (res.find((note) => note.title === searchQuery)) {
