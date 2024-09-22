@@ -1,12 +1,16 @@
 <script lang="ts">
   import { onDestroy, onMount, tick } from 'svelte'
-  import { noteStore } from '@renderer/src/stores/noteStore'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
   import searchIcon from '../assets/icons/search.svg?raw'
   import Results from './Results.svelte'
   import blockApi from '@renderer/src/app/db/block'
+  import type { Block } from '@renderer/src/app/types/block'
 
   let inputEl = null
+  let results: Block[] = []
+  let selectedIds: string[] = []
+
+  export let onBlockChange: (block?: Block) => void
   export let onSubmit: () => void | undefined
 
   // if there is an exact title match then select it, otherwise create a new
@@ -16,28 +20,36 @@
 
     const searchQuery = e.target['0'].value
 
-    const blocks = blockApi.getAllBlocks({
-      filterBy: [{ field: 'properties.title', value: searchQuery }]
-    })
+    let getBlockOpts = searchQuery
+      ? { filterBy: [{ field: 'properties.title', value: searchQuery }] }
+      : {}
+    results = await blockApi.getAllBlocks(getBlockOpts)
 
-    const res = await noteStore.searchNotes(searchQuery)
-    if (res.find((note) => note.title === searchQuery)) {
-      noteStore.setSelectedNoteId(res.find((note) => note.title === searchQuery).id)
-    } else {
-      const createdNote = await noteStore.upsertNote({
-        title: searchQuery,
-        body: ''
+    if (results.length === 0) {
+      await blockApi.createBlock({
+        parent: null,
+        type: 'page',
+        properties: { title: searchQuery },
+        children: []
       })
-      await noteStore.searchNotes({ query: searchQuery, resetState: true })
-      noteStore.setSelectedNoteId(createdNote.id)
+      results = await blockApi.getAllBlocks(getBlockOpts)
+      onBlockChange(results[0])
     }
-
     await tick()
     onSubmit()
   }
 
-  onMount(() => {
-    noteStore.searchNotes({ query: '', resetState: true })
+  async function handleInput(e: Event) {
+    const searchQuery = e.target.value
+    results = searchQuery
+      ? await blockApi.searchBlocks({ query: searchQuery })
+      : await blockApi.getAllBlocks()
+    onBlockChange()
+    selectedIds = []
+  }
+
+  onMount(async () => {
+    results = await blockApi.getAllBlocks()
     $shortcutManager.manager.register({
       context: 'search',
       title: 'Search',
@@ -68,16 +80,37 @@
     placeholder="Search or Create..."
     bind:this={inputEl}
     on:focus={() => inputEl.select()}
-    on:input={(e) => noteStore.searchNotes({ query: e.target.value, resetState: true })}
+    on:input={handleInput}
   />
 </form>
 
 <Results
-  results={$noteStore.notes}
-  onSelectedNoteIdChange={(id) => {
-    inputEl.value = $noteStore.notes.find((note) => note.id === id)?.title || ''
-    inputEl.select()
+  {results}
+  onNext={() => {
+    const idx = results.findIndex((block) => block.id === selectedIds[0])
+    if (idx < results.length - 1) {
+      selectedIds = [results[idx + 1].id]
+      onBlockChange(results[idx + 1])
+    }
   }}
+  onPrev={() => {
+    const idx = results.findIndex((block) => block.id === selectedIds[0])
+    if (idx > 0) {
+      selectedIds = [results[idx - 1].id]
+      onBlockChange(results[idx - 1])
+    }
+  }}
+  onDelete={async () => {
+    await blockApi.deleteBlock(selectedIds[0])
+    results = await blockApi.getAllBlocks()
+    onBlockChange()
+    selectedIds = []
+  }}
+  onSelectId={(id) => {
+    selectedIds = [id]
+    onBlockChange(results.find((block) => block.id === id))
+  }}
+  {selectedIds}
 />
 
 <style>

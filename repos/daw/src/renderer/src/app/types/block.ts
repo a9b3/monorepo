@@ -106,5 +106,5 @@ export interface API {
   deleteBlocks(ids: string[]): Promise<boolean>
   getBlockById(id: string): Promise<Block | undefined>
   searchBlocks(opt: { query: string }): Promise<Block[]>
-  getAllBlocks(opts: GetAllBlocksOpts): Promise<Block[]>
+  getAllBlocks(opts?: GetAllBlocksOpts): Promise<Block[]>
 }

@@ -18,6 +18,8 @@
   export let highlightRows: string[] = []
   export let tableHeight = '100%'
   export let tableWidth = '100%'
+  export let showHeader = true
+  export let gridTemplateColumns = 'repeat(var(--column-count), 1fr)'
 
   let container: HTMLElement
 
@@ -45,19 +47,20 @@
 <div
   class="table-container"
   bind:this={container}
-  style="max-height: {tableHeight}; width:
-{tableWidth}; --column-count: {columns.length}"
+  style="max-height: {tableHeight}; width: {tableWidth}; --column-count: {columns.length};"
 >
-  <div class="grid-table">
-    {#each columns as column}
-      <div class="grid-table-header">
-        {#if column.headerComponent}
-          <svelte:component this={column.headerComponent} value={column.header} />
-        {:else}
-          {column.header}
-        {/if}
-      </div>
-    {/each}
+  <div class="grid-table" style="grid-template-columns: {gridTemplateColumns};">
+    {#if showHeader}
+      {#each columns as column}
+        <div class="grid-table-header">
+          {#if column.headerComponent}
+            <svelte:component this={column.headerComponent} value={column.header} />
+          {:else}
+            {column.header}
+          {/if}
+        </div>
+      {/each}
+    {/if}
 
     {#each data as row}
       <div
@@ -86,7 +89,6 @@
 
   .grid-table {
     display: grid;
-    grid-template-columns: repeat(var(--column-count), 1fr);
     /* gap: 1px; */
   }
 

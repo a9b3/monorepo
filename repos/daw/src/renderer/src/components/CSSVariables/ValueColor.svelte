@@ -5,12 +5,20 @@
 
   export let value: string = ''
   export let onChange: (value: string) => void = () => {}
+
+  let triggerElement: HTMLElement
+  let showColorPicker = false
 </script>
 
 <div class="main">
-  <Popover position="bottom">
-    <div class="preview" style="background-color: {value}" slot="trigger"></div>
+  <div
+    class="preview"
+    bind:this={triggerElement}
+    style="background-color: {value}"
+    on:click={() => (showColorPicker = !showColorPicker)}
+  ></div>
 
+  <Popover position="bottom" isOpen={showColorPicker} {triggerElement}>
     <div slot="content">
       <ColorPicker bind:value on:change={(event) => onChange(event.detail)} />
     </div>

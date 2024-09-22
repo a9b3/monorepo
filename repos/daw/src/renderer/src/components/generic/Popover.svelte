@@ -1,16 +1,12 @@
 <script>
   import { onMount, afterUpdate, onDestroy } from 'svelte'
   import Portal from './Portal.svelte'
-
   export let position = 'bottom'
-  let isOpen = false
+  export let align = 'center' // New prop for horizontal alignment
+  export let isOpen = false
+  export let triggerElement
   let popoverElement
-  let triggerElement
   let portalContainer
-
-  function togglePopover() {
-    isOpen = !isOpen
-  }
 
   function handleClickOutside(event) {
     if (
@@ -25,8 +21,6 @@
 
   onMount(() => {
     document.addEventListener('mousedown', handleClickOutside)
-
-    // Create a container for the portal
     portalContainer = document.createElement('div')
     portalContainer.id = 'popover-portal'
     document.body.appendChild(portalContainer)
@@ -49,11 +43,9 @@
     switch (position) {
       case 'top':
         top = triggerRect.top - popoverRect.height - gap
-        left = triggerRect.left + triggerRect.width / 2 - popoverRect.width / 2
         break
       case 'bottom':
         top = triggerRect.bottom + gap
-        left = triggerRect.left + triggerRect.width / 2 - popoverRect.width / 2
         break
       case 'left':
         top = triggerRect.top + triggerRect.height / 2 - popoverRect.height / 2
@@ -65,7 +57,20 @@
         break
       default:
         top = triggerRect.bottom + gap
-        left = triggerRect.left + triggerRect.width / 2 - popoverRect.width / 2
+    }
+
+    // Handle horizontal alignment for top and bottom positions
+    if (position === 'top' || position === 'bottom') {
+      switch (align) {
+        case 'left':
+          left = triggerRect.left
+          break
+        case 'right':
+          left = triggerRect.right - popoverRect.width
+          break
+        default: // center
+          left = triggerRect.left + triggerRect.width / 2 - popoverRect.width / 2
+      }
     }
 
     // Ensure the popover stays within the viewport
@@ -82,18 +87,10 @@
   })
 </script>
 
-<div class="popover-trigger">
-  <div bind:this={triggerElement} on:click={togglePopover}>
-    <slot name="trigger">
-      <button>Open Popover</button>
-    </slot>
-  </div>
-</div>
-
 {#if isOpen && portalContainer}
   <Portal target={portalContainer}>
     <div bind:this={popoverElement} class="popover-content">
-      <slot name="content">
+      <slot>
         <p>Default popover content</p>
       </slot>
     </div>
@@ -101,9 +98,6 @@
 {/if}
 
 <style>
-  .popover-trigger {
-    display: inline-block;
-  }
   .popover-content {
     border: 1px solid black;
     border-radius: 4px;

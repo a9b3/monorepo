@@ -2,35 +2,23 @@
   import Searchbar from './Searchbar.svelte'
   import TextBox from './TextBox.svelte'
   import { noteStore } from '@renderer/src/stores/noteStore'
-  import type { Note } from '@ipc/notes'
+  import type { Block } from '@renderer/src/app/types/block'
+  import BlockContainer from './Editor/Container.svelte'
 
-  let textBoxRef: HTMLDivElement
-  let prevSelectedNoteId: string = ''
-  let selectedNote: Note
-
-  $: {
-    if ($noteStore.selectedNoteId !== prevSelectedNoteId) {
-      prevSelectedNoteId = $noteStore.selectedNoteId
-      selectedNote = $noteStore.notes.find((note) => note.id === prevSelectedNoteId)
-    }
-  }
+  let selectedBlock: Block
+  let isFocused = false
 </script>
 
 <Searchbar
+  onBlockChange={(block) => {
+    selectedBlock = block
+  }}
   onSubmit={() => {
-    if (textBoxRef) {
-      textBoxRef.focus()
-    }
+    isFocused = true
   }}
 />
-{#key $noteStore.selectedNoteId}
-  <TextBox
-    bind:textBoxRef
-    {selectedNote}
-    onChange={(note) => {
-      noteStore.upsertNote(note)
-    }}
-  />
+{#key selectedBlock?.id}
+  <BlockContainer {isFocused} block={selectedBlock} />
 {/key}
 
 <style>

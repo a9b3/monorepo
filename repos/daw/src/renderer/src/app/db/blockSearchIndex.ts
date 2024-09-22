@@ -100,7 +100,7 @@ function removeIndex(id: string) {
  * Search the index for a query.
  */
 function search(query: string) {
-  return miniSearch.search(query, { fuzzy: 0.2 })
+  return miniSearch.search(query, { prefix: true, fuzzy: 0.2 })
 }
 
 /**
