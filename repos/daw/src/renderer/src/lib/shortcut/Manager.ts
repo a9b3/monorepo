@@ -54,15 +54,26 @@ export default class ShortcutManager {
   contextStack: string[] = []
 
   /**
-   * Map of token to action the key is the parsed key.
+   * Map of token to actions. The key is the parsed key.
    */
-  tokenToAction: Map<string, { context: string; action: () => void }> = new Map()
+  tokenToActions: Map<string, { context: string; action: () => void }[]> = new Map()
 
   keyhandler = (event: KeyboardEvent): void => {
     const token = eventToShortcutKey(event)
-    const { context = '', action } = this.tokenToAction.get(token) || {}
-    if (action && this.contextStack.includes(context)) {
-      action()
+    const actions = this.tokenToActions.get(token)
+    if (actions && actions.length > 0) {
+      const validActions = actions.filter(({ context }) => this.contextStack.includes(context))
+      if (validActions.length > 0) {
+        // Find the action with the highest matching context
+        const highestContextAction = validActions.reduce((prev, current) => {
+          const prevIndex = this.contextStack.lastIndexOf(prev.context)
+          const currentIndex = this.contextStack.lastIndexOf(current.context)
+          return currentIndex > prevIndex ? current : prev
+        })
+        highestContextAction.action()
+        event.preventDefault()
+        event.stopPropagation()
+      }
     }
   }
 
@@ -86,7 +97,16 @@ export default class ShortcutManager {
     const { context } = shortcutGroup
     this.shortcuts.set(context, shortcutGroup)
     shortcutGroup.shortcuts.forEach((shortcut) => {
-      this.tokenToAction.set(parseShortcutKey(shortcut.key), { context, action: shortcut.action })
+      const token = parseShortcutKey(shortcut.key)
+      if (!this.tokenToActions.has(token)) {
+        this.tokenToActions.set(token, [])
+      }
+      const idx = this.tokenToActions.get(token)!.findIndex((a) => a.context === context)
+      if (idx !== -1) {
+        this.tokenToActions.get(token)![idx] = { context, action: shortcut.action }
+      } else {
+        this.tokenToActions.get(token)!.push({ context, action: shortcut.action })
+      }
     })
   }
 

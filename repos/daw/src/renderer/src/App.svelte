@@ -3,7 +3,7 @@
   import TitleBar from './components/TitleBar.svelte'
   import CSSVariables from './components/CSSVariables/CSSVariables.svelte'
   import ShortcutLegend from './components/ShortcutLegend.svelte'
-  import EditorContainer from './components/EditorContainer.svelte'
+  import EditorContainer from './components/BlockEditor/EditorContainer.svelte'
   import { initDatabase } from './app/db/init'
   import blockDb from './app/db/block'
 

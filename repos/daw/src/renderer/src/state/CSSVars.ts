@@ -34,7 +34,14 @@ class CSSVars extends EventEmitter {
     '--spacing-m': 'calc(1rem * var(--scale-ratio))',
     '--spacing-l': 'calc(1rem * var(--scale-ratio) * 2)',
     '--spacing-xl': 'calc(1rem * var(--scale-ratio) * 3)',
-    '--border': '1px solid var(--colors-fg)'
+    '--border': '1px solid var(--colors-fg)',
+    // Header sizes
+    '--font-size-h6': 'calc(var(--base-font-size) * var(--scale-ratio))',
+    '--font-size-h5': 'calc(var(--font-size-h6) * var(--scale-ratio))',
+    '--font-size-h4': 'calc(var(--font-size-h5) * var(--scale-ratio))',
+    '--font-size-h3': 'calc(var(--font-size-h4) * var(--scale-ratio))',
+    '--font-size-h2': 'calc(var(--font-size-h3) * var(--scale-ratio))',
+    '--font-size-h1': 'calc(var(--font-size-h2) * var(--scale-ratio))'
   })
 
   set(key: string, value: string) {

@@ -1,4 +1,5 @@
 import './assets/main.css'
+import(`highlight.js/styles/vs.css`)
 
 import App from './App.svelte'
 

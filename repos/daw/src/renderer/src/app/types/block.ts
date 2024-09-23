@@ -65,6 +65,7 @@ export interface Header extends BaseBlock {
   type: 'header'
   properties: {
     level: number
+    text: string
   }
 }
 
