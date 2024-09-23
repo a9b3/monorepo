@@ -28,7 +28,7 @@ class CSSVars extends EventEmitter {
     '--base-font-size': '16px',
     '--base-line-height': 'calc(1rem * .9)',
     '--scale-ratio': '1.5',
-    '--spacing-xxs': 'calc(1rem / calc(var(--scale-ratio) * 10))',
+    '--spacing-xxs': 'calc(1rem / calc(var(--scale-ratio) * 5))',
     '--spacing-xs': 'calc(1rem / var(--scale-ratio))',
     '--spacing-s': 'calc(1rem)',
     '--spacing-m': 'calc(1rem * var(--scale-ratio))',

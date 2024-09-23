@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Block } from '@renderer/src/app/types/block'
-  import InputRow from './InputRow.svelte'
+  import Text from './Text/Text.svelte'
   import Header from './Header.svelte'
   import Code from './Code.svelte'
 
@@ -19,7 +19,7 @@
   {#if block.type === 'header'}
     <Header {block} {onChange} path={path + '.properties.text'} />
   {:else if block.type === 'text'}
-    <InputRow {block} {onChange} {path} />
+    <Text {block} {onChange} {path} />
   {:else if block.type === 'code'}
     <Code
       value={block.properties.text}
@@ -35,6 +35,9 @@
 {/each}
 
 <style>
+  .container {
+    padding: var(--spacing-xxs) 0;
+  }
   .container:hover {
     outline: 1px solid rgba(0, 0, 0, 0.08);
   }

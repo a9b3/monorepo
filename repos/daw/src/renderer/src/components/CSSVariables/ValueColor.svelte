@@ -19,7 +19,7 @@
   ></div>
 
   <Popover position="bottom" isOpen={showColorPicker} {triggerElement}>
-    <div slot="content">
+    <div>
       <ColorPicker bind:value on:change={(event) => onChange(event.detail)} />
     </div>
   </Popover>

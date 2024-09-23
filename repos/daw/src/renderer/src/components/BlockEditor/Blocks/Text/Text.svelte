@@ -28,17 +28,19 @@
   {placeholder}
   on:input={(e) => {
     if (e.target.innerHTML === '/') {
+      console.log('show popover')
+      e.target.innerHTML = ''
       showPopover = true
     } else {
       showPopover = false
+      onChange(path + '.properties.text', e.target.innerHTML)
     }
-    onChange(path + '.properties.text', e.target.innerHTML)
   }}
 >
   {@html textBuffer}
 </div>
 
-<Popover position="bottom" isOpen={showPopover} triggerElement={containerEl} align="left">
+<Popover position="bottom" bind:isOpen={showPopover} triggerElement={containerEl} align="left">
   <BlockSelection
     onSelection={(type, properties) => {
       onChange(path + '.type', type)

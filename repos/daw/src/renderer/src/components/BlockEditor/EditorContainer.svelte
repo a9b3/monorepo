@@ -1,8 +1,11 @@
+<!--
+  This component is responsible for rendering the editor container.
+-->
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import type { Block, Page } from '@renderer/src/app/types/block'
   import Searchbar from '../Searchbar.svelte'
-  import PageBlock from './Page.svelte'
+  import PageBlock from './RootPage.svelte'
   import blockUtils from './util'
   import blockEditorStore from './blockEditor.store'
 
@@ -25,22 +28,25 @@
     isFocused = true
   }}
 />
-{#key $blockEditorStore.editor.selectedPage?.id + $blockEditorStore.editor.selectedPage?.children.length}
-  {#if $blockEditorStore.editor.selectedPage}
-    <PageBlock
-      pageBlock={$blockEditorStore.editor.selectedPage}
-      onChange={(path, value) => {
-        blockUtils.deepUpdateBlock(path, value, $blockEditorStore.editor.selectedPage)
-        $blockEditorStore.editor.setSelectedPage($blockEditorStore.editor.selectedPage)
-      }}
-      onBlockFocus={(block) => {
-        $blockEditorStore.editor.setCurrentlyInFocusBlock(block)
-      }}
-    />
-  {:else}
-    <div class="empty">No note selected...</div>
-  {/if}
-{/key}
+
+<div>
+  {#key $blockEditorStore.editor.selectedPage?.id + $blockEditorStore.editor.selectedPage?.children.length}
+    {#if $blockEditorStore.editor.selectedPage}
+      <PageBlock
+        pageBlock={$blockEditorStore.editor.selectedPage}
+        onChange={(path, value) => {
+          blockUtils.deepUpdateBlock(path, value, $blockEditorStore.editor.selectedPage)
+          $blockEditorStore.editor.setSelectedPage($blockEditorStore.editor.selectedPage)
+        }}
+        onBlockFocus={(block) => {
+          $blockEditorStore.editor.setCurrentlyInFocusBlock(block)
+        }}
+      />
+    {:else}
+      <div class="empty">No note selected...</div>
+    {/if}
+  {/key}
+</div>
 
 <style>
   .empty {

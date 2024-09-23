@@ -19,8 +19,15 @@
     }
   }
 
+  function handleDelete(event) {
+    if (event.key === 'Backspace') {
+      isOpen = false
+    }
+  }
+
   onMount(() => {
     document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleDelete)
     portalContainer = document.createElement('div')
     portalContainer.id = 'popover-portal'
     document.body.appendChild(portalContainer)
@@ -28,6 +35,7 @@
 
   onDestroy(() => {
     document.removeEventListener('mousedown', handleClickOutside)
+    document.removeEventListener('keydown', handleDelete)
     if (portalContainer && document.body.contains(portalContainer)) {
       document.body.removeChild(portalContainer)
     }

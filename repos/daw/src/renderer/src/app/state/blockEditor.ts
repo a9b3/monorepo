@@ -11,7 +11,7 @@ class BlockEditor extends EventEmitter {
    * Block Manipulation
    *************************************/
 
-  insertBlockBelowCurrentBlock(createdBlock: Block) {
+  insertBlock(createdBlock: Block, direction: 'above' | 'below' = 'below') {
     if (!this.selectedPage) return
     const idx = this.selectedPage.children.findIndex(
       (block) => this.currentlyInFocusBlock?.id === block.id
@@ -19,7 +19,11 @@ class BlockEditor extends EventEmitter {
     if (idx === undefined || idx === null) {
       this.selectedPage.children.push(createdBlock)
     } else {
-      this.selectedPage.children.splice(idx + 1, 0, createdBlock)
+      if (direction === 'above') {
+        this.selectedPage.children.splice(idx, 0, createdBlock)
+      } else {
+        this.selectedPage.children.splice(idx + 1, 0, createdBlock)
+      }
     }
     this.currentlyInFocusBlock = createdBlock
     this.emit('selectedPage', this.selectedPage)
@@ -41,7 +45,32 @@ class BlockEditor extends EventEmitter {
           title: 'Insert Block',
           description: 'Insert a new block below the current block',
           action: () => {
-            this.insertBlockBelowCurrentBlock(this.createEmptyTextBlock())
+            this.insertBlock(this.createEmptyTextBlock())
+          },
+          preventDefault: true,
+          stopPropagation: true
+        },
+        {
+          key: 'shift+meta+Enter',
+          title: 'Insert Block Above',
+          description: 'Insert a new block above the current block',
+          action: () => {
+            this.insertBlock(this.createEmptyTextBlock(), 'above')
+          },
+          preventDefault: true,
+          stopPropagation: true
+        },
+        {
+          key: 'Enter',
+          title: 'Enter',
+          description:
+            'For certain block types (like headers), pressing enter will create a new block below the current block',
+          action: (e) => {
+            if (this.currentlyInFocusBlock?.type === 'header') {
+              this.insertBlock(this.createEmptyTextBlock())
+              e.preventDefault()
+              e.stopPropagation()
+            }
           }
         }
       ]

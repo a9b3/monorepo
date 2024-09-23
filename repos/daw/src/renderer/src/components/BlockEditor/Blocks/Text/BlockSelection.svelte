@@ -73,7 +73,9 @@
           key: 'Enter',
           title: 'Select Block',
           description: 'Select the block type',
-          action: selectBlock
+          action: selectBlock,
+          preventDefault: true,
+          stopPropagation: true
         }
       ]
     })

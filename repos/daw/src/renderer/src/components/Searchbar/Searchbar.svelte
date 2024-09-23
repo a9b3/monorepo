@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount, tick } from 'svelte'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
-  import searchIcon from '../assets/icons/search.svg?raw'
+  import searchIcon from '../../assets/icons/search.svg?raw'
   import Results from './Results.svelte'
   import blockApi from '@renderer/src/app/db/block'
   import type { Block } from '@renderer/src/app/types/block'

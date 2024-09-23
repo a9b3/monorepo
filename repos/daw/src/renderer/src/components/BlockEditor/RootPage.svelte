@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Block } from '@renderer/src/app/types/block'
-  import BlockSwitch from './BlockSwitch.svelte'
-  import blockEditorStore from './blockEditor.store'
+  import BlockSwitch from './Blocks/BlockSwitch.svelte'
 
   export let pageBlock: Block
   export let onChange: (path: string, value: any) => void
@@ -16,7 +15,9 @@
 
 <div class="main">
   {#each pageBlock.children as childBlock, idx}
-    <BlockSwitch path={`children.${idx}`} block={childBlock} {onChange} {onBlockFocus} />
+    {#key childBlock.id}
+      <BlockSwitch path={`children.${idx}`} block={childBlock} {onChange} {onBlockFocus} />
+    {/key}
   {/each}
 
   <!-- Allow clicking to craete new empty text block -->

@@ -2,7 +2,9 @@ export interface Shortcut {
   key: string
   title?: string
   description?: string
-  action: () => void
+  preventDefault?: boolean
+  stopPropagation?: boolean
+  action: (e: KeyboardEvent) => void
 }
 
 export interface ShortcutGroup {
@@ -56,7 +58,7 @@ export default class ShortcutManager {
   /**
    * Map of token to actions. The key is the parsed key.
    */
-  tokenToActions: Map<string, { context: string; action: () => void }[]> = new Map()
+  tokenToActions: Map<string, ({ context: string } & Shortcut)[]> = new Map()
 
   keyhandler = (event: KeyboardEvent): void => {
     const token = eventToShortcutKey(event)
@@ -70,9 +72,9 @@ export default class ShortcutManager {
           const currentIndex = this.contextStack.lastIndexOf(current.context)
           return currentIndex > prevIndex ? current : prev
         })
-        highestContextAction.action()
-        event.preventDefault()
-        event.stopPropagation()
+        highestContextAction.action(event)
+        highestContextAction.preventDefault && event.preventDefault()
+        highestContextAction.stopPropagation && event.stopPropagation()
       }
     }
   }
@@ -103,9 +105,9 @@ export default class ShortcutManager {
       }
       const idx = this.tokenToActions.get(token)!.findIndex((a) => a.context === context)
       if (idx !== -1) {
-        this.tokenToActions.get(token)![idx] = { context, action: shortcut.action }
+        this.tokenToActions.get(token)![idx] = { context, ...shortcut }
       } else {
-        this.tokenToActions.get(token)!.push({ context, action: shortcut.action })
+        this.tokenToActions.get(token)!.push({ context, ...shortcut })
       }
     })
   }
