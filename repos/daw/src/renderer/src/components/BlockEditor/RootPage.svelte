@@ -1,10 +1,10 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import type { Block } from '@renderer/src/app/types/block'
   import BlockSwitch from './Blocks/BlockSwitch.svelte'
 
   export let pageBlock: Block
   export let onChange: (path: string, value: any) => void
-  export let onBlockFocus: (block: Block) => void
 
   function lastBlockIsEmptyText(pageBlock: Block) {
     const lastBlock = pageBlock.children[pageBlock.children.length - 1]
@@ -16,7 +16,7 @@
 <div class="main">
   {#each pageBlock.children as childBlock, idx}
     {#key childBlock.id}
-      <BlockSwitch path={`children.${idx}`} block={childBlock} {onChange} {onBlockFocus} />
+      <BlockSwitch path={`children.${idx}`} block={childBlock} {onChange} />
     {/key}
   {/each}
 

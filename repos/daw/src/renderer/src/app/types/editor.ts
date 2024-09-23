@@ -1,9 +1,13 @@
 import type { Block, Page } from '@renderer/src/app/types/block'
 
-export interface PageEditor {
-  currentFocusBlock: Block
-  currentFocusPage: Page
+export interface Editor {
+  currentFocusBlock: Block | null
+  currentFocusPage: Page | null
   selectedBlocks: Block[]
+
+  /******* Setters *******/
+  setCurrentFocusBlock(block: Block | null): void
+  setCurrentFocusPage(page: Page | null): void
 
   /******* Block Manipulation *******/
   addBlock(createdBlock: Block, idx: number, direction: 'above' | 'below'): void

@@ -18,20 +18,21 @@
   {#if appRdy}
     <TitleBar></TitleBar>
     <MainLayout />
-    <CSSVariables />
-    <ShortcutLegend />
   {/if}
 </main>
+<CSSVariables />
+<ShortcutLegend />
 
 <style>
   main {
-    /* display: flex; */
-    /* flex-direction: column; */
+    display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100vw;
     user-select: none;
     background: var(--colors-bg);
     border: var(--border);
     border-radius: 10px;
+    overflow: hidden;
   }
 </style>

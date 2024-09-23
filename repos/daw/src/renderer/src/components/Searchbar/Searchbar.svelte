@@ -4,14 +4,18 @@
   import searchIcon from '../../assets/icons/search.svg?raw'
   import Results from './Results.svelte'
   import blockApi from '@renderer/src/app/db/block'
-  import type { Block } from '@renderer/src/app/types/block'
+  import type { Page } from '@renderer/src/app/types/block'
 
   let inputEl = null
-  let results: Block[] = []
+  let results: Page[] = []
   let selectedIds: string[] = []
 
-  export let onBlockChange: (block?: Block) => void
+  export let onPageChange: (block?: Page) => void
   export let onSubmit: () => void | undefined
+
+  let queryOpts = {
+    sortBy: [{ field: 'lastModified', direction: 'DSC' as 'DSC' }]
+  }
 
   // if there is an exact title match then select it, otherwise create a new
   // note with the search query as the title
@@ -20,36 +24,47 @@
 
     const searchQuery = e.target['0'].value
 
-    let getBlockOpts = searchQuery
-      ? { filterBy: [{ field: 'properties.title', value: searchQuery }] }
-      : {}
-    results = await blockApi.getAllBlocks(getBlockOpts)
+    let getBlockOpts = {
+      ...queryOpts,
+      ...(searchQuery ? { filterBy: [{ field: 'properties.title', value: searchQuery }] } : {})
+    }
+    results = (await blockApi.getAllBlocks(getBlockOpts)) as Page[]
 
     if (results.length === 0) {
       await blockApi.createBlock({
         parent: null,
         type: 'page',
         properties: { title: searchQuery },
-        children: []
+        children: [
+          {
+            parent: null,
+            id: window.crypto.randomUUID(),
+            type: 'text',
+            properties: { text: '' },
+            lastModified: new Date().toISOString(),
+            children: []
+          }
+        ]
       })
-      results = await blockApi.getAllBlocks(getBlockOpts)
-      onBlockChange(results[0])
+      results = (await blockApi.getAllBlocks(getBlockOpts)) as Page[]
+      onPageChange(results[0])
     }
     await tick()
     onSubmit()
   }
 
   async function handleInput(e: Event) {
-    const searchQuery = e.target.value
+    const target = e.target as HTMLInputElement
+    const searchQuery = target.value
     results = searchQuery
-      ? await blockApi.searchBlocks({ query: searchQuery })
-      : await blockApi.getAllBlocks()
-    onBlockChange()
+      ? ((await blockApi.searchBlocks({ query: searchQuery })) as Page[])
+      : ((await blockApi.getAllBlocks(queryOpts)) as Page[])
+    onPageChange()
     selectedIds = []
   }
 
   onMount(async () => {
-    results = await blockApi.getAllBlocks()
+    results = (await blockApi.getAllBlocks(queryOpts)) as Page[]
     $shortcutManager.manager.register({
       context: 'search',
       title: 'Search',
@@ -90,25 +105,25 @@
     const idx = results.findIndex((block) => block.id === selectedIds[0])
     if (idx < results.length - 1) {
       selectedIds = [results[idx + 1].id]
-      onBlockChange(results[idx + 1])
+      onPageChange(results[idx + 1])
     }
   }}
   onPrev={() => {
     const idx = results.findIndex((block) => block.id === selectedIds[0])
     if (idx > 0) {
       selectedIds = [results[idx - 1].id]
-      onBlockChange(results[idx - 1])
+      onPageChange(results[idx - 1])
     }
   }}
   onDelete={async () => {
     await blockApi.deleteBlock(selectedIds[0])
     results = await blockApi.getAllBlocks()
-    onBlockChange()
+    onPageChange()
     selectedIds = []
   }}
   onSelectId={(id) => {
     selectedIds = [id]
-    onBlockChange(results.find((block) => block.id === id))
+    onPageChange(results.find((block) => block.id === id))
   }}
   {selectedIds}
 />

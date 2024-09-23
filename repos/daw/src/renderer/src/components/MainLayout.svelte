@@ -3,13 +3,11 @@
 -->
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import type { Block, Page } from '@renderer/src/app/types/block'
   import Searchbar from './Searchbar/Searchbar.svelte'
   import PageBlock from './BlockEditor/RootPage.svelte'
   import blockUtils from './BlockEditor/util'
   import blockEditorStore from './BlockEditor/blockEditor.store'
 
-  let selectedBlock: Block
   let isFocused = false
 
   onMount(() => {
@@ -20,32 +18,45 @@
   })
 </script>
 
-<Searchbar
-  onBlockChange={(block) => {
-    $blockEditorStore.editor.setSelectedPage(block)
-  }}
-  onSubmit={() => {
-    isFocused = true
-  }}
-/>
-{#key $blockEditorStore.editor.selectedPage?.id + $blockEditorStore.editor.selectedPage?.children.length}
-  {#if $blockEditorStore.editor.selectedPage}
-    <PageBlock
-      pageBlock={$blockEditorStore.editor.selectedPage}
-      onChange={(path, value) => {
-        blockUtils.deepUpdateBlock(path, value, $blockEditorStore.editor.selectedPage)
-        $blockEditorStore.editor.setSelectedPage($blockEditorStore.editor.selectedPage)
-      }}
-      onBlockFocus={(block) => {
-        $blockEditorStore.editor.setCurrentlyInFocusBlock(block)
-      }}
-    />
-  {:else}
-    <div class="empty">No note selected...</div>
-  {/if}
-{/key}
+<div class="container">
+  <Searchbar
+    onPageChange={(page) => {
+      $blockEditorStore.editor.setCurrentFocusPage(page)
+    }}
+    onSubmit={() => {
+      isFocused = true
+    }}
+  />
+  <div class="editor">
+    {#key $blockEditorStore.editor.currentFocusPage?.id}
+      {#if $blockEditorStore.editor.currentFocusPage}
+        <PageBlock
+          pageBlock={$blockEditorStore.editor.currentFocusPage}
+          onChange={(path, value) => {
+            blockUtils.deepUpdateBlock(path, value, $blockEditorStore.editor.currentFocusPage)
+            $blockEditorStore.editor.setCurrentFocusPage($blockEditorStore.editor.currentFocusPage)
+          }}
+        />
+      {:else}
+        <div class="empty">No note selected...</div>
+      {/if}
+    {/key}
+  </div>
+</div>
 
 <style>
+  .container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .editor {
+    height: 100%;
+    flex: 1;
+    overflow: auto;
+  }
   .empty {
     display: flex;
     justify-content: center;

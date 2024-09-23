@@ -181,10 +181,15 @@ const getAllBlocks: API['getAllBlocks'] = async (opts = {}) => {
       if (opts.sortBy) {
         blocks = blocks.sort((a, b) => {
           for (const sort of opts.sortBy) {
+            if (sort.field === 'lastModified') {
+              return sort.direction === 'ASC'
+                ? new Date(a.lastModified).getTime() - new Date(b.lastModified).getTime()
+                : new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime()
+            }
             if (a[sort.field] < b[sort.field]) {
               return sort.direction === 'ASC' ? -1 : 1
             } else if (a[sort.field] > b[sort.field]) {
-              return sort.direction === 'ASC' ? 1 : -1
+              return sort.direction === 'DSC' ? 1 : -1
             }
           }
           return 0

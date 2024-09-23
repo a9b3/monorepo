@@ -1,33 +1,154 @@
 import EventEmitter from 'events'
 import type { Block, Page } from '@renderer/src/app/types/block'
+import type { Editor } from '@renderer/src/app/types/editor'
 import shortcutManager from '@renderer/src/state/shortcutManager'
 
-class BlockEditor extends EventEmitter {
-  currentInFocusWindow: string = ''
-  selectedPage: Page | null = null
-  currentlyInFocusBlock: Block | null = null
+class BlockEditor extends EventEmitter implements Editor {
+  currentFocusBlock: Block | null = null
+  currentFocusPage: Page | null = null
+  selectedBlocks: Block[] = []
+
+  /*************************************
+   * Setters
+   *************************************/
+
+  setCurrentFocusBlock(block: Block | null): void {
+    this.currentFocusBlock = block
+
+    if (!block) return
+
+    this.pollForElement(`[data-block-id="${block?.id}"]`).then((el) => {
+      el.focus()
+    })
+
+    this.emit('currentFocusBlock', block)
+    this.emit('*')
+  }
+
+  setCurrentFocusPage(page: Page | null): void {
+    this.currentFocusPage = page
+    const firstBlockId = page ? page.children[0]?.id : null
+    if (firstBlockId) {
+      this.pollForElement(`[data-block-id="${firstBlockId}"]`).then((el) => {
+        el.focus()
+      })
+    }
+    this.emit('currentFocusPage', page)
+    this.emit('*')
+  }
 
   /*************************************
    * Block Manipulation
    *************************************/
 
-  insertBlock(createdBlock: Block, direction: 'above' | 'below' = 'below') {
-    if (!this.selectedPage) return
-    const idx = this.selectedPage.children.findIndex(
-      (block) => this.currentlyInFocusBlock?.id === block.id
-    )
+  addBlock(createdBlock: Block, idx: number, direction: 'above' | 'below'): void {
+    if (!this.currentFocusPage) return
     if (idx === undefined || idx === null) {
-      this.selectedPage.children.push(createdBlock)
+      this.currentFocusPage.children.push(createdBlock)
     } else {
       if (direction === 'above') {
-        this.selectedPage.children.splice(idx, 0, createdBlock)
+        this.currentFocusPage.children.splice(idx, 0, createdBlock)
       } else {
-        this.selectedPage.children.splice(idx + 1, 0, createdBlock)
+        this.currentFocusPage.children.splice(idx + 1, 0, createdBlock)
       }
     }
-    this.currentlyInFocusBlock = createdBlock
-    this.emit('selectedPage', this.selectedPage)
+
+    this.setCurrentFocusBlock(createdBlock)
+
+    this.emit('currentFocusPage', this.currentFocusPage)
     this.emit('*')
+  }
+
+  moveBlock(idx: number, toIdx: number): void {
+    this.emit('currentFocusPage', this.currentFocusPage)
+    this.emit('*')
+    throw new Error('Method not implemented.')
+  }
+
+  deleteBlock(id: string): void {
+    if (!this.currentFocusPage) return
+    const idx = this.currentFocusPage.children.findIndex((block) => block.id === id)
+    if (idx === undefined || idx === null) return
+    this.currentFocusPage.children.splice(idx, 1)
+
+    this.emit('currentFocusPage', this.currentFocusPage)
+    this.emit('*')
+  }
+
+  /*************************************
+   * Helpers
+   *************************************/
+
+  /**
+   * Poll for an element to exist in the DOM using raf for 5 seconds then
+   * resolve
+   */
+  pollForElement(selector: string): Promise<HTMLElement> {
+    return new Promise((resolve) => {
+      let timeout: number
+      const poll = () => {
+        const el = document.querySelector(selector)
+        if (el) {
+          resolve(el as HTMLElement)
+          cancelAnimationFrame(timeout)
+        } else {
+          timeout = requestAnimationFrame(poll)
+        }
+      }
+      poll()
+    })
+  }
+
+  /**
+   * Insert a block relative to the currently focused block
+   */
+  addRelativeToFocusedBlock(createdBlock: Block, direction: 'above' | 'below'): void {
+    const idx = this.currentFocusPage?.children.findIndex(
+      (block) => this.currentFocusBlock?.id === block.id
+    )
+    if (idx === undefined || idx === null) return
+    this.addBlock(createdBlock, idx, direction)
+  }
+
+  lastBlockIsEmptyText(block: Block) {
+    const lastBlock = block.children[block.children.length - 1]
+    if (!lastBlock) return false
+    return lastBlock.type === 'text' && lastBlock.properties.text === ''
+  }
+
+  createEmptyTextBlock() {
+    return {
+      id: window.crypto.randomUUID(),
+      type: 'text' as 'text',
+      properties: {
+        text: ''
+      },
+      children: [],
+      parent: this.currentFocusPage?.id || null,
+      lastModified: new Date().toISOString()
+    }
+  }
+
+  /*************************************
+   * Selection
+   *************************************/
+
+  selectBlock(id: string): void {
+    throw new Error('Method not implemented.')
+  }
+  clearSelection(): void {
+    throw new Error('Method not implemented.')
+  }
+
+  /*************************************
+   * Navigation
+   *************************************/
+
+  cursorDown(): void {
+    throw new Error('Method not implemented.')
+  }
+  cursorUp(): void {
+    throw new Error('Method not implemented.')
   }
 
   /*************************************
@@ -45,7 +166,7 @@ class BlockEditor extends EventEmitter {
           title: 'Insert Block',
           description: 'Insert a new block below the current block',
           action: () => {
-            this.insertBlock(this.createEmptyTextBlock())
+            this.addRelativeToFocusedBlock(this.createEmptyTextBlock(), 'below')
           },
           preventDefault: true,
           stopPropagation: true
@@ -55,7 +176,7 @@ class BlockEditor extends EventEmitter {
           title: 'Insert Block Above',
           description: 'Insert a new block above the current block',
           action: () => {
-            this.insertBlock(this.createEmptyTextBlock(), 'above')
+            this.addRelativeToFocusedBlock(this.createEmptyTextBlock(), 'above')
           },
           preventDefault: true,
           stopPropagation: true
@@ -66,8 +187,8 @@ class BlockEditor extends EventEmitter {
           description:
             'For certain block types (like headers), pressing enter will create a new block below the current block',
           action: (e) => {
-            if (this.currentlyInFocusBlock?.type === 'header') {
-              this.insertBlock(this.createEmptyTextBlock())
+            if (this.currentFocusBlock?.type === 'header') {
+              this.addRelativeToFocusedBlock(this.createEmptyTextBlock(), 'below')
               e.preventDefault()
               e.stopPropagation()
             }
@@ -80,52 +201,6 @@ class BlockEditor extends EventEmitter {
 
   removeListeners() {
     shortcutManager.popActiveContext('blockEditor')
-  }
-
-  /*************************************
-   * Setters
-   *************************************/
-
-  setCurrentInFocusWindow(id: string) {
-    this.currentInFocusWindow = id
-    this.emit('currentInFocusWindow', id)
-    this.emit('*')
-  }
-
-  setSelectedPage(pageBlock: Page | null) {
-    this.selectedPage = pageBlock
-    this.emit('selectedPage', pageBlock)
-    this.emit('*')
-  }
-
-  setCurrentlyInFocusBlock(block: Block | null) {
-    console.log(`here`)
-    this.currentlyInFocusBlock = block
-    this.emit('currentlyInFocusBlock', block)
-    this.emit('*')
-  }
-
-  /*************************************
-   * Utils
-   *************************************/
-
-  lastBlockIsEmptyText(block: Block) {
-    const lastBlock = block.children[block.children.length - 1]
-    if (!lastBlock) return false
-    return lastBlock.type === 'text' && lastBlock.properties.text === ''
-  }
-
-  createEmptyTextBlock() {
-    return {
-      id: window.crypto.randomUUID(),
-      type: 'text' as 'text',
-      properties: {
-        text: ''
-      },
-      children: [],
-      parent: this.selectedPage?.id || null,
-      lastModified: new Date().toISOString()
-    }
   }
 }
 

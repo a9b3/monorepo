@@ -7,15 +7,9 @@
   export let path: string
   export let block: Block
   export let onChange: (path: string, value: any) => void
-  export let onBlockFocus: (block: Block) => void
 </script>
 
-<div
-  class="container"
-  on:focusin={() => {
-    onBlockFocus(block)
-  }}
->
+<div class="container">
   {#if block.type === 'header'}
     <Header {block} {onChange} path={path + '.properties.text'} />
   {:else if block.type === 'text'}

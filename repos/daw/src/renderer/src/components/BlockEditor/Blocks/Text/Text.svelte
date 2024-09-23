@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import type { Text as TextBlock } from '@renderer/src/app/types/block'
   import Popover from '@renderer/src/components/generic/Popover.svelte'
   import BlockSelection from './BlockSelection.svelte'
@@ -13,22 +12,16 @@
 
   let containerEl: HTMLDivElement
   let showPopover = false
-
-  onMount(() => {
-    if (block.properties.text === '') {
-      containerEl.focus()
-    }
-  })
 </script>
 
 <div
+  data-block-id={block.id}
   bind:this={containerEl}
   class="main"
   contenteditable={true}
   {placeholder}
   on:input={(e) => {
     if (e.target.innerHTML === '/') {
-      console.log('show popover')
       e.target.innerHTML = ''
       showPopover = true
     } else {
@@ -57,7 +50,7 @@
   .main:focus {
     outline: none;
   }
-  .main:empty:before:focus-within {
+  .main:focus:empty:before {
     content: attr(placeholder);
     pointer-events: none;
     display: block; /* For Firefox */
