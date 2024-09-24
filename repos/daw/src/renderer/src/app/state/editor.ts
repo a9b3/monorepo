@@ -9,6 +9,11 @@ class Editor extends EventEmitter implements EditorI {
   currentFocusPage: Page | null = null
   selectedBlocks: Block[] = []
 
+  constructor() {
+    super()
+    this.setMaxListeners(100)
+  }
+
   /*************************************
    * Setters
    *************************************/
