@@ -1,9 +1,9 @@
 import EventEmitter from 'events'
 import type { Block, Page } from '@renderer/src/app/types/block'
-import type { Editor } from '@renderer/src/app/types/editor'
+import type { Editor as EditorI } from '@renderer/src/app/types/editor'
 import shortcutManager from '@renderer/src/state/shortcutManager'
 
-class BlockEditor extends EventEmitter implements Editor {
+class Editor extends EventEmitter implements EditorI {
   currentFocusBlock: Block | null = null
   currentFocusPage: Page | null = null
   selectedBlocks: Block[] = []
@@ -14,6 +14,8 @@ class BlockEditor extends EventEmitter implements Editor {
 
   setCurrentFocusBlock(block: Block | null): void {
     this.currentFocusBlock = block
+    const idx = this.currentFocusPage?.children.findIndex((b) => b.id === block?.id)
+    this.currentFocusPage?.children.splice(idx, 1, block as Block)
     if (!block) return
 
     this.emit('currentFocusBlock', block)
@@ -93,7 +95,6 @@ class BlockEditor extends EventEmitter implements Editor {
         text: ''
       },
       children: [],
-      parent: this.currentFocusPage?.id || null,
       lastModified: new Date().toISOString()
     }
   }
@@ -127,7 +128,6 @@ class BlockEditor extends EventEmitter implements Editor {
   registerFocusIn = (evt: FocusEvent) => {
     const node = evt.target as HTMLElement
     const id = node.getAttribute('data-block-id')
-    console.log(`focusin: ${evt.target}`, id)
     if (id) {
       const block = this.currentFocusPage?.children.find((block) => block.id === id)
       if (!block) return
@@ -218,6 +218,6 @@ class BlockEditor extends EventEmitter implements Editor {
   }
 }
 
-const blockEditor = new BlockEditor()
+const editor = new Editor()
 
-export default blockEditor
+export default editor

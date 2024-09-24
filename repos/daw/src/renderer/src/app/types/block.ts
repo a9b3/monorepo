@@ -2,7 +2,6 @@
  * ex.
   const block = {
    id: '123',
-   parent: null,
    type: 'page',
    properties: {
      title: 'My First Note'
@@ -10,7 +9,6 @@
    children: [
      {
        id: '456',
-       parent: '123',
        type: 'header',
        properties: {
          level: 1,
@@ -18,7 +16,6 @@
        children: [
          {
            id: '789',
-           parent: '456',
            type: 'text',
            properties: {
              text: 'Hello, World!'
@@ -36,7 +33,6 @@
 
 export interface BaseBlock {
   id: string
-  parent: string | null
   children: Block[]
   lastModified: string
   type: string
@@ -45,7 +41,7 @@ export interface BaseBlock {
 
 /********** Block Types **********/
 
-export type Block = Page | Header | Code | ListItem | Text
+export type Block = Header | Code | ListItem | Text
 
 export interface Page extends BaseBlock {
   type: 'page'
@@ -72,7 +68,7 @@ export interface Header extends BaseBlock {
 export interface Code extends BaseBlock {
   type: 'code'
   properties: {
-    text: Text
+    text: string
     language: string
   }
 }
@@ -80,7 +76,7 @@ export interface Code extends BaseBlock {
 export interface ListItem extends BaseBlock {
   type: 'listItem'
   properties: {
-    text: Text
+    text: string
     listType: 'todo' | 'bullet' | 'numbered'
     checked: boolean
   }

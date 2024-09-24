@@ -1,9 +1,9 @@
 <script lang="ts">
-  export let onSelection: (type: string, properties?: Object) => void
-
   import { onMount, onDestroy } from 'svelte'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
   import Table from '@renderer/src/components/generic/Table.svelte'
+
+  export let onSelection: (type: string, properties?: Object) => void
 
   let data = [
     {

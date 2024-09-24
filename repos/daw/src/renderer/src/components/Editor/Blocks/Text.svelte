@@ -2,12 +2,11 @@
   import type { Text as TextBlock } from '@renderer/src/app/types/block'
   import Popover from '@renderer/src/components/generic/Popover.svelte'
   import BlockSelection from './BlockSelection.svelte'
-  import { autofocus } from '../autofocus'
+  import { editorHelper } from './editorHelper'
+  import editorStore from '@renderer/src/stores/editor'
 
   export let placeholder = `Press '/' to create a block...`
-  export let path: string
   export let block: TextBlock
-  export let onChange: (path: string, value: any) => void
 
   let textBuffer = block.properties.text
 
@@ -20,7 +19,7 @@
   bind:this={containerEl}
   class="main"
   contenteditable={true}
-  use:autofocus
+  use:editorHelper
   {placeholder}
   on:input={(e) => {
     if (e.target.innerHTML === '/') {
@@ -28,7 +27,6 @@
       showPopover = true
     } else {
       showPopover = false
-      onChange(path + '.properties.text', e.target.innerHTML)
     }
   }}
 >
@@ -38,8 +36,12 @@
 <Popover position="bottom" bind:isOpen={showPopover} triggerElement={containerEl} align="left">
   <BlockSelection
     onSelection={(type, properties) => {
-      onChange(path + '.type', type)
-      onChange(path + '.properties', properties)
+      $editorStore.editor.setCurrentFocusBlock({
+        ...block,
+        type,
+        properties
+      })
+      $editorStore.editor.emit('*')
       showPopover = false
     }}
   />

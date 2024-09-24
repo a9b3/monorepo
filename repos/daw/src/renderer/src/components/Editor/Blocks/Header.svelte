@@ -1,27 +1,18 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import type { Header } from '@renderer/src/app/types/block'
-  import { autofocus } from './autofocus'
+  import { editorHelper } from './editorHelper'
+
   export let block: Header
-  export let path: string
-  export let onChange = (path: string, value: string) => {}
 
   let textBuffer = block.properties.text
-  let containerEl: HTMLDivElement
-
-  function handleOnChange(e) {
-    onChange(path, e.target.innerHTML)
-  }
 </script>
 
 <svelte:element
   this={`h${block.properties.level}`}
   class="main"
   contenteditable
-  on:input={handleOnChange}
-  bind:this={containerEl}
   data-block-id={block.id}
-  use:autofocus
+  use:editorHelper
 >
   {@html textBuffer}
 </svelte:element>

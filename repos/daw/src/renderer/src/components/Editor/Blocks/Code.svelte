@@ -1,15 +1,15 @@
-<script>
+<script lang="ts">
+  import type { Block } from '@renderer/src/app/types/block'
   import { onMount, afterUpdate } from 'svelte'
   import hljs from 'highlight.js/lib/common'
-  import { autofocus } from './autofocus'
+  import { editorHelper } from './editorHelper'
 
-  export let id = ''
-  export let value = ''
-  export let onChange = () => {}
+  export let block: Block
+  let value = block.properties.text
 
-  let editableElement
-  let highlightedElement
-  let containerElement
+  let editableElement: HTMLTextAreaElement
+  let highlightedElement: HTMLElement
+  let containerElement: HTMLDivElement
   let detectedLanguage = ''
 
   function updateHighlight() {
@@ -44,7 +44,6 @@
   function handleInput(event) {
     const newValue = event.target.value
     value = newValue
-    onChange(newValue)
     adjustHeight()
   }
 </script>
@@ -52,13 +51,13 @@
 <div class="code-editor hljs" bind:this={containerElement}>
   <pre><code bind:this={highlightedElement}></code></pre>
   <textarea
-    data-block-id={id}
+    data-block-id={block.id}
     bind:this={editableElement}
     {value}
     on:input={handleInput}
     spellcheck="false"
     rows="1"
-    use:autofocus
+    use:editorHelper
   ></textarea>
   {#if detectedLanguage}
     <div class="language-indicator">{detectedLanguage}</div>

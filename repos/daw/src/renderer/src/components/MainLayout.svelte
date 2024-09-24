@@ -2,41 +2,22 @@
   This component is responsible for rendering the editor container.
 -->
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
+  import editorStore from '@renderer/src/stores/editor'
   import Searchbar from './Searchbar/Searchbar.svelte'
-  import PageBlock from './BlockEditor/RootPage.svelte'
-  import blockUtils from './BlockEditor/util'
-  import blockEditorStore from './BlockEditor/blockEditor.store'
-
-  let isFocused = false
-
-  onMount(() => {
-    $blockEditorStore.editor.registerListeners()
-  })
-  onDestroy(() => {
-    $blockEditorStore.editor.removeListeners()
-  })
+  import Editor from './Editor/Editor.svelte'
 </script>
 
 <div class="container">
   <Searchbar
     onPageChange={(page) => {
-      $blockEditorStore.editor.setCurrentFocusPage(page)
+      $editorStore.editor.setCurrentFocusPage(page)
     }}
-    onSubmit={() => {
-      isFocused = true
-    }}
+    onSubmit={undefined}
   />
   <div class="editor">
-    {#key $blockEditorStore.editor.currentFocusPage?.id}
-      {#if $blockEditorStore.editor.currentFocusPage}
-        <PageBlock
-          pageBlock={$blockEditorStore.editor.currentFocusPage}
-          onChange={(path, value) => {
-            blockUtils.deepUpdateBlock(path, value, $blockEditorStore.editor.currentFocusPage)
-            $blockEditorStore.editor.setCurrentFocusPage($blockEditorStore.editor.currentFocusPage)
-          }}
-        />
+    {#key $editorStore.editor.currentFocusPage?.id}
+      {#if $editorStore.editor.currentFocusPage}
+        <Editor />
       {:else}
         <div class="empty">No note selected...</div>
       {/if}
