@@ -99,6 +99,7 @@ const deleteBlock: API['deleteBlock'] = async (id) => {
     const objectStore = transaction.objectStore(OBJ_STORES.blocks)
 
     const request = objectStore.delete(id)
+    blockSearchIndex.removeIndex(id)
 
     request.onerror = function (event) {
       reject(event)
@@ -121,6 +122,7 @@ const deleteBlocks: API['deleteBlocks'] = async (ids) => {
 
     ids.forEach((id) => {
       objectStore.delete(id)
+      blockSearchIndex.removeIndex(id)
     })
 
     transaction.oncomplete = function () {

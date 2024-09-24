@@ -2,6 +2,7 @@
   import type { Text as TextBlock } from '@renderer/src/app/types/block'
   import Popover from '@renderer/src/components/generic/Popover.svelte'
   import BlockSelection from './BlockSelection.svelte'
+  import { autofocus } from '../autofocus'
 
   export let placeholder = `Press '/' to create a block...`
   export let path: string
@@ -19,6 +20,7 @@
   bind:this={containerEl}
   class="main"
   contenteditable={true}
+  use:autofocus
   {placeholder}
   on:input={(e) => {
     if (e.target.innerHTML === '/') {

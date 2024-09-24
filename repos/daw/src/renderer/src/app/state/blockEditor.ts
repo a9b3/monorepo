@@ -14,12 +14,7 @@ class BlockEditor extends EventEmitter implements Editor {
 
   setCurrentFocusBlock(block: Block | null): void {
     this.currentFocusBlock = block
-
     if (!block) return
-
-    this.pollForElement(`[data-block-id="${block?.id}"]`).then((el) => {
-      el.focus()
-    })
 
     this.emit('currentFocusBlock', block)
     this.emit('*')
@@ -27,12 +22,6 @@ class BlockEditor extends EventEmitter implements Editor {
 
   setCurrentFocusPage(page: Page | null): void {
     this.currentFocusPage = page
-    const firstBlockId = page ? page.children[0]?.id : null
-    if (firstBlockId) {
-      this.pollForElement(`[data-block-id="${firstBlockId}"]`).then((el) => {
-        el.focus()
-      })
-    }
     this.emit('currentFocusPage', page)
     this.emit('*')
   }
@@ -78,26 +67,6 @@ class BlockEditor extends EventEmitter implements Editor {
   /*************************************
    * Helpers
    *************************************/
-
-  /**
-   * Poll for an element to exist in the DOM using raf for 5 seconds then
-   * resolve
-   */
-  pollForElement(selector: string): Promise<HTMLElement> {
-    return new Promise((resolve) => {
-      let timeout: number
-      const poll = () => {
-        const el = document.querySelector(selector)
-        if (el) {
-          resolve(el as HTMLElement)
-          cancelAnimationFrame(timeout)
-        } else {
-          timeout = requestAnimationFrame(poll)
-        }
-      }
-      poll()
-    })
-  }
 
   /**
    * Insert a block relative to the currently focused block
@@ -155,7 +124,50 @@ class BlockEditor extends EventEmitter implements Editor {
    * Listeners
    *************************************/
 
+  registerFocusIn = (evt: FocusEvent) => {
+    const node = evt.target as HTMLElement
+    const id = node.getAttribute('data-block-id')
+    console.log(`focusin: ${evt.target}`, id)
+    if (id) {
+      const block = this.currentFocusPage?.children.find((block) => block.id === id)
+      if (!block) return
+      this.currentFocusBlock = block
+      this.emit('currentFocusBlock', block)
+      this.emit('*')
+    }
+  }
+
+  specialDelete = (evt: KeyboardEvent) => {
+    const node = evt.target as HTMLElement
+    const currentIdx = this.currentFocusPage?.children.findIndex(
+      (b) => b.id === this.currentFocusBlock?.id
+    )
+    if (
+      evt.key === 'Backspace' &&
+      node.getAttribute('data-block-id') === this.currentFocusBlock?.id
+    ) {
+      if (this.currentFocusBlock?.properties.text === '') {
+        this.deleteBlock(this.currentFocusBlock.id)
+        evt.stopPropagation()
+        if (currentIdx && currentIdx > 0) {
+          this.setCurrentFocusBlock(this.currentFocusPage?.children[currentIdx - 1] || null)
+        }
+      }
+    }
+  }
+
+  specialDownArrow = (evt: KeyboardEvent) => {
+    if (evt.key === 'ArrowDown') {
+      evt.preventDefault()
+      evt.stopPropagation()
+      this.cursorDown()
+    }
+  }
+
   registerListeners() {
+    document.addEventListener('focusin', this.registerFocusIn)
+    document.addEventListener('keydown', this.specialDelete)
+
     shortcutManager.register({
       title: 'Block Editor',
       context: 'blockEditor',
@@ -200,6 +212,8 @@ class BlockEditor extends EventEmitter implements Editor {
   }
 
   removeListeners() {
+    document.removeEventListener('focusin', this.registerFocusIn)
+    document.removeEventListener('keydown', this.specialDelete)
     shortcutManager.popActiveContext('blockEditor')
   }
 }

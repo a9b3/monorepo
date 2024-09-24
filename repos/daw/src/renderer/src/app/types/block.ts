@@ -45,14 +45,7 @@ export interface BaseBlock {
 
 /********** Block Types **********/
 
-export type Block = Page | Header | Code | List | ListItem | Text
-
-export interface Text extends BaseBlock {
-  type: 'text'
-  properties: {
-    text: string
-  }
-}
+export type Block = Page | Header | Code | ListItem | Text
 
 export interface Page extends BaseBlock {
   type: 'page'
@@ -61,11 +54,18 @@ export interface Page extends BaseBlock {
   }
 }
 
+export interface Text extends BaseBlock {
+  type: 'text'
+  properties: {
+    text: string
+  }
+}
+
 export interface Header extends BaseBlock {
   type: 'header'
   properties: {
-    level: number
     text: string
+    level: number
   }
 }
 
@@ -76,17 +76,12 @@ export interface Code extends BaseBlock {
     language: string
   }
 }
-export interface List extends BaseBlock {
-  type: 'list'
-  properties: {
-    type: 'todo' | 'bulleted' | 'numbered'
-  }
-}
 
 export interface ListItem extends BaseBlock {
   type: 'listItem'
   properties: {
     text: Text
+    listType: 'todo' | 'bullet' | 'numbered'
     checked: boolean
   }
 }

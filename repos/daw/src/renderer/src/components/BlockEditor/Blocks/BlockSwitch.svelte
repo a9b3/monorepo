@@ -16,6 +16,7 @@
     <Text {block} {onChange} {path} />
   {:else if block.type === 'code'}
     <Code
+      id={block.id}
       value={block.properties.text}
       onChange={(value) => {
         onChange(path + '.properties.text', value)

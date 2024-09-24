@@ -117,7 +117,7 @@
   }}
   onDelete={async () => {
     await blockApi.deleteBlock(selectedIds[0])
-    results = await blockApi.getAllBlocks()
+    results = await blockApi.getAllBlocks(queryOpts)
     onPageChange()
     selectedIds = []
   }}

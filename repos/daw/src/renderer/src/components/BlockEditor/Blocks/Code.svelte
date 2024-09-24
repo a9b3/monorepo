@@ -1,7 +1,9 @@
 <script>
   import { onMount, afterUpdate } from 'svelte'
   import hljs from 'highlight.js/lib/common'
+  import { autofocus } from './autofocus'
 
+  export let id = ''
   export let value = ''
   export let onChange = () => {}
 
@@ -31,7 +33,6 @@
   onMount(async () => {
     updateHighlight()
     adjustHeight()
-    editableElement.focus()
     await import('highlight.js/styles/tokyo-night-light.css')
   })
 
@@ -50,7 +51,14 @@
 
 <div class="code-editor hljs" bind:this={containerElement}>
   <pre><code bind:this={highlightedElement}></code></pre>
-  <textarea bind:this={editableElement} {value} on:input={handleInput} spellcheck="false" rows="1"
+  <textarea
+    data-block-id={id}
+    bind:this={editableElement}
+    {value}
+    on:input={handleInput}
+    spellcheck="false"
+    rows="1"
+    use:autofocus
   ></textarea>
   {#if detectedLanguage}
     <div class="language-indicator">{detectedLanguage}</div>
