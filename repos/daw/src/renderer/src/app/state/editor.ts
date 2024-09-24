@@ -2,6 +2,7 @@ import EventEmitter from 'events'
 import type { Block, Page } from '@renderer/src/app/types/block'
 import type { Editor as EditorI } from '@renderer/src/app/types/editor'
 import shortcutManager from '@renderer/src/state/shortcutManager'
+import blockApi from '../db/block'
 
 class Editor extends EventEmitter implements EditorI {
   currentFocusBlock: Block | null = null
@@ -93,6 +94,21 @@ class Editor extends EventEmitter implements EditorI {
       type: 'text' as 'text',
       properties: {
         text: ''
+      },
+      children: [],
+      lastModified: new Date().toISOString()
+    }
+  }
+
+  createListItemBlock(listType, indentLevel) {
+    return {
+      id: window.crypto.randomUUID(),
+      type: 'listItem' as 'listItem',
+      properties: {
+        text: '',
+        listType,
+        indentLevel,
+        checked: false
       },
       children: [],
       lastModified: new Date().toISOString()
@@ -204,6 +220,17 @@ class Editor extends EventEmitter implements EditorI {
               e.preventDefault()
               e.stopPropagation()
             }
+            if (this.currentFocusBlock?.type === 'listItem') {
+              this.addRelativeToFocusedBlock(
+                this.createListItemBlock(
+                  this.currentFocusBlock.properties.listType,
+                  this.currentFocusBlock.properties.indentLevel
+                ),
+                'below'
+              )
+              e.preventDefault()
+              e.stopPropagation()
+            }
           }
         }
       ]
@@ -219,5 +246,11 @@ class Editor extends EventEmitter implements EditorI {
 }
 
 const editor = new Editor()
+
+editor.on('*', () => {
+  if (editor.currentFocusPage) {
+    blockApi.saveBlock(editor.currentFocusPage)
+  }
+})
 
 export default editor

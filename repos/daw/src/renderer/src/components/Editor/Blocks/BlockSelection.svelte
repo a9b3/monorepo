@@ -10,7 +10,7 @@
       id: 'header',
       name: 'Header',
       properties: { level: 5, text: '' },
-      description: 'A block that contains a title'
+      description: 'Header text'
     },
     {
       id: 'code',
@@ -19,7 +19,17 @@
         text: '',
         language: ''
       },
-      description: 'A block that contains code'
+      description: 'Display code with syntax highlighting'
+    },
+    {
+      id: 'listItem',
+      name: 'Bullet List Item',
+      properties: {
+        text: '',
+        listType: 'bullet',
+        indentLevel: 0
+      },
+      description: 'Bullet list item'
     }
   ]
   let selectedRow = null
@@ -48,7 +58,7 @@
 
   function selectBlock() {
     const row = data.find((row) => row.id === selectedRow)
-    onSelection(String(row.name).toLowerCase(), row.properties)
+    onSelection(row.id, row.properties)
   }
 
   onMount(() => {

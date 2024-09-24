@@ -8,13 +8,15 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
   import Text from './Text.svelte'
   import Header from './Header.svelte'
   import Code from './Code.svelte'
+  import ListItem from './ListItem.svelte'
 
   export let block: Block
 
   const component = {
     header: Header,
     text: Text,
-    code: Code
+    code: Code,
+    listItem: ListItem
   }[block.type]
 </script>
 

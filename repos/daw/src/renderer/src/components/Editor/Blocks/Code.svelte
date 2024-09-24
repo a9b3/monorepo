@@ -33,7 +33,7 @@
   onMount(async () => {
     updateHighlight()
     adjustHeight()
-    await import('highlight.js/styles/tokyo-night-light.css')
+    await import('highlight.js/styles/monokai.css')
   })
 
   afterUpdate(() => {

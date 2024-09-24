@@ -11,7 +11,7 @@ export function editorHelper(node: HTMLElement) {
     const id = node.getAttribute('data-block-id')
     const block = editor.currentFocusPage?.children.find((block) => block.id === id)
     if (!block) return
-    block.properties.text = node.textContent || ''
+    block.properties.text = node.textContent || node.value || ''
     editor.emit('currentFocusBlock', block)
     editor.emit('*')
   }

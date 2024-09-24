@@ -78,6 +78,7 @@ export interface ListItem extends BaseBlock {
   properties: {
     text: string
     listType: 'todo' | 'bullet' | 'numbered'
+    indentLevel: number
     checked: boolean
   }
 }
