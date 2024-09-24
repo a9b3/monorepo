@@ -36,7 +36,7 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  globalShortcut.register('CommandOrControl+Shift+T', () => {
+  globalShortcut.register('CommandOrControl+Shift+I', () => {
     mainWindow.webContents.toggleDevTools()
     if (mainWindow.isFocused()) {
       mainWindow.hide()

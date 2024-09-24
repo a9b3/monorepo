@@ -46,7 +46,7 @@
     const triggerRect = triggerElement.getBoundingClientRect()
     const popoverRect = popoverElement.getBoundingClientRect()
     let top, left
-    const gap = 10 // Gap between trigger and popover
+    const gap = 2 // Gap between trigger and popover
 
     switch (position) {
       case 'top':

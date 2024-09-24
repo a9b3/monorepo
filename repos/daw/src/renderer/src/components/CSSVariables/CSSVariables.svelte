@@ -65,6 +65,7 @@
     transform: translate(-50%, -50%);
     background: white;
     border: var(--border);
+    background: var(--colors-bg);
     width: 500px;
     border-radius: 4px;
     overflow: auto;

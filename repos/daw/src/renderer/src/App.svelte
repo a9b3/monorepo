@@ -4,6 +4,7 @@
   import CSSVariables from './components/CSSVariables/CSSVariables.svelte'
   import ShortcutLegend from './components/ShortcutLegend.svelte'
   import MainLayout from './components/MainLayout.svelte'
+  import ConfirmDialogue from './components/generic/ConfirmDialogue.svelte'
   import { initDatabase } from './app/db/init'
 
   let appRdy = false
@@ -22,6 +23,7 @@
 </main>
 <CSSVariables />
 <ShortcutLegend />
+<ConfirmDialogue />
 
 <style>
   main {

@@ -210,17 +210,20 @@ class Editor extends EventEmitter implements EditorI {
           stopPropagation: true
         },
         {
+          key: 'Tab',
+          title: 'Tab'
+        },
+        {
           key: 'Enter',
           title: 'Enter',
           description:
             'For certain block types (like headers), pressing enter will create a new block below the current block',
           action: (e) => {
-            if (this.currentFocusBlock?.type === 'header') {
+            if (['header', 'text'].includes(this.currentFocusBlock?.type)) {
               this.addRelativeToFocusedBlock(this.createEmptyTextBlock(), 'below')
               e.preventDefault()
               e.stopPropagation()
-            }
-            if (this.currentFocusBlock?.type === 'listItem') {
+            } else if (this.currentFocusBlock?.type === 'listItem') {
               this.addRelativeToFocusedBlock(
                 this.createListItemBlock(
                   this.currentFocusBlock.properties.listType,

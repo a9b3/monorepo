@@ -51,7 +51,7 @@
     /* background-color: #f6f6f6; */
     -webkit-app-region: drag;
     position: relative;
-    border-bottom: 1px solid black;
+    border-bottom: var(--border);
   }
 
   .titlebar-buttons {

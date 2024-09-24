@@ -7,6 +7,13 @@ export function editorHelper(node: HTMLElement) {
     node.focus()
   }
 
+  function handleFocusBlockChange(block) {
+    if (block.id === id) {
+      node.focus()
+    }
+  }
+  editor.on('currentFocusBlock', handleFocusBlockChange)
+
   function handleInput() {
     const id = node.getAttribute('data-block-id')
     const block = editor.currentFocusPage?.children.find((block) => block.id === id)
@@ -21,6 +28,7 @@ export function editorHelper(node: HTMLElement) {
   return {
     destroy() {
       node.removeEventListener('input', handleInput)
+      editor.off('currentFocusBlock', handleFocusBlockChange)
     }
   }
 }

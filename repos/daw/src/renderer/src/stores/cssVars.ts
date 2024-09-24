@@ -7,7 +7,7 @@ const { subscribe, update } = writable<{
   cssVars: cssVars
 })
 
-cssVars.pubsub.subscribe('*', () => {
+cssVars.on('*', () => {
   update((state) => {
     state.cssVars = cssVars
     return state

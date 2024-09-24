@@ -1,9 +1,8 @@
 import { EventEmitter } from 'events'
-import PubSub from './pubsub/pubsub'
 
 class CSSVars extends EventEmitter {
-  pubsub = new PubSub()
-  variables: { [key: string]: string } = this.pubsub.createProxy({
+  variables: { [key: string]: string } = {
+    // Primitives
     '--primative-colors-grey1': '#343434',
     '--primative-colors-grey2': '#343434',
     '--primative-colors-grey3': '#393939',
@@ -24,9 +23,9 @@ class CSSVars extends EventEmitter {
     '--colors-fg3': 'var(--primative-colors-grey6)',
     '--colors-hl': 'var(--primative-colors-yellow1)',
     '--colors-link': 'var(--primative-colors-blue1)',
-    '--font-family': 'Proggy, sans-serif',
-    '--base-font-size': '16px',
-    '--base-line-height': 'calc(1rem * .9)',
+    '--border': '1px solid var(--colors-fg)',
+
+    // Spacing
     '--scale-ratio': '1.5',
     '--spacing-xxs': 'calc(1rem / calc(var(--scale-ratio) * 5))',
     '--spacing-xs': 'calc(1rem / var(--scale-ratio))',
@@ -34,19 +33,23 @@ class CSSVars extends EventEmitter {
     '--spacing-m': 'calc(1rem * var(--scale-ratio))',
     '--spacing-l': 'calc(1rem * var(--scale-ratio) * 2)',
     '--spacing-xl': 'calc(1rem * var(--scale-ratio) * 3)',
-    '--border': '1px solid var(--colors-fg)',
-    // Header sizes
-    '--font-size-h6': 'calc(var(--base-font-size) * var(--scale-ratio))',
-    '--font-size-h5': 'calc(var(--font-size-h6) * var(--scale-ratio))',
-    '--font-size-h4': 'calc(var(--font-size-h5) * var(--scale-ratio))',
-    '--font-size-h3': 'calc(var(--font-size-h4) * var(--scale-ratio))',
-    '--font-size-h2': 'calc(var(--font-size-h3) * var(--scale-ratio))',
-    '--font-size-h1': 'calc(var(--font-size-h2) * var(--scale-ratio))'
-  })
+
+    // Font
+    '--font-family': 'Proggy, sans-serif',
+    '--base-font-size': '16px',
+    '--base-line-height': 'calc(1rem * .9)',
+    '--font-scale-ratio': '1.5',
+    '--font-size-h6': 'calc(var(--base-font-size) * var(--font-scale-ratio))',
+    '--font-size-h5': 'calc(var(--font-size-h6) * var(--font-scale-ratio))',
+    '--font-size-h4': 'calc(var(--font-size-h5) * var(--font-scale-ratio))',
+    '--font-size-h3': 'calc(var(--font-size-h4) * var(--font-scale-ratio))',
+    '--font-size-h2': 'calc(var(--font-size-h3) * var(--font-scale-ratio))',
+    '--font-size-h1': 'calc(var(--font-size-h2) * var(--font-scale-ratio))'
+  }
 
   set(key: string, value: string) {
     this.variables[key] = value
-    this.emit('change')
+    this.emit('*')
   }
 
   setAndApply(key: string, value: string) {

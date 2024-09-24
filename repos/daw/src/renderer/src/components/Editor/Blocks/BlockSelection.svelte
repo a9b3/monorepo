@@ -116,5 +116,6 @@
 <style>
   .main {
     width: 300px;
+    background: var(--colors-bg);
   }
 </style>

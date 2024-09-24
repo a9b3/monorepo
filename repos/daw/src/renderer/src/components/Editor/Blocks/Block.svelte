@@ -26,7 +26,7 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
 
 <style>
   .container {
-    padding: var(--spacing-xxs) 0;
+    padding: 0;
   }
   .container:hover {
     outline: 1px solid rgba(0, 0, 0, 0.08);

@@ -6,10 +6,6 @@
   export let value: string = ''
   export let onChange: (value: string) => void = () => {}
 
-  $: {
-    onChange(value)
-  }
-
   const type = determineCssValueType(value)
 </script>
 

@@ -3,6 +3,7 @@
   import shortcutManager from '@renderer/src/stores/shortcutManager'
   import Table from '@renderer/src/components/generic/Table.svelte'
   import ResizableContainer from '@renderer/src/components/generic/ResizableContainer.svelte'
+  import confirmDialogue from '@renderer/src/app/state/confirmDialogue'
   import moment from 'moment'
 
   export let results: any = []
@@ -36,7 +37,13 @@
           key: 'meta+Backspace',
           description: 'Delete note',
           action: () => {
-            onDelete()
+            confirmDialogue.show({
+              message: 'Are you sure you want to delete this note?',
+              onConfirm: () => {
+                onDelete()
+              },
+              onCancel: () => {}
+            })
           }
         }
       ]

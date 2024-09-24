@@ -165,7 +165,7 @@
   }
 
   .icon-wrapper :global(svg path) {
-    fill: black;
+    fill: var(--colors-fg);
     fill-opacity: 1;
   }
 
