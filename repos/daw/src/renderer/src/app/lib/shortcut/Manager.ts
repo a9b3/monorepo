@@ -1,13 +1,15 @@
+import Stack from '../stack'
+
 export interface Shortcut {
   key: string
+  action: (e: KeyboardEvent) => void
   title?: string
   description?: string
   preventDefault?: boolean
   stopPropagation?: boolean
-  action: (e: KeyboardEvent) => void
 }
 
-export interface ShortcutGroup {
+export interface Shortcuts {
   title: string
   context: string
   description: string
@@ -18,67 +20,60 @@ function isMetaKey(s: string) {
   return ['ctrl', 'alt', 'meta', 'shift'].includes(s)
 }
 
-function parseShortcutKey(key: string) {
-  const metaKeys: string[] = []
-  const keys: string[] = []
-  const arr = key.split('+')
-  for (let index = 0; index < arr.length; index++) {
-    const element = arr[index]
-    if (isMetaKey(element)) {
-      metaKeys.push(element)
-    } else {
-      keys.push(element)
-    }
-  }
-  return metaKeys.sort().concat(keys.sort()).join('+')
-}
-
-function eventToShortcutKey(event: KeyboardEvent): string {
-  const metaKeys: string[] = []
-  if (event.altKey) {
-    metaKeys.push('alt')
-  }
-  if (event.ctrlKey) {
-    metaKeys.push('ctrl')
-  }
-  if (event.metaKey) {
-    metaKeys.push('meta')
-  }
-  if (event.shiftKey) {
-    metaKeys.push('shift')
-  }
-  return metaKeys.sort().concat(event.key).join('+')
-}
-
-export default class ShortcutManager {
-  listening = false
-  shortcuts: Map<string, ShortcutGroup> = new Map()
-  contextStack: string[] = []
-
+const keyParser = {
   /**
-   * Map of token to actions. The key is the parsed key.
+   * Parse a shortcut key into a canonical form.
+   * For example, 'ctrl+shift+a' and 'shift+ctrl+a' are equivalent.
    */
-  tokenToActions: Map<string, ({ context: string } & Shortcut)[]> = new Map()
-
-  keyhandler = (event: KeyboardEvent): void => {
-    const token = eventToShortcutKey(event)
-    const actions = this.tokenToActions.get(token)
-    if (actions && actions.length > 0) {
-      const validActions = actions.filter(({ context }) => this.contextStack.includes(context))
-      if (validActions.length > 0) {
-        // Find the action with the highest matching context
-        const highestContextAction = validActions.reduce((prev, current) => {
-          const prevIndex = this.contextStack.lastIndexOf(prev.context)
-          const currentIndex = this.contextStack.lastIndexOf(current.context)
-          return currentIndex > prevIndex ? current : prev
-        })
-        console.log('Action', highestContextAction)
-        highestContextAction.action(event)
-        highestContextAction.preventDefault && event.preventDefault()
-        highestContextAction.stopPropagation && event.stopPropagation()
+  fromString: (key: string) => {
+    const metaKeys: string[] = []
+    const keys: string[] = []
+    const arr = key.split('+')
+    for (let index = 0; index < arr.length; index++) {
+      const element = arr[index]
+      if (isMetaKey(element)) {
+        metaKeys.push(element)
+      } else {
+        keys.push(element)
       }
     }
+    return metaKeys.sort().concat(keys.sort()).join('+')
+  },
+
+  /**
+   * Convert a KeyboardEvent into a canonical shortcut key.
+   * For example, 'ctrl+shift+a' and 'shift+ctrl+a' are equivalent.
+   */
+  fromKeyboardEvent: (event: KeyboardEvent) => {
+    const metaKeys: string[] = []
+    if (event.altKey) {
+      metaKeys.push('alt')
+    }
+    if (event.ctrlKey) {
+      metaKeys.push('ctrl')
+    }
+    if (event.metaKey) {
+      metaKeys.push('meta')
+    }
+    if (event.shiftKey) {
+      metaKeys.push('shift')
+    }
+    return metaKeys.sort().concat(event.key).join('+')
   }
+}
+
+/**
+ * A manager for handling keyboard shortcuts.
+ * This class allows for registering shortcuts and invoking the appropriate
+ * action based on the current context.
+ */
+export default class ShortcutManager {
+  private listening = false
+  shortcuts: Map<string, Shortcuts> = new Map()
+  contextStack: Stack<string> = new Stack()
+  // Map of token to actions. The key is the parsed key. Used by the keyhandler
+  // to quickly find the action associated with a key.
+  tokenToActions: Map<string, Map<string, Shortcut>> = new Map()
 
   constructor() {
     this.startListening()
@@ -96,20 +91,19 @@ export default class ShortcutManager {
     window.removeEventListener('keydown', this.keyhandler)
   }
 
-  register(shortcutGroup: ShortcutGroup): void {
-    const { context } = shortcutGroup
-    this.shortcuts.set(context, shortcutGroup)
-    shortcutGroup.shortcuts.forEach((shortcut) => {
-      const token = parseShortcutKey(shortcut.key)
+  register(shortcuts: Shortcuts): void {
+    const { context } = shortcuts
+    this.shortcuts.set(context, shortcuts)
+
+    shortcuts.shortcuts.forEach((shortcut) => {
+      const token = keyParser.fromString(shortcut.key)
       if (!this.tokenToActions.has(token)) {
-        this.tokenToActions.set(token, [])
+        this.tokenToActions.set(token, new Map())
       }
-      const idx = this.tokenToActions.get(token)!.findIndex((a) => a.context === context)
-      if (idx !== -1) {
-        this.tokenToActions.get(token)![idx] = { context, ...shortcut }
-      } else {
-        this.tokenToActions.get(token)!.push({ context, ...shortcut })
+      if (this.tokenToActions.get(token)!.has(context)) {
+        throw new Error(`Shortcut ${shortcut.key} already registered for context ${context}`)
       }
+      this.tokenToActions.get(token)!.set(context, shortcut)
     })
   }
 
@@ -118,6 +112,29 @@ export default class ShortcutManager {
   }
 
   popActiveContext(context: string): void {
-    this.contextStack = this.contextStack.filter((c) => c !== context)
+    this.contextStack.remove(context)
+  }
+
+  /**
+   * Find and invoke the action associated with the highest context in the
+   * context stack.
+   */
+  private keyhandler = (event: KeyboardEvent): void => {
+    const token = keyParser.fromKeyboardEvent(event)
+    const contextMap = this.tokenToActions.get(token)
+
+    if (!contextMap) {
+      return
+    }
+
+    for (const context of this.contextStack.fromHighestToLowest()) {
+      const action = contextMap.get(context)
+      if (action) {
+        action.action(event)
+        action.preventDefault && event.preventDefault()
+        action.stopPropagation && event.stopPropagation()
+        return
+      }
+    }
   }
 }

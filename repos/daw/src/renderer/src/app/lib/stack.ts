@@ -1,4 +1,4 @@
-export class Stack<T> {
+export default class Stack<T> {
   private stack: T[] = []
 
   push(elem: T) {
@@ -46,5 +46,13 @@ export class Stack<T> {
 
   toArray() {
     return this.stack
+  }
+
+  includes(elem: T) {
+    return this.stack.includes(elem)
+  }
+
+  fromHighestToLowest() {
+    return this.stack.slice().reverse()
   }
 }
