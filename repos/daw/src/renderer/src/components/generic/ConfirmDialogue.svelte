@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import confirmDialogue from '@renderer/src/app/state/confirmDialogue'
-  import Button from './Button.svelte'
+  import confirmDialogue from '@renderer/src/app/lib/ui/confirmDialogue'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
+  import Button from './Button.svelte'
 
   let show = false
   let message = ''
