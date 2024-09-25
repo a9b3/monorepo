@@ -7,7 +7,7 @@ const { subscribe, update } = writable<{
   cssVars: cssVars
 })
 
-cssVars.on('*', () => {
+cssVars.emitter.on('*', () => {
   update((state) => {
     state.cssVars = cssVars
     return state

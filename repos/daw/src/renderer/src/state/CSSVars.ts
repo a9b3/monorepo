@@ -1,6 +1,12 @@
 import { EventEmitter } from 'events'
 
-class CSSVars extends EventEmitter {
+class CSSVars {
+  emitter = new EventEmitter()
+
+  constructor() {
+    this.emitter.setMaxListeners(0)
+  }
+
   variables: { [key: string]: string } = {
     // Primitives
     '--primative-colors-grey1': '#343434',
@@ -49,11 +55,10 @@ class CSSVars extends EventEmitter {
 
   set(key: string, value: string) {
     this.variables[key] = value
-    this.emit('*')
+    this.emitter.emit('*')
   }
 
   setAndApply(key: string, value: string) {
-    console.log(`Setting ${key} to ${value}`)
     this.set(key, value)
     this.applyVariables()
   }

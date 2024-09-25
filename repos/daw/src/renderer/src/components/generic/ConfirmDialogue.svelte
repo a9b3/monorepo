@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte'
   import confirmDialogue from '@renderer/src/app/lib/ui/confirmDialogue'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
+  import { shortcutManagerContext } from '@renderer/src/state/shortcutManagerHelper'
   import Button from './Button.svelte'
 
   let show = false
@@ -45,16 +46,11 @@
         }
       ]
     })
-    $shortcutManager.manager.pushActiveContext('confirmDialogue')
-  })
-
-  onDestroy(() => {
-    $shortcutManager.manager.popActiveContext('confirmDialogue')
   })
 </script>
 
 {#if show}
-  <div class="main app-win-border">
+  <div class="main app-win-border" use:shortcutManagerContext={'confirmDialogue'}>
     <div class="content">{message}</div>
     <div class="buttons">
       <Button onClick={handleConfirm}>Confirm</Button>
