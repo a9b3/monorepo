@@ -98,15 +98,10 @@
         }
       ]
     })
-    $shortcutManager.manager.pushActiveContext('blockSelection')
-  })
-
-  onDestroy(() => {
-    $shortcutManager.manager.popActiveContext('blockSelection')
   })
 </script>
 
-<div class="main">
+<div class="main" use:shortcutManager.setContext={'blockSelection'}>
   <Table
     {data}
     onRowClick={(row) => {

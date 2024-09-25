@@ -1,14 +1,15 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
+  import editorStore, { editor } from '@renderer/src/stores/editor'
+  import { shortcutManager } from '@renderer/src/stores/shortcutManager'
+  import { onEditorCreate, onEditorDestroy } from '@renderer/src/app/lib/Editor'
   import Block from './Blocks/Block.svelte'
-  import editorStore from '@renderer/src/stores/editor'
 
   onMount(() => {
-    console.log('Editor mounted')
-    $editorStore.editor.registerListeners()
+    onEditorCreate({ shortcutManager, editor })
   })
   onDestroy(() => {
-    $editorStore.editor.removeListeners()
+    onEditorDestroy({ shortcutManager })
   })
 </script>
 

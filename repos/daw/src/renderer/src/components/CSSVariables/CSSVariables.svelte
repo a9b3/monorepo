@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
-  import cssVarStore from '@renderer/src/stores/cssVars'
+  import { onMount } from 'svelte'
+  import themeStore from '@renderer/src/stores/theme'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
   import Table from '@renderer/src/components/generic/Table.svelte'
   import Value from './Value.svelte'
@@ -8,7 +8,7 @@
   let show = false
 
   onMount(() => {
-    $cssVarStore.cssVars.applyVariables()
+    $themeStore.theme.applyVariables()
     $shortcutManager.manager.register({
       context: 'CSSVariables',
       title: 'CSS Variables',
@@ -30,17 +30,13 @@
         }
       ]
     })
-    $shortcutManager.manager.pushActiveContext('CSSVariables')
-  })
-  onDestroy(() => {
-    $shortcutManager.manager.popActiveContext('CSSVariables')
   })
 </script>
 
 {#if show}
-  <main class="app-win-border">
+  <main class="app-win-border" use:shortcutManager.setContext={'CSSVariables'}>
     <Table
-      data={Object.entries($cssVarStore.cssVars.variables).map(([key, value]) => {
+      data={Object.entries($themeStore.theme.variables).map(([key, value]) => {
         return { id: key, name: key, value }
       })}
       columns={[
@@ -51,14 +47,14 @@
           cellComponent: Value,
           passProps: (row) => ({
             value: row.value,
-            onChange: (value) => $cssVarStore.cssVars.setAndApply(row.name, value)
+            onChange: (value) => $themeStore.theme.setAndApply(row.name, value)
           })
         }
       ]}
     />
     <button
       on:click={() => {
-        navigator.clipboard.writeText($cssVarStore.cssVars.toJSON())
+        navigator.clipboard.writeText($themeStore.theme.toJSON())
       }}
     >
       Click to copy values

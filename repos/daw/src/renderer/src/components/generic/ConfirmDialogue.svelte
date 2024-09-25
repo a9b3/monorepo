@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
+  import { onMount } from 'svelte'
   import confirmDialogue from '@renderer/src/app/lib/ui/confirmDialogue'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
-  import { shortcutManagerContext } from '@renderer/src/state/shortcutManagerHelper'
   import Button from './Button.svelte'
 
   let show = false
@@ -50,7 +49,7 @@
 </script>
 
 {#if show}
-  <div class="main app-win-border" use:shortcutManagerContext={'confirmDialogue'}>
+  <div class="main app-win-border" use:shortcutManager.setContext={'confirmDialogue'}>
     <div class="content">{message}</div>
     <div class="buttons">
       <Button onClick={handleConfirm}>Confirm</Button>

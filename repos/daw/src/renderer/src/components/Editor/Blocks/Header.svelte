@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Header } from '@renderer/src/app/types/block'
-  import { editorHelper } from './editorHelper'
+  import { setBlockBehavior } from '@renderer/src/stores/editor'
 
   export let block: Header
 
@@ -11,8 +11,7 @@
   this={`h${block.properties.level}`}
   class="main"
   contenteditable
-  data-block-id={block.id}
-  use:editorHelper
+  use:setBlockBehavior={block.id}
 >
   {@html textBuffer}
 </svelte:element>

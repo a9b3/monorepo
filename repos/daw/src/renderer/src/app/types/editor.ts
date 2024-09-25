@@ -1,12 +1,12 @@
 import type { Block, Page } from '@renderer/src/app/types/block'
 
 export interface Editor {
-  currentFocusBlock: Block | null
+  currentFocusBlockId: string | null
   currentFocusPage: Page | null
   selectedBlocks: Block[]
 
   /******* Setters *******/
-  setCurrentFocusBlock(block: Block | null): void
+  setCurrentFocusBlockId(id: string | null): void
   setCurrentFocusPage(page: Page | null): void
 
   /******* Block Manipulation *******/

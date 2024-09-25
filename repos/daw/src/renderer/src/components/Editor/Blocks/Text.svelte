@@ -2,8 +2,7 @@
   import type { Text as TextBlock } from '@renderer/src/app/types/block'
   import Popover from '@renderer/src/components/generic/Popover.svelte'
   import BlockSelection from './BlockSelection.svelte'
-  import { editorHelper } from './editorHelper'
-  import editorStore from '@renderer/src/stores/editor'
+  import editorStore, { setBlockBehavior } from '@renderer/src/stores/editor'
 
   export let placeholder = `Press '/' to create a block...`
   export let block: TextBlock
@@ -15,11 +14,10 @@
 </script>
 
 <div
-  data-block-id={block.id}
   bind:this={containerEl}
   class="main"
   contenteditable={true}
-  use:editorHelper
+  use:setBlockBehavior={block.id}
   {placeholder}
   on:input={(e) => {
     if (e.target.innerHTML === '/') {
@@ -37,7 +35,7 @@
   <BlockSelection
     onClose={() => (showPopover = false)}
     onSelection={(type, properties) => {
-      $editorStore.editor.setCurrentFocusBlock({
+      $editorStore.editor.updateBlock(block.id, {
         ...block,
         type,
         properties

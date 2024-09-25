@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ListItem } from '@renderer/src/app/types/block'
-  import { editorHelper } from './editorHelper'
+  import { setBlockBehavior } from '@renderer/src/stores/editor'
 
   export let block: ListItem
 
@@ -9,10 +9,9 @@
 
 <div
   style="--indent-level: {block.properties.indentLevel}"
-  data-block-id={block.id}
   class="list-item"
   contenteditable={true}
-  use:editorHelper
+  use:setBlockBehavior={block.id}
 >
   {@html textBuffer}
 </div>

@@ -2,7 +2,7 @@
   import type { Block } from '@renderer/src/app/types/block'
   import { onMount, afterUpdate } from 'svelte'
   import hljs from 'highlight.js/lib/common'
-  import { editorHelper } from './editorHelper'
+  import { setBlockBehavior } from '@renderer/src/stores/editor'
 
   export let block: Block
   let value = block.properties.text
@@ -51,13 +51,12 @@
 <div class="code-editor hljs" bind:this={containerElement}>
   <pre><code bind:this={highlightedElement}></code></pre>
   <textarea
-    data-block-id={block.id}
     bind:this={editableElement}
     {value}
     on:input={handleInput}
     spellcheck="false"
     rows="1"
-    use:editorHelper
+    use:setBlockBehavior={block.id}
   ></textarea>
   {#if detectedLanguage}
     <div class="language-indicator">{detectedLanguage}</div>

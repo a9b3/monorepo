@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 
-class CSSVars {
+export default class ThemeManager {
   emitter = new EventEmitter()
 
   constructor() {
@@ -73,5 +73,3 @@ class CSSVars {
     return JSON.stringify(this.variables)
   }
 }
-
-export default new CSSVars()
