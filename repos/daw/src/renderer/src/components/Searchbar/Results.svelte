@@ -3,7 +3,7 @@
   import shortcutManager from '@renderer/src/stores/shortcutManager'
   import Table from '@renderer/src/components/generic/Table.svelte'
   import ResizableContainer from '@renderer/src/components/generic/ResizableContainer.svelte'
-  import confirmDialogue from '@renderer/src/app/state/confirmDialogue'
+  import confirmDialogue from '@renderer/src/app/lib/ui/confirmDialogue'
   import moment from 'moment'
 
   export let results: any = []

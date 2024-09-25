@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useDelta } from '@renderer/src/lib/ui/mouseDelta'
+  import { useDelta } from '@renderer/src/app/lib/ui/mouseDelta'
   import { onMount } from 'svelte'
 
   export let allowedEdges: ('top' | 'left' | 'bottom' | 'right')[] = []
