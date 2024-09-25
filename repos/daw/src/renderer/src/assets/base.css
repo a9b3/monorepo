@@ -9,3 +9,9 @@
 ul {
   list-style: none;
 }
+
+.app-win-border {
+  border: 1px solid;
+  border-color: black #808080 #808080 black;
+  box-shadow: 2px 2px 0 0 #000000;
+}

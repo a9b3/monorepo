@@ -4,6 +4,7 @@
   import Table from '@renderer/src/components/generic/Table.svelte'
 
   export let onSelection: (type: string, properties?: Object) => void
+  export let onClose: () => void
 
   let data = [
     {
@@ -86,6 +87,14 @@
           action: selectBlock,
           preventDefault: true,
           stopPropagation: true
+        },
+        {
+          key: 'Escape',
+          title: 'Close',
+          description: 'Close the block selection',
+          action: () => {
+            onClose()
+          }
         }
       ]
     })

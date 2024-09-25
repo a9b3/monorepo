@@ -97,7 +97,7 @@
 
 {#if isOpen && portalContainer}
   <Portal target={portalContainer}>
-    <div bind:this={popoverElement} class="popover-content">
+    <div bind:this={popoverElement} class="app-win-border">
       <slot>
         <p>Default popover content</p>
       </slot>
@@ -106,10 +106,4 @@
 {/if}
 
 <style>
-  .popover-content {
-    border: 1px solid black;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    background-color: white;
-  }
 </style>

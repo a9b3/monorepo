@@ -10,6 +10,7 @@ import MiniSearch from 'minisearch'
 import { Block } from '../types/block'
 import { default as dbState, OBJ_STORES } from './db'
 import dbUtil from './util'
+import { walk } from '@renderer/src/app/lib/tree/walk'
 
 /**
  * MiniSearch options. This object is used to initialize the MiniSearch instance
@@ -23,56 +24,15 @@ let miniSearchOpts = {
       res = doc.id
     }
     if (fieldName === 'properties.text') {
-      res = extractAll(doc, ['text']).join(' ')
+      res = walk(doc, (node) => node.properties?.text).join(' ')
     }
     if (fieldName === 'properties.title') {
-      res = extractAll(doc, ['title']).join(' ')
+      res = walk(doc, (node) => node.properties?.title).join(' ')
     }
     return res
   }
 }
 let miniSearch = new MiniSearch(miniSearchOpts)
-
-/**
- * Extract all values of the specified fields from a block and its children.
- * Returns an array of strings.
- *
- * Used in the MiniSearch extractField option.
- */
-function extractAll(block: Block, fields: string[]): string[] {
-  const result: string[] = []
-  const stack: Block[] = [block]
-  const processed: Set<string> = new Set()
-
-  while (stack.length > 0) {
-    const currentBlock = stack.pop()!
-
-    if (processed.has(currentBlock.id)) {
-      continue
-    }
-    processed.add(currentBlock.id)
-
-    const extractedFields: string[] = []
-
-    fields.forEach((field) => {
-      const value = currentBlock.properties[field]
-      if (value) {
-        extractedFields.push(value)
-      }
-    })
-
-    result.push(...extractedFields)
-
-    // Add children to the stack
-    currentBlock.children.forEach((child) => {
-      if (child) {
-        stack.push(child)
-      }
-    })
-  }
-
-  return result
-}
 
 /**
  * Add a block to the search index.

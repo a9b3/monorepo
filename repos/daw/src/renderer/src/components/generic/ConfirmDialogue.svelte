@@ -54,7 +54,7 @@
 </script>
 
 {#if show}
-  <div class="main">
+  <div class="main app-win-border">
     <div class="content">{message}</div>
     <div class="buttons">
       <Button onClick={handleConfirm}>Confirm</Button>
@@ -76,10 +76,6 @@
     align-items: center;
     background: var(--colors-bg);
     padding: var(--spacing-s);
-    /* border: var(--border); */
-    border: 1px solid;
-    border-color: black #808080 #808080 black;
-    box-shadow: 2px 2px 0 0 #000000;
   }
   .main:hover {
     cursor: default;

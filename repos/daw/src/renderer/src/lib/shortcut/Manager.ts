@@ -72,6 +72,7 @@ export default class ShortcutManager {
           const currentIndex = this.contextStack.lastIndexOf(current.context)
           return currentIndex > prevIndex ? current : prev
         })
+        console.log('Action', highestContextAction)
         highestContextAction.action(event)
         highestContextAction.preventDefault && event.preventDefault()
         highestContextAction.stopPropagation && event.stopPropagation()

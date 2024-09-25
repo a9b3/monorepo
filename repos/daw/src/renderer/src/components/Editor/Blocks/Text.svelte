@@ -35,6 +35,7 @@
 
 <Popover position="bottom" bind:isOpen={showPopover} triggerElement={containerEl} align="left">
   <BlockSelection
+    onClose={() => (showPopover = false)}
     onSelection={(type, properties) => {
       $editorStore.editor.setCurrentFocusBlock({
         ...block,

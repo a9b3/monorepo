@@ -11,7 +11,7 @@
 
 <div class="main">
   {#if type === 'color'}
-    <ValueColor bind:value />
+    <ValueColor bind:value {onChange} />
   {:else if type === 'custom property'}
     <Input bind:value />
   {:else}

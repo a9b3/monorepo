@@ -16,19 +16,29 @@
       shortcuts: [
         {
           key: 'meta+shift+d',
+          description: 'Show/Hide CSS Variables Panel',
           action: () => {
             show = !show
+          }
+        },
+        {
+          key: 'Escape',
+          description: 'Close CSS Variables Panel',
+          action: () => {
+            show = false
           }
         }
       ]
     })
     $shortcutManager.manager.pushActiveContext('CSSVariables')
   })
-  onDestroy(() => {})
+  onDestroy(() => {
+    $shortcutManager.manager.popActiveContext('CSSVariables')
+  })
 </script>
 
 {#if show}
-  <main>
+  <main class="app-win-border">
     <Table
       data={Object.entries($cssVarStore.cssVars.variables).map(([key, value]) => {
         return { id: key, name: key, value }
@@ -67,7 +77,6 @@
     border: var(--border);
     background: var(--colors-bg);
     width: 500px;
-    border-radius: 4px;
     overflow: auto;
   }
 </style>

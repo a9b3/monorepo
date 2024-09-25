@@ -53,6 +53,7 @@ class CSSVars extends EventEmitter {
   }
 
   setAndApply(key: string, value: string) {
+    console.log(`Setting ${key} to ${value}`)
     this.set(key, value)
     this.applyVariables()
   }

@@ -214,10 +214,10 @@ class Editor extends EventEmitter implements EditorI {
           preventDefault: true,
           stopPropagation: true
         },
-        {
-          key: 'Tab',
-          title: 'Tab'
-        },
+        // {
+        //   key: 'Tab',
+        //   title: 'Tab'
+        // },
         {
           key: 'Enter',
           title: 'Enter',
