@@ -32,12 +32,10 @@
 
     if (results.length === 0) {
       await blockApi.createBlock({
-        parent: null,
         type: 'page',
         properties: { title: searchQuery },
         children: [
           {
-            parent: null,
             id: window.crypto.randomUUID(),
             type: 'text',
             properties: { text: '' },

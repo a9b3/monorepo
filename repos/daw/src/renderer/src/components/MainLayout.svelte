@@ -12,7 +12,7 @@
     onPageChange={(page) => {
       $editorStore.editor.setCurrentFocusPage(page)
     }}
-    onSubmit={undefined}
+    onSubmit={() => {}}
   />
   <div class="editor">
     {#key $editorStore.editor.currentFocusPage?.id}

@@ -4,6 +4,7 @@
   import editorStore from '@renderer/src/stores/editor'
 
   onMount(() => {
+    console.log('Editor mounted')
     $editorStore.editor.registerListeners()
   })
   onDestroy(() => {

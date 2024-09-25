@@ -7,7 +7,7 @@ const { subscribe, update } = writable<{
   editor: editor
 })
 
-editor.on('*', () => update((state) => state))
+editor.emitter.on('*', () => update((state) => state))
 
 export default {
   subscribe

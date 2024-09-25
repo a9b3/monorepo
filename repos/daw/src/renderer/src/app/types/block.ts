@@ -41,7 +41,7 @@ export interface BaseBlock {
 
 /********** Block Types **********/
 
-export type Block = Header | Code | ListItem | Text
+export type Block = Page | Header | Code | ListItem | Text
 
 export interface Page extends BaseBlock {
   type: 'page'
@@ -90,11 +90,13 @@ interface GetAllBlocksOpts {
   filterBy?: { field: string; value: string }[]
 }
 
+type SaveBlockOpts = (Partial<Block> & Required<Pick<Block, 'id'>>) | Partial<Page>
+
 export interface API {
   createBlock(
     block: Omit<Partial<Block> & Required<Pick<Block, 'type' | 'properties'>>, 'id'>
   ): Promise<Block>
-  saveBlock(block: Partial<Block> & Required<Pick<Block, 'id'>>): Promise<Block>
+  saveBlock(block: SaveBlockOpts): Promise<Block | Page>
   deleteBlock(id: string): Promise<boolean>
   deleteBlocks(ids: string[]): Promise<boolean>
   getBlockById(id: string): Promise<Block | undefined>

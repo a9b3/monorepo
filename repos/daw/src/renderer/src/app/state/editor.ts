@@ -4,14 +4,14 @@ import type { Editor as EditorI } from '@renderer/src/app/types/editor'
 import shortcutManager from '@renderer/src/state/shortcutManager'
 import blockApi from '../db/block'
 
-class Editor extends EventEmitter implements EditorI {
+class Editor implements EditorI {
+  emitter = new EventEmitter()
   currentFocusBlock: Block | null = null
   currentFocusPage: Page | null = null
   selectedBlocks: Block[] = []
 
   constructor() {
-    super()
-    this.setMaxListeners(100)
+    this.emitter.setMaxListeners(100)
   }
 
   /*************************************
@@ -20,18 +20,18 @@ class Editor extends EventEmitter implements EditorI {
 
   setCurrentFocusBlock(block: Block | null): void {
     this.currentFocusBlock = block
-    const idx = this.currentFocusPage?.children.findIndex((b) => b.id === block?.id)
-    this.currentFocusPage?.children.splice(idx, 1, block as Block)
+    const idx = this.currentFocusPage?.children.findIndex((b) => b.id === block?.id) as number
+    this.currentFocusPage?.children.splice(idx, 1, block)
     if (!block) return
 
-    this.emit('currentFocusBlock', block)
-    this.emit('*')
+    this.emitter.emit('currentFocusBlock', block)
+    this.emitter.emit('*')
   }
 
   setCurrentFocusPage(page: Page | null): void {
     this.currentFocusPage = page
-    this.emit('currentFocusPage', page)
-    this.emit('*')
+
+    this.emitter.emit('*')
   }
 
   /*************************************
@@ -52,14 +52,12 @@ class Editor extends EventEmitter implements EditorI {
 
     this.setCurrentFocusBlock(createdBlock)
 
-    this.emit('currentFocusPage', this.currentFocusPage)
-    this.emit('*')
+    this.emitter.emit('*')
   }
 
   moveBlock(idx: number, toIdx: number): void {
-    this.emit('currentFocusPage', this.currentFocusPage)
-    this.emit('*')
     throw new Error('Method not implemented.')
+    this.emitter.emit('*')
   }
 
   deleteBlock(id: string): void {
@@ -68,8 +66,7 @@ class Editor extends EventEmitter implements EditorI {
     if (idx === undefined || idx === null) return
     this.currentFocusPage.children.splice(idx, 1)
 
-    this.emit('currentFocusPage', this.currentFocusPage)
-    this.emit('*')
+    this.emitter.emit('*')
   }
 
   /*************************************
@@ -105,7 +102,7 @@ class Editor extends EventEmitter implements EditorI {
     }
   }
 
-  createListItemBlock(listType, indentLevel) {
+  createListItemBlock(listType: string, indentLevel: number) {
     return {
       id: window.crypto.randomUUID(),
       type: 'listItem' as 'listItem',
@@ -153,8 +150,9 @@ class Editor extends EventEmitter implements EditorI {
       const block = this.currentFocusPage?.children.find((block) => block.id === id)
       if (!block) return
       this.currentFocusBlock = block
-      this.emit('currentFocusBlock', block)
-      this.emit('*')
+
+      this.emitter.emit('currentFocusBlock', block)
+      this.emitter.emit('*')
     }
   }
 
@@ -255,7 +253,7 @@ class Editor extends EventEmitter implements EditorI {
 
 const editor = new Editor()
 
-editor.on('*', () => {
+editor.emitter.on('*', () => {
   if (editor.currentFocusPage) {
     blockApi.saveBlock(editor.currentFocusPage)
   }

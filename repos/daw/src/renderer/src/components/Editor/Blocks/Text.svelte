@@ -42,7 +42,6 @@
         type,
         properties
       })
-      $editorStore.editor.emit('*')
       showPopover = false
     }}
   />

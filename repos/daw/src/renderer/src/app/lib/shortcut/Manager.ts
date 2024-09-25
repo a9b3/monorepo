@@ -1,4 +1,4 @@
-import Stack from '../stack'
+import Stack from '@renderer/src/app/lib/ds/stack/stack'
 
 export interface Shortcut {
   key: string
@@ -101,7 +101,7 @@ export default class ShortcutManager {
         this.tokenToActions.set(token, new Map())
       }
       if (this.tokenToActions.get(token)!.has(context)) {
-        throw new Error(`Shortcut ${shortcut.key} already registered for context ${context}`)
+        console.debug(`Shortcut ${shortcut.key} is already registered for context ${context}`)
       }
       this.tokenToActions.get(token)!.set(context, shortcut)
     })

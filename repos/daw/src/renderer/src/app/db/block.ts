@@ -13,7 +13,6 @@ const createBlock: API['createBlock'] = async (block) => {
 
     const id = window.crypto.randomUUID()
     const createBlock = {
-      parent: null,
       children: [],
       lastModified: new Date().toISOString(),
       ...block,

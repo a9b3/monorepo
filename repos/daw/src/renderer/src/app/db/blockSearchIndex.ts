@@ -10,7 +10,7 @@ import MiniSearch from 'minisearch'
 import { Block } from '../types/block'
 import { default as dbState, OBJ_STORES } from './db'
 import dbUtil from './util'
-import { walk } from '@renderer/src/app/lib/tree/walk'
+import { walk } from '@renderer/src/app/lib/ds/tree/walk'
 
 /**
  * MiniSearch options. This object is used to initialize the MiniSearch instance
@@ -88,7 +88,7 @@ async function initSearchIndex() {
     miniSearch = MiniSearch.loadJSON(index as string, miniSearchOpts)
   } else {
     // If no index is found in the database, create a new one
-    const blocks = await dbUtil.getAllDocuments(OBJ_STORES.blocks)
+    const blocks = (await dbUtil.getAllDocuments(OBJ_STORES.blocks)) as Block[]
     miniSearch.addAll(blocks)
   }
 }
