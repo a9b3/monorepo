@@ -58,6 +58,8 @@ export interface Editor {
    */
   deleteBlock(id: string): void
 
+  clearBlocks(): void
+
   /**
    * Updates a block with the given id with the new block data.
    */

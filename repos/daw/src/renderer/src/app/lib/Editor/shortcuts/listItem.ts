@@ -12,6 +12,7 @@ export default (editor: Editor) => ({
       description: 'Insert a new list item in the current list block for List Item blocks',
       action: (e) => {
         const curBlock = editor.getCurrentBlock()
+        console.log(`curBlock: ${curBlock}`, curBlock.properties)
         if (curBlock.properties.text === '') {
           editor.deleteBlock(editor.currentBlockId)
           editor.addRelativeToFocusedBlock(createTextBlock(), 'below')

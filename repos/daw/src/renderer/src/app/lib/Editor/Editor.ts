@@ -120,6 +120,13 @@ export default class Editor implements EditorI {
     this.emitter.emit('*')
   }
 
+  clearBlocks(): void {
+    if (!this.page) return
+    this.page.children = []
+    this.emitter.emit('page', { type: 'page', page: this.page })
+    this.emitter.emit('*')
+  }
+
   updateBlock(id: string, updates: any): void {
     const block = this.page?.children.find((b) => b.id === id)
     if (!block) return
