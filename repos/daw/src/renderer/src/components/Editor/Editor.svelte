@@ -22,7 +22,7 @@
 
 <div class="main">
   <div class="wrapper">
-    {#each $editorStore.editor.currentFocusPage.children as childBlock}
+    {#each $editorStore.editor.page.children as childBlock}
       {#key childBlock.id + childBlock.type}
         <Block block={childBlock} />
       {/key}

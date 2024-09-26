@@ -29,6 +29,7 @@ export function onMouseMove(evt: MouseEvent) {
     // TODO(fix) this is not working, selecting down works but not up
     range.setEnd(originRange.startContainer, originRange.startOffset)
     range.setStart(curRange.endContainer, curRange.endOffset)
+    range.setEndAfter
   }
 
   window.getSelection()?.removeAllRanges()

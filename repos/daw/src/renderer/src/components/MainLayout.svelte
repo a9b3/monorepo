@@ -15,8 +15,8 @@
     onSubmit={() => {}}
   />
   <div class="editor">
-    {#key $editorStore.editor.currentFocusPage?.id}
-      {#if $editorStore.editor.currentFocusPage}
+    {#key $editorStore.editor.page?.id}
+      {#if $editorStore.editor.page}
         <Editor />
       {:else}
         <div class="empty">No note selected...</div>

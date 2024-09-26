@@ -6,8 +6,8 @@ import ShortcutManager from './shortcut/Manager'
 export default class Editor implements EditorI {
   emitter = new EventEmitter()
   shortcutManager: ShortcutManager
-  currentFocusBlockId: string | null = null
-  currentFocusPage: Page | null = null
+  currentBlockId: string | null = null
+  page: Page | null = null
   selectedBlocks: Block[] = []
 
   constructor(shortcutManager: ShortcutManager) {
@@ -20,32 +20,34 @@ export default class Editor implements EditorI {
    *************************************/
 
   setCurrentFocusBlockId(id: string | null): void {
-    this.currentFocusBlockId = id
+    this.currentBlockId = id
     this.emitter.emit('*')
   }
 
   getCurrentFocusBlock(): Block | null {
-    return this.currentFocusPage?.children.find((b) => b.id === this.currentFocusBlockId) || null
+    return this.page?.children.find((b) => b.id === this.currentBlockId) || null
   }
 
   setCurrentFocusPage(page: Page | null): void {
-    this.currentFocusPage = page
+    this.page = page
     this.emitter.emit('*')
   }
+
+  updatePage() {}
 
   /*************************************
    * Block Manipulation
    *************************************/
 
   addBlock(createdBlock: Block, idx: number, direction: 'above' | 'below'): void {
-    if (!this.currentFocusPage) return
+    if (!this.page) return
     if (idx === undefined || idx === null) {
-      this.currentFocusPage.children.push(createdBlock)
+      this.page.children.push(createdBlock)
     } else {
       if (direction === 'above') {
-        this.currentFocusPage.children.splice(idx, 0, createdBlock)
+        this.page.children.splice(idx, 0, createdBlock)
       } else {
-        this.currentFocusPage.children.splice(idx + 1, 0, createdBlock)
+        this.page.children.splice(idx + 1, 0, createdBlock)
       }
     }
 
@@ -60,20 +62,20 @@ export default class Editor implements EditorI {
   }
 
   deleteBlock(id: string): void {
-    if (!this.currentFocusPage) return
-    const idx = this.currentFocusPage.children.findIndex((block) => block.id === id)
+    if (!this.page) return
+    const idx = this.page.children.findIndex((block) => block.id === id)
     if (idx === undefined || idx === null) return
-    this.currentFocusPage.children.splice(idx, 1)
+    this.page.children.splice(idx, 1)
 
     if (idx && idx > 0) {
-      this.setCurrentFocusBlockId(this.currentFocusPage?.children[idx - 1].id || null)
+      this.setCurrentFocusBlockId(this.page?.children[idx - 1].id || null)
     }
 
     this.emitter.emit('*')
   }
 
   updateBlock(id: string, updates: any): void {
-    const block = this.currentFocusPage?.children.find((b) => b.id === id)
+    const block = this.page?.children.find((b) => b.id === id)
     if (!block) return
     block.type = updates.type || block.type
     block.properties = { ...block.properties, ...updates.properties }
@@ -91,9 +93,7 @@ export default class Editor implements EditorI {
    * Insert a block relative to the currently focused block
    */
   addRelativeToFocusedBlock(createdBlock: Block, direction: 'above' | 'below'): void {
-    const idx = this.currentFocusPage?.children.findIndex(
-      (block) => this.currentFocusBlockId === block.id
-    )
+    const idx = this.page?.children.findIndex((block) => this.currentBlockId === block.id)
     if (idx === undefined || idx === null) return
     this.addBlock(createdBlock, idx, direction)
   }
@@ -186,13 +186,11 @@ export function onEditorCreate({ editor, shortcutManager }) {
         description: 'Delete the current block',
         action: (evt) => {
           if (editor.getCurrentFocusBlock()?.properties.text === '') {
-            const idx = editor.currentFocusPage?.children.findIndex(
-              (b) => b.id === editor.currentFocusBlockId
-            )
-            editor.deleteBlock(editor.currentFocusBlockId)
+            const idx = editor.page?.children.findIndex((b) => b.id === editor.currentBlockId)
+            editor.deleteBlock(editor.currentBlockId)
 
             if (idx && idx > 0) {
-              editor.setCurrentFocusBlockId(editor.currentFocusPage?.children[idx - 1].id || null)
+              editor.setCurrentFocusBlockId(editor.page?.children[idx - 1].id || null)
             }
 
             evt.preventDefault()

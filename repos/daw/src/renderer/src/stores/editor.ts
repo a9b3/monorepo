@@ -15,8 +15,8 @@ const { subscribe, update } = writable<{
 editor.emitter.on('*', () => {
   update((state) => state)
 
-  if (editor.currentFocusPage) {
-    blockApi.saveBlock(editor.currentFocusPage)
+  if (editor.page) {
+    blockApi.saveBlock(editor.page)
   }
 })
 
@@ -33,12 +33,12 @@ const moveCursorToEnd = (contentEle) => {
  * Focus the element if it is the current focus block.
  */
 export function setBlockBehavior(node: HTMLElement, id: string) {
-  if (id === editor.currentFocusBlockId) {
+  if (id === editor.currentBlockId) {
     node.focus()
   }
 
   function handleChange() {
-    if (editor.currentFocusBlockId === id) {
+    if (editor.currentBlockId === id) {
       node.focus()
     }
   }
