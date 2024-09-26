@@ -3,13 +3,20 @@
   import editorStore, { editor } from '@renderer/src/stores/editor'
   import { shortcutManager } from '@renderer/src/stores/shortcutManager'
   import { onEditorCreate, onEditorDestroy } from '@renderer/src/app/lib/Editor'
+  import { onMouseDown, onMouseMove, onMouseUp } from '@renderer/src/app/lib/ui/textSelection'
   import Block from './Blocks/Block.svelte'
 
   onMount(() => {
     onEditorCreate({ shortcutManager, editor })
+    document.addEventListener('mousedown', onMouseDown)
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
   })
   onDestroy(() => {
     onEditorDestroy({ shortcutManager })
+    document.removeEventListener('mousedown', onMouseDown)
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
   })
 </script>
 
@@ -32,6 +39,7 @@
     align-items: center;
     padding: var(--spacing-s) var(--spacing-xs);
     overflow: auto;
+    user-select: none;
   }
   .main:focus-within {
     box-shadow: inset 0 0 0 2px var(--colors-hl);
