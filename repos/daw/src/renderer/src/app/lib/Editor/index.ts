@@ -12,7 +12,7 @@ export default class Editor implements EditorI {
 
   constructor(shortcutManager: ShortcutManager) {
     this.shortcutManager = shortcutManager
-    this.emitter.setMaxListeners(100)
+    this.emitter.setMaxListeners(0)
   }
 
   /*************************************
@@ -64,6 +64,10 @@ export default class Editor implements EditorI {
     const idx = this.currentFocusPage.children.findIndex((block) => block.id === id)
     if (idx === undefined || idx === null) return
     this.currentFocusPage.children.splice(idx, 1)
+
+    if (idx && idx > 0) {
+      this.setCurrentFocusBlockId(this.currentFocusPage?.children[idx - 1].id || null)
+    }
 
     this.emitter.emit('*')
   }

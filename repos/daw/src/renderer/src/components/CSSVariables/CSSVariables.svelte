@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, onDestroy } from 'svelte'
   import themeStore from '@renderer/src/stores/theme'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
   import Table from '@renderer/src/components/generic/Table.svelte'
@@ -30,11 +30,16 @@
         }
       ]
     })
+    $shortcutManager.manager.pushActiveContext('CSSVariables')
+  })
+
+  onDestroy(() => {
+    $shortcutManager.manager.popActiveContext('CSSVariables')
   })
 </script>
 
 {#if show}
-  <main class="app-win-border" use:shortcutManager.setContext={'CSSVariables'}>
+  <main class="app-win-border">
     <Table
       data={Object.entries($themeStore.theme.variables).map(([key, value]) => {
         return { id: key, name: key, value }

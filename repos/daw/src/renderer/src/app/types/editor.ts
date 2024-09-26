@@ -13,6 +13,7 @@ export interface Editor {
   addBlock(createdBlock: Block, idx: number, direction: 'above' | 'below'): void
   moveBlock(idx: number, toIdx: number): void
   deleteBlock(id: string): void
+  updateBlock(id: string, block: Partial<Block>): void
 
   /******* Helper Functions *******/
   addRelativeToFocusedBlock(createdBlock: Block, direction: 'above' | 'below'): void
