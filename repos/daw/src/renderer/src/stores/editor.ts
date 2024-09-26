@@ -1,9 +1,12 @@
-import Editor from '@renderer/src/app/lib/Editor'
+import Editor, { getBlockShortcuts, getListItemShortcuts } from '@renderer/src/app/lib/Editor'
+import type { PageChild } from '@renderer/src/app/types/block'
 import blockApi from '@renderer/src/app/db/block'
 import { writable } from 'svelte/store'
 import { shortcutManager } from './shortcutManager'
 
 export const editor = new Editor(shortcutManager)
+const blockShortcuts = getBlockShortcuts(editor)
+const listItemShortcuts = getListItemShortcuts(editor)
 
 const { subscribe, update } = writable<{
   editor: typeof editor
@@ -29,10 +32,30 @@ const moveCursorToEnd = (contentEle) => {
   selection.addRange(range)
 }
 
+function setup(block: PageChild) {
+  shortcutManager.register(blockShortcuts)
+  shortcutManager.pushActiveContext(blockShortcuts.context)
+
+  if (block.type === 'listItem') {
+    shortcutManager.register(listItemShortcuts)
+    shortcutManager.pushActiveContext(listItemShortcuts.context)
+  }
+
+  return () => {
+    shortcutManager.popActiveContext(blockShortcuts.context)
+
+    if (block.type === 'listItem') {
+      shortcutManager.popActiveContext(listItemShortcuts.context)
+    }
+  }
+}
+
 /**
  * Focus the element if it is the current focus block.
  */
 export function setBlockBehavior(node: HTMLElement, id: string) {
+  let teardown = setup(editor.getBlockById(id))
+
   if (id === editor.currentBlockId) {
     node.focus()
   }
@@ -44,7 +67,10 @@ export function setBlockBehavior(node: HTMLElement, id: string) {
   }
 
   function onFocus() {
-    editor.setCurrentFocusBlockId(id)
+    editor.setCurrentBlockId(id)
+
+    teardown()
+    teardown = setup(editor.getBlockById(id))
     moveCursorToEnd(node)
   }
 
@@ -62,6 +88,7 @@ export function setBlockBehavior(node: HTMLElement, id: string) {
 
   return {
     destroy() {
+      teardown()
       editor.emitter.off('*', handleChange)
       node.removeEventListener('focusin', onFocus)
       node.removeEventListener('input', onInput)

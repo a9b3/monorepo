@@ -33,7 +33,7 @@
 
 export interface BaseBlock {
   id: string
-  children: Block[]
+  children: PageChild[]
   lastModified: string
   type: string
   properties: any
@@ -42,6 +42,7 @@ export interface BaseBlock {
 /********** Block Types **********/
 
 export type Block = Page | Header | Code | ListItem | Text
+export type PageChild = Header | Code | ListItem | Text
 
 export interface Page extends BaseBlock {
   type: 'page'

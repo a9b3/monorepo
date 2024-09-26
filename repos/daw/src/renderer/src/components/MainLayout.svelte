@@ -10,7 +10,7 @@
 <div class="container">
   <Searchbar
     onPageChange={(page) => {
-      $editorStore.editor.setCurrentFocusPage(page)
+      $editorStore.editor.setPage(page)
     }}
     onSubmit={() => {}}
   />

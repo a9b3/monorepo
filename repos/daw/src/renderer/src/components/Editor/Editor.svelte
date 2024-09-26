@@ -1,19 +1,15 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import editorStore, { editor } from '@renderer/src/stores/editor'
-  import { shortcutManager } from '@renderer/src/stores/shortcutManager'
-  import { onEditorCreate, onEditorDestroy } from '@renderer/src/app/lib/Editor'
+  import editorStore from '@renderer/src/stores/editor'
   import { onMouseDown, onMouseMove, onMouseUp } from '@renderer/src/app/lib/ui/textSelection'
   import Block from './Blocks/Block.svelte'
 
   onMount(() => {
-    onEditorCreate({ shortcutManager, editor })
     document.addEventListener('mousedown', onMouseDown)
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
   })
   onDestroy(() => {
-    onEditorDestroy({ shortcutManager })
     document.removeEventListener('mousedown', onMouseDown)
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)
