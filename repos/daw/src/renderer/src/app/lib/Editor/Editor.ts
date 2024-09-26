@@ -10,7 +10,8 @@ import ShortcutManager from '../shortcut/Manager'
 export default class Editor implements EditorI {
   currentBlockId: string | null = null
   page: Page | null = null
-  selectedBlocks: Block[] = []
+  selectedBlocks: Map<string, boolean> = new Map()
+  isSelecting: boolean = false
   emitter = new EventEmitter()
   shortcutManager: ShortcutManager
 
@@ -120,9 +121,12 @@ export default class Editor implements EditorI {
     this.emitter.emit('*')
   }
 
-  clearBlocks(): void {
+  clearBlocks(ids: string[]): void {
     if (!this.page) return
-    this.page.children = []
+    ids.map((id) => {
+      this.deleteBlock(id)
+    })
+
     this.emitter.emit('page', { type: 'page', page: this.page })
     this.emitter.emit('*')
   }
@@ -136,6 +140,19 @@ export default class Editor implements EditorI {
     block.lastModified = new Date().toISOString()
 
     this.emitter.emit('block', { type: 'block', block })
+    this.emitter.emit('*')
+  }
+
+  selectBlocks(ids: string[]): void {
+    this.selectedBlocks = new Map()
+    ids.forEach((id) => this.selectedBlocks.set(id, true))
+
+    this.emitter.emit('*')
+  }
+
+  appendSelected(id: string): void {
+    this.selectedBlocks.set(id, true)
+
     this.emitter.emit('*')
   }
 

@@ -5,6 +5,7 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
 -->
 <script lang="ts">
   import type { Block } from '@renderer/src/app/types/block'
+  import editorStore from '@renderer/src/stores/editor'
   import Text from './Text.svelte'
   import Header from './Header.svelte'
   import Code from './Code.svelte'
@@ -20,11 +21,14 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
   }[block.type]
 </script>
 
-<div class="container">
+<div class="container" class:selected={$editorStore.editor.selectedBlocks.has(block.id)}>
   <svelte:component this={component} {block} />
 </div>
 
 <style>
+  .selected {
+    background: rgba(0, 0, 0, 0.4);
+  }
   .container {
     padding: 0;
   }

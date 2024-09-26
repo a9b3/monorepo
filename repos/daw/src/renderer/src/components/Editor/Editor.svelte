@@ -1,15 +1,38 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import editorStore from '@renderer/src/stores/editor'
-  import { onMouseDown, onMouseMove, onMouseUp } from '@renderer/src/app/lib/ui/textSelection'
+  import {
+    onMouseDown as textMouseDown,
+    onMouseMove,
+    onMouseUp as textMouseUp
+  } from '@renderer/src/app/lib/ui/textSelection'
   import Block from './Blocks/Block.svelte'
 
+  function onMouseDown(...args) {
+    $editorStore.editor.selectBlocks([])
+    $editorStore.editor.isSelecting = true
+    textMouseDown(...args)
+  }
+
+  function onMouseUp(...args) {
+    $editorStore.editor.isSelecting = false
+    textMouseUp(...args)
+  }
+
+  function handleKeyDown(evt) {
+    if (evt.key === 'Backspace') {
+      $editorStore.editor.clearBlocks(Array.from($editorStore.editor.selectedBlocks.keys()))
+    }
+  }
+
   onMount(() => {
+    document.addEventListener('keydown', handleKeyDown)
     document.addEventListener('mousedown', onMouseDown)
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
   })
   onDestroy(() => {
+    document.removeEventListener('keydown', handleKeyDown)
     document.removeEventListener('mousedown', onMouseDown)
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)

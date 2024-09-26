@@ -3,6 +3,7 @@ import type { PageChild } from '@renderer/src/app/types/block'
 import blockApi from '@renderer/src/app/db/block'
 import { writable } from 'svelte/store'
 import { shortcutManager } from './shortcutManager'
+import { onMouseUp } from '../app/lib/ui/textSelection'
 
 export const editor = new Editor(shortcutManager)
 const blockShortcuts = getBlockShortcuts(editor)
@@ -74,6 +75,17 @@ export function setBlockBehavior(node: HTMLElement, id: string) {
     moveCursorToEnd(node)
   }
 
+  function onMouseOver() {
+    if (editor.isSelecting) {
+      editor.appendSelected(id)
+    }
+  }
+
+  function onMouseDown() {
+    editor.isSelecting = true
+    editor.appendSelected(id)
+  }
+
   function onInput(evt) {
     editor.updateBlock(id, {
       properties: {
@@ -85,6 +97,8 @@ export function setBlockBehavior(node: HTMLElement, id: string) {
   editor.emitter.on('*', handleChange)
   node.addEventListener('focusin', onFocus)
   node.addEventListener('input', onInput)
+  node.addEventListener('mouseover', onMouseOver)
+  node.addEventListener('mousedown', onMouseDown)
 
   return {
     destroy() {
@@ -92,6 +106,8 @@ export function setBlockBehavior(node: HTMLElement, id: string) {
       editor.emitter.off('*', handleChange)
       node.removeEventListener('focusin', onFocus)
       node.removeEventListener('input', onInput)
+      node.removeEventListener('mouseover', onMouseOver)
+      node.removeEventListener('mousedown', onMouseDown)
     }
   }
 }

@@ -10,6 +10,7 @@ export type EditorEvent =
 
 export interface Editor {
   currentBlockId: string | null
+  selectedBlocks: Map<string, boolean>
   page: Page | null
 
   on(event: EditorEventName, listener: (event: EditorEvent) => void): void
@@ -58,12 +59,15 @@ export interface Editor {
    */
   deleteBlock(id: string): void
 
-  clearBlocks(): void
+  clearBlocks(ids: string): void
 
   /**
    * Updates a block with the given id with the new block data.
    */
   updateBlock(id: string, block: Partial<PageChild>): void
+
+  selectBlocks(ids: string[]): void
+  appendSelected(id: string): void
 
   addRelativeToFocusedBlock(createdBlock: PageChild, direction: 'above' | 'below'): void
 }
