@@ -69,6 +69,20 @@ export default class Editor implements EditorI {
     this.emitter.emit('*')
   }
 
+  getNextBlockFrom(id: string): PageChild | null {
+    if (!this.page) return null
+    const idx = this.page.children.findIndex((block) => block.id === id)
+    if (idx === undefined || idx === null) return null
+    return this.page.children[idx + 1] || null
+  }
+
+  getPreviousBlockFrom(id: string): PageChild | null {
+    if (!this.page) return null
+    const idx = this.page.children.findIndex((block) => block.id === id)
+    if (idx === undefined || idx === null) return null
+    return this.page.children[idx - 1] || null
+  }
+
   focusNextBlock(): void {
     if (!this.page) return
     const idx = this.page.children.findIndex((block) => block.id === this.currentBlockId)

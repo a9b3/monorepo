@@ -26,6 +26,59 @@ export default (editor: Editor) => ({
         e.preventDefault()
         e.stopPropagation()
       }
+    },
+    {
+      key: 'Tab',
+      title: 'Indent List Item',
+      description: 'Indent the current list item',
+      action: (e) => {
+        const curBlock = editor.getCurrentBlock()
+
+        let nextIndentLevel = curBlock?.properties.indentLevel
+        const prevBlock = editor.getPreviousBlockFrom(curBlock?.id)
+        if (prevBlock?.type === 'listItem') {
+          nextIndentLevel =
+            nextIndentLevel + 1 < prevBlock.properties.indentLevel + 2
+              ? nextIndentLevel + 1
+              : prevBlock.properties.indentLevel + 1
+        } else {
+          nextIndentLevel = 1
+        }
+
+        editor.updateBlock(curBlock?.id, {
+          properties: {
+            indentLevel: nextIndentLevel
+          }
+        })
+
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    },
+    {
+      key: 'shift+Tab',
+      title: 'Outdent List Item',
+      description: 'Outdent the current list item',
+      action: (e) => {
+        const curBlock = editor.getCurrentBlock()
+
+        let nextIndentLevel = curBlock?.properties.indentLevel
+        const prevBlock = editor.getPreviousBlockFrom(curBlock?.id)
+        if (prevBlock?.type === 'listItem') {
+          nextIndentLevel = nextIndentLevel - 1 > 0 ? nextIndentLevel - 1 : 1
+        } else {
+          nextIndentLevel = 0
+        }
+
+        editor.updateBlock(curBlock?.id, {
+          properties: {
+            indentLevel: nextIndentLevel
+          }
+        })
+
+        e.preventDefault()
+        e.stopPropagation()
+      }
     }
   ]
 })

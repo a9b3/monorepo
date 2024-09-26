@@ -44,6 +44,8 @@ export interface Editor {
   addBlock(block: PageChild, idx: number, direction: 'above' | 'below'): void
   moveBlock(idx: number, toIdx: number): void
   moveBlocks(ids: string[], toIdx: number): void
+  getPreviousBlockFrom(id: string): PageChild | null
+  getNextBlockFrom(id: string): PageChild | null
   focusNextBlock(): void
   focusPrevBlock(): void
 

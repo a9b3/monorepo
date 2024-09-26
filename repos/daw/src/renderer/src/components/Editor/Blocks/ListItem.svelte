@@ -26,7 +26,7 @@
   .list-item::before {
     content: '';
     position: absolute;
-    left: 0;
+    left: calc(calc(var(--spacing-s) * var(--indent-level)));
     top: 50%;
     transform: translateY(-50%);
     width: 6px;

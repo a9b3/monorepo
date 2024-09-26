@@ -36,7 +36,7 @@ function setup(block: PageChild) {
   shortcutManager.register(blockShortcuts)
   shortcutManager.pushActiveContext(blockShortcuts.context)
 
-  if (block.type === 'listItem') {
+  if (block?.type === 'listItem') {
     shortcutManager.register(listItemShortcuts)
     shortcutManager.pushActiveContext(listItemShortcuts.context)
   }
@@ -44,7 +44,7 @@ function setup(block: PageChild) {
   return () => {
     shortcutManager.popActiveContext(blockShortcuts.context)
 
-    if (block.type === 'listItem') {
+    if (block?.type === 'listItem') {
       shortcutManager.popActiveContext(listItemShortcuts.context)
     }
   }
