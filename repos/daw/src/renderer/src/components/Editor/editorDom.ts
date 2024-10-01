@@ -309,19 +309,27 @@ export class EditorDom {
         )
       })
       .forEach((handler) => {
-        handler.action({ block })
+        handler.action({ block, evt })
 
-        evt.preventDefault()
-        evt.stopPropagation()
+        if (handler.preventDefault) {
+          evt.preventDefault()
+        }
+        if (handler.stopPropagation) {
+          evt.stopPropagation()
+        }
       })
 
     this.editorWideHandlers
       .filter((handler) => handler.trigger === trigger)
       .forEach((handler) => {
-        handler.action()
+        handler.action({ block, evt })
 
-        evt.preventDefault()
-        evt.stopPropagation()
+        if (handler.preventDefault) {
+          evt.preventDefault()
+        }
+        if (handler.stopPropagation) {
+          evt.stopPropagation()
+        }
       })
   }
 
@@ -332,7 +340,7 @@ export class EditorDom {
      * 2. Then find block that is partially selected and delete the selected text.
      */
     {
-      title: 'Delete',
+      title: 'Delete selected blocks or text',
       trigger: 'Backspace',
       action: () => {
         const selection = window.getSelection()
@@ -375,6 +383,34 @@ export class EditorDom {
 
         selection?.collapseToStart()
       }
+      // preventDefault: true,
+      // stopPropagation: true
+    },
+    {
+      title: 'Shift+Enter to create new block below regardless of cursor',
+      trigger: 'shift+Enter',
+      action: ({ block }) => {
+        this.focusId = this.editor.addBlock({
+          blockType: 'text',
+          id: block?.id,
+          direction: 'below'
+        })
+      },
+      preventDefault: true,
+      stopPropagation: true
+    },
+    {
+      title: 'Shift+Meta+Enter to create new block above regardless of cursor',
+      trigger: 'meta+shift+Enter',
+      action: ({ block }) => {
+        this.focusId = this.editor.addBlock({
+          blockType: 'text',
+          id: block?.id,
+          direction: 'above'
+        })
+      },
+      preventDefault: true,
+      stopPropagation: true
     }
   ]
 
@@ -383,58 +419,136 @@ export class EditorDom {
     trigger: string
     blockType?: string[] | '*'
     action: (args: { block: any }) => void
+    preventDefault?: boolean
+    stopPropagation?: boolean
   }[] = [
     {
-      title: 'Enter',
+      title: 'Press enter for new empty text block',
       trigger: 'Enter',
       blockType: ['text', 'header'],
       action: ({ block }) => {
+        console.log(`here`)
         this.focusId = this.editor.addBlock({
           blockType: 'text',
           id: block.id,
           direction: 'below'
         })
-      }
+      },
+      preventDefault: true,
+      stopPropagation: true
     },
     {
-      title: 'Enter',
+      title: 'Enter for new empty list item',
       trigger: 'Enter',
       blockType: ['listItem'],
       action: ({ block }) => {
+        if (block.properties.text === '') {
+          this.focusId = this.editor.addBlock({
+            blockType: 'text',
+            id: block.id,
+            direction: 'below'
+          })
+          this.editor.deleteBlock(block.id)
+          return
+        }
+
         this.focusId = this.editor.addBlock({
           blockType: 'listItem',
           args: [block.properties.listType, block.properties.indentLevel],
           id: block.id,
           direction: 'below'
         })
-      }
+      },
+      preventDefault: true,
+      stopPropagation: true
     },
     {
-      title: 'Shift+Enter',
-      trigger: 'shift+Enter',
-      blockType: '*',
+      title: 'Tab to indent list item',
+      trigger: 'Tab',
+      blockType: ['listItem'],
+      /**
+       * Tab behavior:
+       * 1. If no previous block do not allow indent.
+       * 2. If previous block is a list item, allow +1 indent level.
+       *    Also indent the subtree of list items defined by everything below
+       *    the current block that has an indent level greater than the current
+       *    block.
+       */
       action: ({ block }) => {
-        this.focusId = this.editor.addBlock({
-          blockType: 'text',
-          id: block.id,
-          direction: 'below'
-        })
-      }
+        const prevBlock = this.editor.getPreviousBlockFrom(block.id)
+        if (!prevBlock || prevBlock.type !== 'listItem') return
+        if (block.properties.indentLevel > prevBlock.properties.indentLevel) return
+
+        const curIndent = block.properties.indentLevel
+
+        let curBlock = block
+        do {
+          this.editor.updateBlock(curBlock.id, {
+            properties: { indentLevel: curBlock.properties.indentLevel + 1 }
+          })
+          curBlock = this.editor.getNextBlockFrom(curBlock.id)
+        } while (
+          curBlock &&
+          curBlock.type === 'listItem' &&
+          curBlock.properties.indentLevel > curIndent
+        )
+      },
+      preventDefault: true,
+      stopPropagation: true
     },
     {
-      title: 'Shift+Meta+Enter',
-      trigger: 'meta+shift+Enter',
-      blockType: '*',
+      title: 'Shift tab to indent list item',
+      trigger: 'shift+Tab',
+      blockType: ['listItem'],
+      /**
+       * Shift+Tab behavior:
+       * 1. If no previous block do not allow indent.
+       * 2. Do not allow indent to be less than 0.
+       */
       action: ({ block }) => {
-        this.focusId = this.editor.addBlock({
-          blockType: 'text',
-          id: block.id,
-          direction: 'above'
-        })
+        if (block.properties.indentLevel === 0) return
+        const curIndent = block.properties.indentLevel
+
+        let curBlock = block
+        do {
+          this.editor.updateBlock(curBlock.id, {
+            properties: { indentLevel: curBlock.properties.indentLevel - 1 }
+          })
+          curBlock = this.editor.getNextBlockFrom(curBlock.id)
+        } while (
+          curBlock &&
+          curBlock.type === 'listItem' &&
+          curBlock.properties.indentLevel > curIndent
+        )
+      },
+      preventDefault: true,
+      stopPropagation: true
+    },
+    {
+      title: 'Delete block if empty',
+      trigger: 'Backspace',
+      blockType: '*',
+      action: ({ block, evt }) => {
+        if (block.properties.text === '') {
+          const id = this.editor.getPreviousBlockFrom(block.id)?.id
+          if (id) {
+            this.focusId = id
+            this.editor.deleteBlock(block.id)
+            this.blocks.get(this.focusId)?.focus()
+
+            const range = document.createRange()
+            range.selectNodeContents(this.blocks.get(this.focusId))
+            window.getSelection()?.removeAllRanges()
+            window.getSelection()?.addRange(range)
+            window.getSelection()?.collapseToEnd()
+            evt.stopPropagation()
+            evt.preventDefault()
+          }
+        }
       }
     },
     {
-      title: 'Arrow Up',
+      title: 'Arrow Up to move focus to block above',
       trigger: 'ArrowUp',
       blockType: '*',
       action: ({ block }) => {
@@ -443,10 +557,12 @@ export class EditorDom {
           this.focusId = id
           this.blocks.get(this.focusId)?.focus()
         }
-      }
+      },
+      preventDefault: true,
+      stopPropagation: true
     },
     {
-      title: 'Arrow Down',
+      title: 'Arrow Down to move focus to block below',
       trigger: 'ArrowDown',
       blockType: '*',
       action: ({ block }) => {
@@ -455,7 +571,9 @@ export class EditorDom {
           this.focusId = id
           this.blocks.get(this.focusId)?.focus()
         }
-      }
+      },
+      preventDefault: true,
+      stopPropagation: true
     }
   ]
 }
