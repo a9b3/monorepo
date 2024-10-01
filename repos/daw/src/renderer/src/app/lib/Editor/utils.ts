@@ -1,3 +1,5 @@
+import type { ListItem } from '../../types/block'
+
 export function createTextBlock() {
   return {
     id: window.crypto.randomUUID(),
@@ -10,7 +12,10 @@ export function createTextBlock() {
   }
 }
 
-export function createListItemBlock(listType: string, indentLevel: number) {
+export function createListItemBlock(
+  listType: ListItem['properties']['listType'],
+  indentLevel: number
+): ListItem {
   return {
     id: window.crypto.randomUUID(),
     type: 'listItem' as 'listItem',

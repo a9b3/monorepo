@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Header } from '@renderer/src/app/types/block'
-  import { setBlockBehavior } from '@renderer/src/stores/editor'
 
+  export let registerBlock: (node: HTMLElement, id: string) => void
   export let block: Header
 
   let textBuffer = block.properties.text
@@ -11,7 +11,7 @@
   this={`h${block.properties.level}`}
   class="main"
   contenteditable
-  use:setBlockBehavior={block.id}
+  use:registerBlock={block.id}
 >
   {@html textBuffer}
 </svelte:element>

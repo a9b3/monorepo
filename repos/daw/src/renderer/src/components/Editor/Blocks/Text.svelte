@@ -2,7 +2,8 @@
   import type { Text as TextBlock } from '@renderer/src/app/types/block'
   import Popover from '@renderer/src/components/generic/Popover.svelte'
   import BlockSelection from './BlockSelection.svelte'
-  import editorStore, { setBlockBehavior } from '@renderer/src/stores/editor'
+  import editorStore from '@renderer/src/stores/editor'
+  export let registerBlock: (node: HTMLElement, id: string) => void
 
   export let placeholder = `Press '/' to create a block...`
   export let block: TextBlock
@@ -17,7 +18,7 @@
   bind:this={containerEl}
   class="main"
   contenteditable={true}
-  use:setBlockBehavior={block.id}
+  use:registerBlock={block.id}
   {placeholder}
   on:input={(e) => {
     if (e.target.innerHTML === '/') {

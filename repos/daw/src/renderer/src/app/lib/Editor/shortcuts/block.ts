@@ -26,19 +26,19 @@ export default (editor: Editor) => ({
       preventDefault: true,
       stopPropagation: true
     },
-    {
-      key: 'Backspace',
-      title: 'Delete Block',
-      description: 'Delete the current block if it is empty',
-      action: (e) => {
-        if (editor.getCurrentBlock()?.properties.text === '') {
-          editor.deleteBlock(editor.currentBlockId)
-
-          e.preventDefault()
-          e.stopPropagation()
-        }
-      }
-    },
+    // {
+    //   key: 'Backspace',
+    //   title: 'Delete Block',
+    //   description: 'Delete the current block if it is empty',
+    //   action: (e) => {
+    //     if (editor.getCurrentBlock()?.properties.text === '') {
+    //       editor.deleteBlock(editor.currentBlockId)
+    //
+    //       e.preventDefault()
+    //       e.stopPropagation()
+    //     }
+    //   }
+    // },
     {
       key: 'Enter',
       title: 'Insert New Line',

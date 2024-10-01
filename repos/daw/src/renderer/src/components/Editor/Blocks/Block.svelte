@@ -5,12 +5,12 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
 -->
 <script lang="ts">
   import type { Block } from '@renderer/src/app/types/block'
-  import editorStore from '@renderer/src/stores/editor'
   import Text from './Text.svelte'
   import Header from './Header.svelte'
   import Code from './Code.svelte'
   import ListItem from './ListItem.svelte'
 
+  export let registerBlock: (node: HTMLElement, id: string) => void
   export let block: Block
 
   const component = {
@@ -21,13 +21,15 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
   }[block.type]
 </script>
 
-<div class="container" class:selected={$editorStore.editor.selectedBlocks.has(block.id)}>
-  <svelte:component this={component} {block} />
+<div class="container">
+  <svelte:component this={component} {block} {registerBlock} />
 </div>
 
 <style>
-  .selected {
-    background: rgba(0, 0, 0, 0.4);
+  span {
+    position: absolute;
+    right: 0;
+    color: blue;
   }
   .container {
     padding: 0;

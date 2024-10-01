@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ListItem } from '@renderer/src/app/types/block'
-  import { setBlockBehavior } from '@renderer/src/stores/editor'
 
+  export let registerBlock: (node: HTMLElement, id: string) => void
   export let block: ListItem
 
   let textBuffer = block.properties.text
@@ -11,7 +11,7 @@
   style="--indent-level: {block.properties.indentLevel}"
   class="list-item"
   contenteditable={true}
-  use:setBlockBehavior={block.id}
+  use:registerBlock={block.id}
 >
   {@html textBuffer}
 </div>

@@ -2,8 +2,8 @@
   import type { Block } from '@renderer/src/app/types/block'
   import { onMount, afterUpdate } from 'svelte'
   import hljs from 'highlight.js/lib/common'
-  import { setBlockBehavior } from '@renderer/src/stores/editor'
 
+  export let registerBlock: (node: HTMLElement, id: string) => void
   export let block: Block
   let value = block.properties.text
 
@@ -56,7 +56,7 @@
     on:input={handleInput}
     spellcheck="false"
     rows="1"
-    use:setBlockBehavior={block.id}
+    use:registerBlock={block.id}
   ></textarea>
   {#if detectedLanguage}
     <div class="language-indicator">{detectedLanguage}</div>

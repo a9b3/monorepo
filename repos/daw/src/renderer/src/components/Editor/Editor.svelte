@@ -1,49 +1,27 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import editorStore from '@renderer/src/stores/editor'
-  import {
-    onMouseDown as textMouseDown,
-    onMouseMove,
-    onMouseUp as textMouseUp
-  } from '@renderer/src/app/lib/ui/textSelection'
   import Block from './Blocks/Block.svelte'
+  import { EditorDom } from './editorDom'
 
-  function onMouseDown(...args) {
-    $editorStore.editor.selectBlocks([])
-    $editorStore.editor.isSelecting = true
-    textMouseDown(...args)
-  }
-
-  function onMouseUp(...args) {
-    $editorStore.editor.isSelecting = false
-    textMouseUp(...args)
-  }
-
-  function handleKeyDown(evt) {
-    if (evt.key === 'Backspace') {
-      $editorStore.editor.clearBlocks(Array.from($editorStore.editor.selectedBlocks.keys()))
-    }
-  }
+  let editorEl: HTMLDivElement
+  let editorDom: EditorDom = new EditorDom({ editor: $editorStore.editor })
+  let teardown: () => void
 
   onMount(() => {
-    document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('mousedown', onMouseDown)
-    document.addEventListener('mousemove', onMouseMove)
-    document.addEventListener('mouseup', onMouseUp)
+    teardown = editorDom.onEditorCreate(editorEl)
   })
+
   onDestroy(() => {
-    document.removeEventListener('keydown', handleKeyDown)
-    document.removeEventListener('mousedown', onMouseDown)
-    document.removeEventListener('mousemove', onMouseMove)
-    document.removeEventListener('mouseup', onMouseUp)
+    teardown()
   })
 </script>
 
-<div class="main">
+<div class="main" bind:this={editorEl}>
   <div class="wrapper">
     {#each $editorStore.editor.page.children as childBlock}
       {#key childBlock.id + childBlock.type}
-        <Block block={childBlock} />
+        <Block block={childBlock} registerBlock={editorDom.onBlockCreate} />
       {/key}
     {/each}
   </div>
