@@ -1,143 +1,50 @@
-import Editor, { getBlockShortcuts, getListItemShortcuts } from '@renderer/src/app/lib/Editor'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
+import Editor from '@renderer/src/app/lib/Editor'
+import {
+  keyParser,
+  getMouseEventCaretRange,
+  isMetaKey,
+  getEndOffset,
+  isElementEditable,
+  rangeIncludesRange,
+  getBlockIdAtRange
+} from './utils'
 
-function isMetaKey(s: string) {
-  return ['ctrl', 'alt', 'meta', 'shift'].includes(s)
-}
+class EditorDomHelper {
+  blockAttr = 'data-block-id'
 
-const keyParser = {
-  /**
-   * Parse a shortcut key into a canonical form.
-   * For example, 'ctrl+shift+a' and 'shift+ctrl+a' are equivalent.
-   */
-  fromString: (key: string) => {
-    const metaKeys: string[] = []
-    const keys: string[] = []
-    const arr = key.split('+')
-    for (let index = 0; index < arr.length; index++) {
-      const element = arr[index]
-      if (isMetaKey(element)) {
-        metaKeys.push(element)
-      } else {
-        keys.push(element)
-      }
-    }
-    return metaKeys.sort().concat(keys.sort()).join('+')
-  },
-
-  /**
-   * Convert a KeyboardEvent into a canonical shortcut key.
-   * For example, 'ctrl+shift+a' and 'shift+ctrl+a' are equivalent.
-   */
-  fromKeyboardEvent: (event: KeyboardEvent) => {
-    const metaKeys: string[] = []
-    if (event.altKey) {
-      metaKeys.push('alt')
-    }
-    if (event.ctrlKey) {
-      metaKeys.push('ctrl')
-    }
-    if (event.metaKey) {
-      metaKeys.push('meta')
-    }
-    if (event.shiftKey) {
-      metaKeys.push('shift')
-    }
-    return metaKeys.sort().concat(event.key).join('+')
-  }
-}
-
-function getEndOffset(el: HTMLElement) {
-  if (el.lastChild.nodeValue === null) {
-    return 0
-  }
-  return el.lastChild?.innerHTML?.length || el.lastChild?.textContent?.length || 0
-}
-
-function isElementEditable(element) {
-  // Check if it's a form input that allows text input
-  if (element instanceof HTMLElement) {
-    const tagName = element.tagName.toLowerCase()
-    if (tagName === 'input') {
-      const inputType = element.type.toLowerCase()
-      const editableInputTypes = [
-        'text',
-        'password',
-        'number',
-        'email',
-        'tel',
-        'url',
-        'search',
-        'date',
-        'datetime-local',
-        'time',
-        'month',
-        'week'
-      ]
-      return editableInputTypes.includes(inputType) && !element.disabled && !element.readOnly
-    }
-    if (tagName === 'textarea') {
-      return !element.disabled && !element.readOnly
-    }
+  getById(id: string) {
+    return document.querySelector(`[${this.blockAttr}="${id}"]`)
   }
 
-  // Check for contentEditable
-  if (element.isContentEditable) {
-    return true
+  getClientRect(r: Range) {
+    return r.getClientRects()[0] ? r.getClientRects()[0] : r.startContainer.getClientRects()[0]
   }
 
-  // Check if it's inside a contentEditable container
-  let parent = element.parentElement
-  while (parent) {
-    if (parent.isContentEditable) {
-      return true
-    }
-    parent = parent.parentElement
+  cursorAtTop(cursor: Range, el: HTMLElement): boolean {
+    const range = document.createRange()
+    range.selectNodeContents(el.firstChild || el)
+
+    return this.getClientRect(cursor).top === this.getClientRect(range).top
   }
 
-  return false
-}
+  cursorAtBottom(cursor: Range, el: HTMLElement): boolean {
+    const range = document.createRange()
+    range.selectNodeContents(el.lastChild || el)
 
-function rangeIncludesRange(range1, range2) {
-  return (
-    range1.compareBoundaryPoints(Range.START_TO_START, range2) <= 0 &&
-    range1.compareBoundaryPoints(Range.END_TO_END, range2) >= 0
-  )
-}
-
-function getMouseEventCaretRange(evt) {
-  var range,
-    x = evt.clientX,
-    y = evt.clientY
-
-  // Try the simple IE way first
-  if (document.body.createTextRange) {
-    range = document.body.createTextRange()
-    range.moveToPoint(x, y)
-  } else if (typeof document.createRange != 'undefined') {
-    // Try Mozilla's rangeOffset and rangeParent properties,
-    // which are exactly what we want
-    if (typeof evt.rangeParent != 'undefined') {
-      range = document.createRange()
-      range.setStart(evt.rangeParent, evt.rangeOffset)
-      range.collapse(true)
-    }
-
-    // Try the standards-based way next
-    else if (document.caretPositionFromPoint) {
-      var pos = document.caretPositionFromPoint(x, y)
-      range = document.createRange()
-      range.setStart(pos.offsetNode, pos.offset)
-      range.collapse(true)
-    }
-
-    // Next, the WebKit way
-    else if (document.caretRangeFromPoint) {
-      range = document.caretRangeFromPoint(x, y)
-    }
+    return this.getClientRect(cursor).bottom === this.getClientRect(range).bottom
   }
 
-  return range
+  setCursorAt(node: Node, offset: number) {
+    const newRange = document.createRange()
+    if (!node) return
+    newRange.setStart(
+      node.firstChild || node,
+      Math.min(offset, node.firstChild ? node.firstChild.length : node.length)
+    )
+    newRange.collapse(true)
+    window.getSelection()?.removeAllRanges()
+    window.getSelection()?.addRange(newRange)
+  }
 }
 
 export class EditorDom {
@@ -145,12 +52,14 @@ export class EditorDom {
   editor: Editor
   blocks: Map<string, HTMLElement> = new Map()
   focusId: string | undefined
+  domHelper: EditorDomHelper = new EditorDomHelper()
 
   constructor({ editor }: { editor: Editor }) {
     this.editor = editor
   }
 
   #editorSetup = false
+
   /**
    * Invoke upon editor dom element creation.
    */
@@ -170,12 +79,21 @@ export class EditorDom {
     }
   }
 
+  /**
+   * Blocks are implemented as div contenteditable or textareas or inputs,
+   * extract the text value from these various elements.
+   */
+  #extractBlockContent = (el: HTMLElement | HTMLTextAreaElement) => {
+    return (el as HTMLTextAreaElement).value || el.innerHTML
+  }
+
   // NOTE: This is a workaround for svelte's inability to track dom
   // create/destroy accurately. In a dom tree if a node is removed, for all the
   // subsequent nodes svelte will recreate the node and destroy the old node in
   // that order resulting in a inaccurate call sequence of create/destroy for a
   // node that is supposed to be the same.
   #trackSvelteDomUpdates = new Map()
+
   /**
    * Register a block element to the editor. Need this to keep track of the
    * focused blocks id.
@@ -196,7 +114,8 @@ export class EditorDom {
     }
 
     const oninput = (evt: Event) => {
-      const text = evt.target.value || evt.target.innerHTML
+      if (!evt.target) return
+      const text = this.#extractBlockContent(evt.target as HTMLElement)
       this.editor.updateBlock(id, { properties: { text } })
     }
 
@@ -221,24 +140,27 @@ export class EditorDom {
    * Setup text selection behavior.
    * This is to allow selecting text across multiple blocks.
    * This is a workaround for the default behavior of contenteditable elements.
+   *
+   * 1. On mousedown keep track of origin range (caret position).
+   * 2. On mousemove set selection range to include contents between origin and
+   *    current range.
+   * 3. On mouseup reset origin range.
+   *
+   * note: browsers only support selection range with one range at a time, this
    */
   handleTextSelection() {
-    let isSelecting = false
     // should be a collapsed range (e.g. a caret)
     let originRange: Range | null = null
 
     function onMouseDown(evt: MouseEvent) {
-      isSelecting = true
       originRange = getMouseEventCaretRange(evt)
     }
 
     // set selection range to include contents within blocks
     function onMouseMove(evt: MouseEvent) {
-      if (!isSelecting) return
       if (!originRange) return
 
       const curRange = getMouseEventCaretRange(evt)
-      if (!isElementEditable(curRange.startContainer)) return
 
       const selection = window.getSelection()
       if (!selection) return
@@ -266,7 +188,6 @@ export class EditorDom {
     }
 
     function onMouseUp() {
-      isSelecting = false
       originRange = null
     }
 
@@ -295,9 +216,16 @@ export class EditorDom {
     return false
   }
 
+  /**
+   * Handle keyboard events.
+   */
   keydownhandler = (evt: KeyboardEvent) => {
     const trigger = keyParser.fromKeyboardEvent(evt)
     const block = this.focusId ? this.editor.getBlockById(this.focusId) : null
+
+    if (trigger === 'Tab') {
+      evt.preventDefault()
+    }
 
     this.keyhandlers
       .filter((handler) => {
@@ -310,7 +238,6 @@ export class EditorDom {
       })
       .forEach((handler) => {
         handler.action({ block, evt })
-
         if (handler.preventDefault) {
           evt.preventDefault()
         }
@@ -323,7 +250,6 @@ export class EditorDom {
       .filter((handler) => handler.trigger === trigger)
       .forEach((handler) => {
         handler.action({ block, evt })
-
         if (handler.preventDefault) {
           evt.preventDefault()
         }
@@ -333,6 +259,9 @@ export class EditorDom {
       })
   }
 
+  /**
+   * Editor wide key handlers.
+   */
   editorWideHandlers = [
     /**
      * Handle delete across blocks.
@@ -411,32 +340,132 @@ export class EditorDom {
       },
       preventDefault: true,
       stopPropagation: true
+    },
+    {
+      title: 'Cmd+A to select all blocks',
+      trigger: 'meta+a',
+      action: () => {
+        const all = this.editorEl?.querySelectorAll('[data-block-id]') || []
+        if (all.length === 0) return
+
+        const foo = this.editorEl?.querySelectorAll('textarea') || []
+        const range = document.createRange()
+        console.log(foo[0])
+        range.setStart(foo[0], 0)
+        range.setEnd(foo[0], 2)
+        window.getSelection()?.removeAllRanges()
+        window.getSelection()?.addRange(range)
+
+        // range.setStart(all[0], 0)
+        // this.#extractBlockContent(all[all.length - 1])
+        // all[all.length - 1]
+        //
+        // range.setEnd(all?.[all.length - 1], getEndOffset(all?.[all.length - 1]))
+        // window.getSelection()?.removeAllRanges()
+        // window.getSelection()?.addRange(range)
+      },
+      preventDefault: true,
+      stopPropagation: true
     }
   ]
 
+  /**
+   * Block specific key handlers.
+   */
   keyhandlers: {
     title: string
     trigger: string
     blockType?: string[] | '*'
-    action: (args: { block: any }) => void
+    action: (args: { block: any; evt: Event }) => boolean | undefined
     preventDefault?: boolean
     stopPropagation?: boolean
   }[] = [
+    /*************************************************************************
+     * Any
+     *************************************************************************/
+
     {
-      title: 'Press enter for new empty text block',
-      trigger: 'Enter',
-      blockType: ['text', 'header'],
-      action: ({ block }) => {
-        console.log(`here`)
-        this.focusId = this.editor.addBlock({
-          blockType: 'text',
-          id: block.id,
-          direction: 'below'
-        })
-      },
-      preventDefault: true,
-      stopPropagation: true
+      title: 'Delete block if empty',
+      trigger: 'Backspace',
+      blockType: '*',
+      action: ({ block, evt }) => {
+        if (block.properties.text === '') {
+          const id = this.editor.getPreviousBlockFrom(block.id)?.id
+          if (id) {
+            this.focusId = id
+            this.editor.deleteBlock(block.id)
+            this.blocks.get(this.focusId)?.focus()
+
+            const range = document.createRange()
+            range.selectNodeContents(this.blocks.get(this.focusId))
+            window.getSelection()?.removeAllRanges()
+            window.getSelection()?.addRange(range)
+            window.getSelection()?.collapseToEnd()
+            evt.stopPropagation()
+            evt.preventDefault()
+          }
+        }
+      }
     },
+
+    /**
+     * 1. If cursor is at the top of element then find previous block and move
+     * cursor to that element.
+     */
+    {
+      title: 'Arrow Up to move focus to block above',
+      trigger: 'ArrowUp',
+      blockType: '*',
+      action: ({ block, evt }) => {
+        const selection = window.getSelection()
+        if (!selection) return
+
+        const blockEl = this.domHelper.getById(block.id)
+        if (!blockEl) return
+
+        if (this.domHelper.cursorAtTop(selection.getRangeAt(0), blockEl)) {
+          const id = this.editor.getPreviousBlockFrom(block.id)?.id
+          if (id) {
+            this.domHelper.setCursorAt(
+              this.domHelper.getById(id).lastChild || this.domHelper.getById(id),
+              selection.getRangeAt(0).startOffset
+            )
+            evt.preventDefault()
+            evt.stopPropagation()
+          }
+        }
+      }
+    },
+
+    {
+      title: 'Arrow Down to move focus to block below',
+      trigger: 'ArrowDown',
+      blockType: '*',
+      action: ({ block, evt }) => {
+        const selection = window.getSelection()
+        if (!selection) return
+
+        const blockEl = this.domHelper.getById(block.id)
+        if (!blockEl) return
+
+        if (this.domHelper.cursorAtBottom(selection.getRangeAt(0), blockEl)) {
+          const id = this.editor.getNextBlockFrom(block.id)?.id
+          if (id) {
+            this.domHelper.setCursorAt(
+              this.domHelper.getById(id).firstChild || this.domHelper.getById(id),
+              selection.getRangeAt(0).startOffset
+            )
+            evt.preventDefault()
+            evt.stopPropagation()
+          }
+        }
+      }
+    },
+
+    /*************************************************************************
+     * List Item
+     *************************************************************************/
+
     {
       title: 'Enter for new empty list item',
       trigger: 'Enter',
@@ -525,52 +554,32 @@ export class EditorDom {
       stopPropagation: true
     },
     {
-      title: 'Delete block if empty',
+      title: 'Delete should turn empty list item back to textblock',
       trigger: 'Backspace',
-      blockType: '*',
+      blockType: ['listItem'],
       action: ({ block, evt }) => {
         if (block.properties.text === '') {
-          const id = this.editor.getPreviousBlockFrom(block.id)?.id
-          if (id) {
-            this.focusId = id
-            this.editor.deleteBlock(block.id)
-            this.blocks.get(this.focusId)?.focus()
-
-            const range = document.createRange()
-            range.selectNodeContents(this.blocks.get(this.focusId))
-            window.getSelection()?.removeAllRanges()
-            window.getSelection()?.addRange(range)
-            window.getSelection()?.collapseToEnd()
-            evt.stopPropagation()
-            evt.preventDefault()
-          }
-        }
-      }
-    },
-    {
-      title: 'Arrow Up to move focus to block above',
-      trigger: 'ArrowUp',
-      blockType: '*',
-      action: ({ block }) => {
-        const id = this.editor.getPreviousBlockFrom(block.id)?.id
-        if (id) {
-          this.focusId = id
-          this.blocks.get(this.focusId)?.focus()
+          this.editor.updateBlock(block.id, { type: 'text' })
         }
       },
       preventDefault: true,
       stopPropagation: true
     },
+
+    /*************************************************************************
+     * Text/Header
+     *************************************************************************/
+
     {
-      title: 'Arrow Down to move focus to block below',
-      trigger: 'ArrowDown',
-      blockType: '*',
+      title: 'Press enter for new empty text block',
+      trigger: 'Enter',
+      blockType: ['text', 'header'],
       action: ({ block }) => {
-        const id = this.editor.getNextBlockFrom(block.id)?.id
-        if (id) {
-          this.focusId = id
-          this.blocks.get(this.focusId)?.focus()
-        }
+        this.focusId = this.editor.addBlock({
+          blockType: 'text',
+          id: block.id,
+          direction: 'below'
+        })
       },
       preventDefault: true,
       stopPropagation: true
