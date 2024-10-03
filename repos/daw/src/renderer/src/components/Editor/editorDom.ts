@@ -407,51 +407,15 @@ export class EditorDom {
       trigger: 'ArrowUp',
       blockType: '*',
       action: ({ block, evt }) => {
-        const selection = window.getSelection()
-        if (!selection) return
-
-        const blockEl = this.domHelper.getById(block.id)
-        if (!blockEl) return
-
-        // selection.collapseToStart()
-        if (this.domHelper.cursorAtTop(selection.getRangeAt(0), blockEl)) {
-          const id = this.editor.getPreviousBlockFrom(block.id)?.id
-          if (id) {
-            this.domHelper.setCursorAt(
-              this.domHelper.getById(id).lastChild || this.domHelper.getById(id),
-              selection.getRangeAt(0).startOffset
-            )
-            evt.preventDefault()
-            evt.stopPropagation()
-          }
-        }
+        this.#moveCursor({ id: block.id, direction: 'up', evt })
       }
     },
-
     {
       title: 'Arrow Down to move focus to block below',
       trigger: 'ArrowDown',
       blockType: '*',
       action: ({ block, evt }) => {
-        const selection = window.getSelection()
-        if (!selection) return
-
-        const blockEl = this.domHelper.getById(block.id)
-        if (!blockEl) return
-
-        // selection.collapseToEnd()
-        // if (this.domHelper.cursorAtBottom(selection.getRangeAt(0), blockEl)) {
-        if (this.domHelper.cursorAt(selection.getRangeAt(0), blockEl, 'bottom')) {
-          const id = this.editor.getNextBlockFrom(block.id)?.id
-          if (id) {
-            this.domHelper.setCursorAt(
-              this.domHelper.getById(id).firstChild || this.domHelper.getById(id),
-              selection.getRangeAt(0).startOffset
-            )
-            evt.preventDefault()
-            evt.stopPropagation()
-          }
-        }
+        this.#moveCursor({ id: block.id, direction: 'down', evt })
       }
     },
     {
@@ -459,21 +423,7 @@ export class EditorDom {
       trigger: 'ArrowLeft',
       blockType: '*',
       action: ({ block, evt }) => {
-        const selection = window.getSelection()
-        if (!selection) return
-
-        const blockEl = this.domHelper.getById(block.id)
-        if (!blockEl) return
-
-        if (selection.getRangeAt(0).startOffset === 0) {
-          const id = this.editor.getPreviousBlockFrom(block.id)?.id
-          if (id) {
-            const prevChild = this.domHelper.getById(id).lastChild || this.domHelper.getById(id)
-            this.domHelper.setCursorAt(prevChild, prevChild.length)
-            evt.preventDefault()
-            evt.stopPropagation()
-          }
-        }
+        this.#moveCursor({ id: block.id, direction: 'left', evt })
       }
     },
     {
@@ -481,21 +431,7 @@ export class EditorDom {
       trigger: 'ArrowRight',
       blockType: '*',
       action: ({ block, evt }) => {
-        const selection = window.getSelection()
-        if (!selection) return
-
-        const blockEl = this.domHelper.getById(block.id)
-        if (!blockEl) return
-
-        if (selection.getRangeAt(0).endOffset === blockEl.lastChild.length) {
-          const id = this.editor.getNextBlockFrom(block.id)?.id
-          if (id) {
-            const nextChild = this.domHelper.getById(id).firstChild || this.domHelper.getById(id)
-            this.domHelper.setCursorAt(nextChild, 0)
-            evt.preventDefault()
-            evt.stopPropagation()
-          }
-        }
+        this.#moveCursor({ id: block.id, direction: 'right', evt })
       }
     },
 
@@ -651,11 +587,19 @@ export class EditorDom {
       const moveElChild = moveEl.firstChild || moveEl
       this.domHelper.setCursorAt(moveElChild, sRange.startOffset)
       movedCursor = true
-    } else if (direction === 'left' && sRange.startOffset === 0) {
+    } else if (
+      direction === 'left' &&
+      sRange.startOffset === 0 &&
+      this.domHelper.cursorAt(sRange, curEl, 'top')
+    ) {
       const moveElChild = moveEl.lastChild || moveEl
       this.domHelper.setCursorAt(moveElChild, moveElChild.length)
       movedCursor = true
-    } else if (direction === 'right' && sRange.endOffset === curEl.lastChild?.length) {
+    } else if (
+      direction === 'right' &&
+      this.domHelper.cursorAt(sRange, curEl, 'bottom') &&
+      sRange.endOffset === (curEl.lastChild?.length || curEl.length || 0)
+    ) {
       const moveElChild = moveEl.firstChild || moveEl
       this.domHelper.setCursorAt(moveElChild, 0)
       movedCursor = true
