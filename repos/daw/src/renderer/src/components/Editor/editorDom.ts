@@ -45,6 +45,20 @@ class EditorDomHelper {
     window.getSelection()?.removeAllRanges()
     window.getSelection()?.addRange(newRange)
   }
+
+  getRangeValues(n: Node, key: string): [node: Node, offset: number] {
+    return n[key] ? [n[key], n[key].length] : [n, n.length]
+  }
+
+  setNodeValue(n: Node, value: string) {
+    if (n instanceof HTMLElement) {
+      n.innerHTML = value
+    } else {
+      n.nodeValue = value
+    }
+
+    n.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }))
+  }
 }
 
 export class EditorDom {
@@ -83,8 +97,13 @@ export class EditorDom {
    * Blocks are implemented as div contenteditable or textareas or inputs,
    * extract the text value from these various elements.
    */
-  #extractBlockContent = (el: HTMLElement | HTMLTextAreaElement) => {
-    return (el as HTMLTextAreaElement).value || el.innerHTML
+  #extractElText = (el: HTMLElement) => {
+    if (el.nodeType === Node.TEXT_NODE) {
+      return el.nodeValue || ''
+    }
+    if (el.nodeType === Node.ELEMENT_NODE) {
+      return el.innerHTML
+    }
   }
 
   // NOTE: This is a workaround for svelte's inability to track dom
@@ -115,7 +134,7 @@ export class EditorDom {
 
     const oninput = (evt: Event) => {
       if (!evt.target) return
-      const text = this.#extractBlockContent(evt.target as HTMLElement)
+      const text = this.#extractElText(evt.target as HTMLElement)
       this.editor.updateBlock(id, { properties: { text } })
     }
 
@@ -271,49 +290,42 @@ export class EditorDom {
     {
       title: 'Delete selected blocks or text',
       trigger: 'Backspace',
-      action: () => {
+      action: ({ evt }) => {
         const selection = window.getSelection()
-        if (selection?.isCollapsed) {
-          return
-        }
+        if (!selection) return
+        if (selection.isCollapsed) return
+
+        const range = selection.getRangeAt(0)
+
+        const startContainer = range.startContainer
+        const endContainer = range.endContainer
+
+        this.domHelper.setNodeValue(
+          startContainer,
+          this.#extractElText(startContainer).slice(0, range.startOffset)
+        )
+        this.domHelper.setNodeValue(
+          endContainer,
+          this.#extractElText(endContainer).slice(range.endOffset)
+        )
 
         // Find blocks that are fully selected and delete them.
         const toBeDeleted: string[] = []
-        this.blocks.forEach((el, id) => {
-          const range = document.createRange()
-          if (!el.firstChild) {
-            range.selectNode(el)
-          } else {
-            range.setStart(el.firstChild, 0)
-            const endOffset = getEndOffset(el)
-            range.setEnd(el.lastChild, endOffset)
-          }
+        document.querySelectorAll('[data-block-id]').forEach((el) => {
+          const r = document.createRange()
+          r.selectNodeContents(el)
 
-          if (rangeIncludesRange(selection?.getRangeAt(0), range)) {
-            toBeDeleted.push(id)
+          if (rangeIncludesRange(range, r)) {
+            toBeDeleted.push(el.getAttribute('data-block-id')!)
           }
-        })
-        toBeDeleted.forEach((id) => {
-          this.blocks.delete(id)
         })
         this.editor.deleteBlocks(toBeDeleted)
 
-        // selection?.getRangeAt(0).deleteContents()
-        // const startEl = selection?.getRangeAt(0).startContainer
-        // const endEl = selection?.getRangeAt(0).endContainer
-        //
-        // startEl.textContent = startEl.textContent?.slice(0, selection?.getRangeAt(0).startOffset)
-        // console.log(selection?.getRangeAt(0).endOffset)
-        // endEl.textContent = endEl.textContent?.slice(selection?.getRangeAt(0).endOffset)
-        console.log(selection?.getRangeAt(0).startContainer)
-        console.log(selection?.getRangeAt(0).endContainer)
+        selection.removeAllRanges()
 
-        debugger
-
-        selection?.collapseToStart()
+        evt.preventDefault()
+        evt.stopPropagation()
       }
-      // preventDefault: true,
-      // stopPropagation: true
     },
     {
       title: 'Shift+Enter to create new block below regardless of cursor',
@@ -348,21 +360,11 @@ export class EditorDom {
         const all = this.editorEl?.querySelectorAll('[data-block-id]') || []
         if (all.length === 0) return
 
-        const foo = this.editorEl?.querySelectorAll('textarea') || []
         const range = document.createRange()
-        console.log(foo[0])
-        range.setStart(foo[0], 0)
-        range.setEnd(foo[0], 2)
+        range.setStart(all[0], 0)
+        range.setEnd(...this.domHelper.getRangeValues(all[all.length - 1], 'lastChild'))
         window.getSelection()?.removeAllRanges()
         window.getSelection()?.addRange(range)
-
-        // range.setStart(all[0], 0)
-        // this.#extractBlockContent(all[all.length - 1])
-        // all[all.length - 1]
-        //
-        // range.setEnd(all?.[all.length - 1], getEndOffset(all?.[all.length - 1]))
-        // window.getSelection()?.removeAllRanges()
-        // window.getSelection()?.addRange(range)
       },
       preventDefault: true,
       stopPropagation: true
@@ -407,11 +409,6 @@ export class EditorDom {
         }
       }
     },
-
-    /**
-     * 1. If cursor is at the top of element then find previous block and move
-     * cursor to that element.
-     */
     {
       title: 'Arrow Up to move focus to block above',
       trigger: 'ArrowUp',
@@ -423,6 +420,7 @@ export class EditorDom {
         const blockEl = this.domHelper.getById(block.id)
         if (!blockEl) return
 
+        selection.collapseToStart()
         if (this.domHelper.cursorAtTop(selection.getRangeAt(0), blockEl)) {
           const id = this.editor.getPreviousBlockFrom(block.id)?.id
           if (id) {
@@ -448,6 +446,7 @@ export class EditorDom {
         const blockEl = this.domHelper.getById(block.id)
         if (!blockEl) return
 
+        selection.collapseToEnd()
         if (this.domHelper.cursorAtBottom(selection.getRangeAt(0), blockEl)) {
           const id = this.editor.getNextBlockFrom(block.id)?.id
           if (id) {
@@ -455,6 +454,50 @@ export class EditorDom {
               this.domHelper.getById(id).firstChild || this.domHelper.getById(id),
               selection.getRangeAt(0).startOffset
             )
+            evt.preventDefault()
+            evt.stopPropagation()
+          }
+        }
+      }
+    },
+    {
+      title: 'Left Arrow move to top block if cursor is at start',
+      trigger: 'ArrowLeft',
+      blockType: '*',
+      action: ({ block, evt }) => {
+        const selection = window.getSelection()
+        if (!selection) return
+
+        const blockEl = this.domHelper.getById(block.id)
+        if (!blockEl) return
+
+        if (selection.getRangeAt(0).startOffset === 0) {
+          const id = this.editor.getPreviousBlockFrom(block.id)?.id
+          if (id) {
+            const prevChild = this.domHelper.getById(id).lastChild || this.domHelper.getById(id)
+            this.domHelper.setCursorAt(prevChild, prevChild.length)
+            evt.preventDefault()
+            evt.stopPropagation()
+          }
+        }
+      }
+    },
+    {
+      title: 'Arrow Right move to bottom block if cursor is at end',
+      trigger: 'ArrowRight',
+      blockType: '*',
+      action: ({ block, evt }) => {
+        const selection = window.getSelection()
+        if (!selection) return
+
+        const blockEl = this.domHelper.getById(block.id)
+        if (!blockEl) return
+
+        if (selection.getRangeAt(0).endOffset === blockEl.lastChild.length) {
+          const id = this.editor.getNextBlockFrom(block.id)?.id
+          if (id) {
+            const nextChild = this.domHelper.getById(id).firstChild || this.domHelper.getById(id)
+            this.domHelper.setCursorAt(nextChild, 0)
             evt.preventDefault()
             evt.stopPropagation()
           }
