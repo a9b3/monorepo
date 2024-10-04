@@ -38,7 +38,7 @@
           description: 'Delete note',
           action: () => {
             if (!selectedIds.length) {
-              returnreturn
+              return
             }
             confirmDialogue.show({
               message: 'Are you sure you want to delete this note?',

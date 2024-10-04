@@ -1,4 +1,4 @@
-export function isMetaKey(s: string) {
+function isMetaKey(s: string) {
   return ['ctrl', 'alt', 'meta', 'shift'].includes(s)
 }
 
@@ -44,57 +44,6 @@ export const keyParser = {
   }
 }
 
-export function getEndOffset(el: HTMLElement) {
-  if (el.lastChild.nodeValue === null) {
-    return 0
-  }
-  return el.lastChild?.innerHTML?.length || el.lastChild?.textContent?.length || 0
-}
-
-export function isElementEditable(element) {
-  // Check if it's a form input that allows text input
-  if (element instanceof HTMLElement) {
-    const tagName = element.tagName.toLowerCase()
-    if (tagName === 'input') {
-      const inputType = element.type.toLowerCase()
-      const editableInputTypes = [
-        'text',
-        'password',
-        'number',
-        'email',
-        'tel',
-        'url',
-        'search',
-        'date',
-        'datetime-local',
-        'time',
-        'month',
-        'week'
-      ]
-      return editableInputTypes.includes(inputType) && !element.disabled && !element.readOnly
-    }
-    if (tagName === 'textarea') {
-      return !element.disabled && !element.readOnly
-    }
-  }
-
-  // Check for contentEditable
-  if (element.isContentEditable) {
-    return true
-  }
-
-  // Check if it's inside a contentEditable container
-  let parent = element.parentElement
-  while (parent) {
-    if (parent.isContentEditable) {
-      return true
-    }
-    parent = parent.parentElement
-  }
-
-  return false
-}
-
 export function rangeIncludesRange(range1, range2) {
   return (
     range1.compareBoundaryPoints(Range.START_TO_START, range2) <= 0 &&
@@ -135,29 +84,4 @@ export function getMouseEventCaretRange(evt) {
   }
 
   return range
-}
-
-export function getBlockIdAtRange(range: Range) {
-  const queryKey = '[data-block-id]'
-
-  console.log(range)
-
-  let n1 =
-    runQuery(range.startContainer, queryKey) ||
-    (range.startContainer.parentElement && runQuery(range.startContainer.parentElement, queryKey))
-  const n2 =
-    runQuery(range.endContainer, queryKey) ||
-    (range.endContainer.parentElement && runQuery(range.endContainer.parentElement, queryKey))
-
-  return {
-    startBlockId: n1 && n1.getAttribute('data-block-id'),
-    endBlockId: n2 && n2.getAttribute('data-block-id')
-  }
-}
-
-function runQuery(n: Node, query: string) {
-  if (n.nodeType === Node.ELEMENT_NODE) {
-    return (n as HTMLElement).closest(query)
-  }
-  return
 }

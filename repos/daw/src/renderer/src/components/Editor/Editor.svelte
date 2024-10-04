@@ -4,20 +4,20 @@
   import Block from './Blocks/Block.svelte'
   import { EditorDom } from './editorDom'
 
-  let editorEl: HTMLDivElement
   let editorDom: EditorDom = new EditorDom({ editor: $editorStore.editor })
-  let teardown: () => void
 
-  onMount(() => {
-    teardown = editorDom.onEditorCreate(editorEl)
-  })
+  function useEditor(editorEl) {
+    const teardown = editorDom.onEditorCreate(editorEl)
 
-  onDestroy(() => {
-    teardown()
-  })
+    return {
+      destroy: () => {
+        teardown()
+      }
+    }
+  }
 </script>
 
-<div class="main" bind:this={editorEl}>
+<div class="main" use:useEditor>
   <div class="wrapper">
     {#each $editorStore.editor.page.children as childBlock}
       {#key childBlock.id + childBlock.type}

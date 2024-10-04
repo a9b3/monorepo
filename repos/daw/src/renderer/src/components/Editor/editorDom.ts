@@ -1,13 +1,5 @@
 import Editor from '@renderer/src/app/lib/Editor'
-import {
-  keyParser,
-  getMouseEventCaretRange,
-  isMetaKey,
-  getEndOffset,
-  isElementEditable,
-  rangeIncludesRange,
-  getBlockIdAtRange
-} from './utils'
+import { keyParser, getMouseEventCaretRange, rangeIncludesRange } from './utils'
 
 class EditorDomHelper {
   blockAttr = 'data-block-id'
@@ -75,7 +67,7 @@ class EditorDomHelper {
   }
 
   getActiveBlockEl() {
-    return document.activeElement?.closest(`[${this.blockAttr}]`)
+    return document.activeElement
   }
 
   extractElText(el: Node) {
@@ -102,6 +94,13 @@ class EditorDomHelper {
     selection?.addRange(range)
     return selection
   }
+
+  focusBlockEl(id: string) {
+    const el = this.getById(id)
+    if (el) {
+      el.focus()
+    }
+  }
 }
 
 export class EditorDom {
@@ -117,8 +116,11 @@ export class EditorDom {
   /**
    * Invoke upon editor dom element creation.
    */
-  onEditorCreate(editorEl: HTMLElement) {
+  onEditorCreate = (editorEl: HTMLElement) => {
     this.editorEl = editorEl
+
+    this.focusId = this.editor?.page?.children[0]?.id
+    if (this.focusId) this.domHelper.focusBlockEl(this.focusId)
 
     const teardown = this.handleTextSelection()
     window.addEventListener('keydown', this.keydownhandler)
@@ -559,6 +561,9 @@ export class EditorDom {
     }
   ]
 
+  /**
+   * Handle moving the cursor with arrow keys.
+   */
   #moveCursor = ({
     id,
     direction,
