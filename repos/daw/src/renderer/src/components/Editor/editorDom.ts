@@ -1,116 +1,17 @@
 import Editor from '@renderer/src/app/lib/Editor'
-import { keyParser, getMouseEventCaretRange, rangeIncludesRange } from './utils'
-
-class EditorDomHelper {
-  blockAttr = 'data-block-id'
-
-  getById(id: string): HTMLDivElement | null {
-    return document.querySelector(`[${this.blockAttr}="${id}"]`)
-  }
-
-  getClientRect(r: Range) {
-    return r.getClientRects()[0] ? r.getClientRects()[0] : r.startContainer.getClientRects()[0]
-  }
-
-  cursorAtTop(cursor: Range, el: HTMLElement): boolean {
-    const range = document.createRange()
-    range.selectNodeContents(el.firstChild || el)
-
-    return this.getClientRect(cursor).top === this.getClientRect(range).top
-  }
-
-  cursorAtBottom(cursor: Range, el: HTMLElement): boolean {
-    const range = document.createRange()
-    range.selectNodeContents(el.lastChild || el)
-
-    return this.getClientRect(cursor).bottom === this.getClientRect(range).bottom
-  }
-
-  cursorAt(cursor: Range, el: HTMLElement, position: 'top' | 'bottom' | 'left' | 'right') {
-    const c = cursor.cloneRange()
-    if (['top', 'left'].includes(position)) {
-      c.collapse(true)
-    } else {
-      c.collapse()
-    }
-    const range = document.createRange()
-    const selectFrom = ['top', 'left'].includes(position) ? el.firstChild || el : el.lastChild || el
-    range.selectNodeContents(selectFrom)
-
-    return this.getClientRect(c)[position] === this.getClientRect(range)[position]
-  }
-
-  setCursorAt(node: Node | null, offset: number) {
-    const newRange = document.createRange()
-    if (!node) return
-    newRange.setStart(
-      node.firstChild || node,
-      Math.min(offset, node.firstChild ? node.firstChild.length : node.length)
-    )
-    newRange.collapse(true)
-    window.getSelection()?.removeAllRanges()
-    window.getSelection()?.addRange(newRange)
-  }
-
-  getRangeValues(n: Node, key: string): [node: Node, offset: number] {
-    return n[key] ? [n[key], n[key].length] : [n, n.length]
-  }
-
-  setNodeValue(n: Node, value: string) {
-    if (n instanceof HTMLElement) {
-      n.innerHTML = value
-    } else {
-      n.nodeValue = value
-    }
-
-    n.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }))
-  }
-
-  getActiveBlockEl() {
-    return document.activeElement
-  }
-
-  extractElText(el: Node) {
-    if (el.nodeType === Node.TEXT_NODE) {
-      return el.nodeValue || ''
-    }
-    if (el.nodeType === Node.ELEMENT_NODE) {
-      return (el as HTMLElement).innerHTML
-    }
-    return ''
-  }
-
-  getSelectionRange() {
-    const selection = window.getSelection()
-    return {
-      sRange: selection?.getRangeAt(0),
-      selection: selection
-    }
-  }
-
-  setSelectionRange(range: Range) {
-    const selection = window.getSelection()
-    selection?.removeAllRanges()
-    selection?.addRange(range)
-    return selection
-  }
-
-  focusBlockEl(id: string) {
-    const el = this.getById(id)
-    if (el) {
-      el.focus()
-    }
-  }
-}
+import ShortcutManager from '@renderer/src/app/lib/shortcut/Manager'
+import { EditorDomHelper, keyParser, getMouseEventCaretRange, rangeIncludesRange } from './utils'
 
 export class EditorDom {
   editorEl: HTMLElement | null = null
   editor: Editor
+  shortcutManager: ShortcutManager
   domHelper: EditorDomHelper = new EditorDomHelper()
   focusId: string | undefined
 
-  constructor({ editor }: { editor: Editor }) {
+  constructor({ editor, shortcutManager }: { editor: Editor; shortcutManager: ShortcutManager }) {
     this.editor = editor
+    this.shortcutManager = shortcutManager
   }
 
   /**

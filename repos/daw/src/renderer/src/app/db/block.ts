@@ -77,7 +77,6 @@ const saveBlock: API['saveBlock'] = async (block) => {
     }
 
     request.onsuccess = function (event) {
-      console.log('hi', event.target.result)
       resolve(event.target.result)
     }
   })

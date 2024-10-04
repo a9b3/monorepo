@@ -1,10 +1,14 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import editorStore from '@renderer/src/stores/editor'
+  import shortcutManagerStore from '@renderer/src/stores/shortcutManager'
   import Block from './Blocks/Block.svelte'
   import { EditorDom } from './editorDom'
 
-  let editorDom: EditorDom = new EditorDom({ editor: $editorStore.editor })
+  let editorDom: EditorDom = new EditorDom({
+    editor: $editorStore.editor,
+    shortcutManager: $shortcutManagerStore.manager
+  })
 
   function useEditor(editorEl) {
     const teardown = editorDom.onEditorCreate(editorEl)

@@ -6,6 +6,7 @@
   import MainLayout from './components/MainLayout.svelte'
   import ConfirmDialogue from './components/generic/ConfirmDialogue.svelte'
   import { initDatabase } from './app/db/init'
+  import('highlight.js/styles/monokai.css')
 
   let appRdy = false
 

@@ -1,7 +1,7 @@
 import Editor from '@renderer/src/app/lib/Editor'
 import blockApi from '@renderer/src/app/db/block'
 import { writable } from 'svelte/store'
-import debounce from 'lodash/debounce'
+import DebounceQueue from '@renderer/src/app/lib/ds/debounceQueue'
 
 export const editor = new Editor()
 
@@ -11,17 +11,18 @@ const { subscribe, update } = writable<{
   editor: editor
 })
 
-// Listen to all events and save to the database
-editor.emitter.on(
-  '*',
-  debounce(() => {
-    update((state) => state)
+const debounceQueue = new DebounceQueue(50)
 
+// Listen to all events and save to the database
+editor.emitter.on('*', () => {
+  update((state) => state)
+
+  debounceQueue.add(async () => {
     if (editor.page) {
-      blockApi.saveBlock(editor.page)
+      await blockApi.saveBlock(editor.page)
     }
-  }, 50)
-)
+  })
+})
 
 export default {
   subscribe

@@ -31,7 +31,6 @@
   }
 
   onMount(async () => {
-    await import('highlight.js/styles/monokai.css')
     updateHighlight(editableElement.innerText)
     adjustHeight()
   })
