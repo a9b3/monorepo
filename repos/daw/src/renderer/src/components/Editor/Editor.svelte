@@ -1,16 +1,13 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
+  import { onMount } from 'svelte'
   import editorStore from '@renderer/src/stores/editor'
-  import shortcutManagerStore from '@renderer/src/stores/shortcutManager'
   import Block from './Blocks/Block.svelte'
   import { EditorDom } from './editorDom'
 
-  let editorDom: EditorDom = new EditorDom({
-    editor: $editorStore.editor,
-    shortcutManager: $shortcutManagerStore.manager
-  })
+  export let editorDom: EditorDom
+  let editorEl: HTMLDivElement
 
-  function useEditor(editorEl) {
+  onMount(() => {
     const teardown = editorDom.onEditorCreate(editorEl)
 
     return {
@@ -18,10 +15,10 @@
         teardown()
       }
     }
-  }
+  })
 </script>
 
-<div class="main" use:useEditor>
+<div class="main" bind:this={editorEl}>
   <div class="wrapper">
     {#each $editorStore.editor.page.children as childBlock}
       {#key childBlock.id + childBlock.type}

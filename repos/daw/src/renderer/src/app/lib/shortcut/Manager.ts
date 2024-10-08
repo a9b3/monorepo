@@ -73,6 +73,13 @@ export default class ShortcutManager {
   contextStack: Stack<string> = new Stack()
   // Map of token to actions. The key is the parsed key. Used by the keyhandler
   // to quickly find the action associated with a key.
+  // ex.
+  // {
+  //  'ctrl+shift+a': {
+  //    'context1': { key: 'ctrl+shift+a', action: () => {}, ... },
+  //    'context2': { key: 'ctrl+shift+a', action: () => {}, ... },
+  //  }
+  // }
   tokenToActions: Map<string, Map<string, Shortcut>> = new Map()
 
   constructor() {
@@ -91,7 +98,10 @@ export default class ShortcutManager {
     window.removeEventListener('keydown', this.keyhandler)
   }
 
-  register(shortcuts: Shortcuts): void {
+  register(
+    shortcuts: Shortcuts,
+    opts?: { container?: HTMLElement; activateContext?: boolean }
+  ): () => void {
     const { context } = shortcuts
     this.shortcuts.set(context, shortcuts)
 
@@ -105,6 +115,26 @@ export default class ShortcutManager {
       }
       this.tokenToActions.get(token)!.set(context, shortcut)
     })
+
+    if (opts) {
+      if (opts.activateContext) {
+        this.pushActiveContext(context)
+      }
+      if (opts.container) {
+        opts.container.addEventListener('keydown', this.keyhandler)
+      }
+    }
+
+    return () => {
+      if (opts) {
+        if (opts.activateContext) {
+          this.popActiveContext(context)
+        }
+        if (opts.container) {
+          opts.container.removeEventListener('keydown', this.keyhandler)
+        }
+      }
+    }
   }
 
   pushActiveContext(context: string): void {

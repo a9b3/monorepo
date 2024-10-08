@@ -61,26 +61,30 @@
     selectedIds = []
   }
 
+  let teardownShortcut = () => {}
+
   onMount(async () => {
     results = (await blockApi.getAllBlocks(queryOpts)) as Page[]
-    $shortcutManager.manager.register({
-      context: 'search',
-      title: 'Search',
-      description: '',
-      shortcuts: [
-        {
-          key: 'meta+l',
-          action: () => {
-            inputEl.focus()
+    teardownShortcut = $shortcutManager.manager.register(
+      {
+        context: 'search',
+        title: 'Search',
+        description: '',
+        shortcuts: [
+          {
+            key: 'meta+l',
+            action: () => {
+              inputEl.focus()
+            }
           }
-        }
-      ]
-    })
-    $shortcutManager.manager.pushActiveContext('search')
+        ]
+      },
+      { activateContext: true }
+    )
   })
 
   onDestroy(() => {
-    $shortcutManager.manager.popActiveContext('search')
+    teardownShortcut()
   })
 </script>
 

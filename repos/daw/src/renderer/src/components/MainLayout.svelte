@@ -5,19 +5,27 @@
   import editorStore from '@renderer/src/stores/editor'
   import Searchbar from './Searchbar/Searchbar.svelte'
   import Editor from './Editor/Editor.svelte'
+  import { EditorDom } from './Editor/editorDom'
+  import shortcutManagerStore from '@renderer/src/stores/shortcutManager'
+
+  let editorDom: EditorDom = new EditorDom({
+    editor: $editorStore.editor,
+    shortcutManager: $shortcutManagerStore.manager
+  })
 </script>
 
 <div class="container">
   <Searchbar
     onPageChange={(page) => {
       $editorStore.editor.setPage(page)
+      editorDom.focusId = $editorStore.editor.page?.children[0]?.id
     }}
     onSubmit={() => {}}
   />
   <div class="editor">
     {#key $editorStore.editor.page?.id}
       {#if $editorStore.editor.page}
-        <Editor />
+        <Editor {editorDom} />
       {:else}
         <div class="empty">No note selected...</div>
       {/if}

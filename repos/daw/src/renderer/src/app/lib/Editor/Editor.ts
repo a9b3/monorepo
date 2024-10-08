@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import type { Page, PageChild } from '@renderer/src/app/types/block'
 import { createTextBlock, createListItemBlock } from './utils'
 
-type EditorEventName = '*'
+type EditorEventName = '*' | 'page'
 type EditorEvent = undefined
 
 export default class Editor {
@@ -34,6 +34,7 @@ export default class Editor {
     this.page = page
 
     this.emitter.emit('*')
+    this.emitter.emit('page')
   }
 
   /**
