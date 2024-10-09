@@ -2,16 +2,21 @@ import Editor from '@renderer/src/app/lib/Editor'
 import ShortcutManager from '@renderer/src/app/lib/shortcut/Manager'
 import { domHelper, getMouseEventCaretRange, rangeIncludesRange } from './utils'
 
-const actions = ({
-  editor,
-  setFocusId
-}: {
+function extractBlockFromEvent(evt: KeyboardEvent, editor: Editor) {
+  const id = (evt.target as HTMLElement).getAttribute('data-block-id')
+  if (!id) return false
+  const block = editor.getBlockById(id)
+  if (!block) return false
+  return block
+}
+
+type shortcutOpts = {
   editor: Editor
-  setFocusId?: (id: string | undefined) => void
-}) => ({
-  createAbove: (evt) => {
-    const id = evt.target.getAttribute('data-block-id')
-    const block = editor.getBlockById(id)
+  setFocusId: (id: string | undefined) => void
+}
+const actions = ({ editor, setFocusId }: shortcutOpts) => ({
+  createAbove: (evt: KeyboardEvent) => {
+    const block = extractBlockFromEvent(evt, editor)
     if (!block) return
 
     const focusId = editor.addBlock({
@@ -24,9 +29,8 @@ const actions = ({
     evt.stopPropagation()
     evt.preventDefault()
   },
-  createBelow: (evt) => {
-    const id = evt.target.getAttribute('data-block-id')
-    const block = editor.getBlockById(id)
+  createBelow: (evt: KeyboardEvent) => {
+    const block = extractBlockFromEvent(evt, editor)
     if (!block) return
 
     const focusId = editor.addBlock({
@@ -47,19 +51,18 @@ const actions = ({
    *    the current block that has an indent level greater than the current
    *    block.
    */
-  tabIndent: (evt) => {
-    const id = evt.target.getAttribute('data-block-id')
-    const block = editor.getBlockById(id)
+  tabIndent: (evt: KeyboardEvent) => {
+    const block = extractBlockFromEvent(evt, editor)
     if (!block) return
     if (block.type !== 'listItem') return
 
-    const prevBlock = editor.getPreviousBlockFrom(id)
+    const prevBlock = editor.getPreviousBlockFrom(block.id)
     if (!prevBlock || prevBlock.type !== 'listItem') return
     if (block.properties.indentLevel > prevBlock.properties.indentLevel) return
 
     const curIndent = block.properties.indentLevel
 
-    let curBlock = block
+    let curBlock: any = block
     do {
       editor.updateBlock(curBlock.id, {
         properties: { indentLevel: curBlock.properties.indentLevel + 1 }
@@ -74,15 +77,14 @@ const actions = ({
     evt.stopPropagation()
     evt.preventDefault()
   },
-  shiftTabIndent: (evt) => {
-    const id = evt.target.getAttribute('data-block-id')
-    const block = editor.getBlockById(id)
+  shiftTabIndent: (evt: KeyboardEvent) => {
+    const block = extractBlockFromEvent(evt, editor)
     if (!block) return
     if (block.type !== 'listItem') return
     if (block.properties.indentLevel === 0) return
 
     const curIndent = block.properties.indentLevel
-    let curBlock = block
+    let curBlock: any = block
     do {
       editor.updateBlock(curBlock.id, {
         properties: { indentLevel: curBlock.properties.indentLevel - 1 }
@@ -94,12 +96,11 @@ const actions = ({
       curBlock.properties.indentLevel > curIndent
     )
 
-    evt.previousDefault()
+    evt.preventDefault()
     evt.stopPropagation()
   },
-  tabEnter: (evt) => {
-    const id = evt.target.getAttribute('data-block-id')
-    const block = editor.getBlockById(id)
+  tabEnter: (evt: KeyboardEvent) => {
+    const block = extractBlockFromEvent(evt, editor)
     if (!block) return
     if (block.type !== 'listItem') return
 
@@ -128,9 +129,8 @@ const actions = ({
     evt.stopPropagation()
     evt.preventDefault()
   },
-  tabDelete: (evt) => {
-    const id = evt.target.getAttribute('data-block-id')
-    const block = editor.getBlockById(id)
+  tabDelete: (evt: KeyboardEvent) => {
+    const block = extractBlockFromEvent(evt, editor)
     if (!block) return
     if (block.type !== 'listItem') return
 
@@ -140,9 +140,8 @@ const actions = ({
       evt.stopPropagation()
     }
   },
-  deleteIfEmpty: (evt) => {
-    const id = evt.target.getAttribute('data-block-id')
-    const block = editor.getBlockById(id)
+  deleteIfEmpty: (evt: KeyboardEvent) => {
+    const block = extractBlockFromEvent(evt, editor)
     if (!block) return
 
     if (block.properties.text === '') {
@@ -167,8 +166,9 @@ const actions = ({
    * Handle moving the cursor with arrow keys.
    */
   moveCursor: ({ direction }: { direction: 'up' | 'down' | 'left' | 'right' }) => {
-    return (evt) => {
-      const id = evt.target.getAttribute('data-block-id')
+    return (evt: KeyboardEvent) => {
+      const id = (evt.target as HTMLElement).getAttribute('data-block-id')
+      if (!id) return
       const { sRange, selection } = domHelper.getSelectionRange()
       if (!selection || !sRange) return
       const curEl = domHelper.getById(id)
@@ -211,124 +211,156 @@ const actions = ({
         evt.stopPropagation()
       }
     }
+  },
+  deleteSelected: (event) => {
+    const { selection, sRange } = domHelper.getSelectionRange()
+    if (!selection || selection.isCollapsed || !sRange) return
+
+    domHelper.setNodeValue(
+      sRange.startContainer,
+      domHelper.extractElText(sRange.startContainer).slice(0, sRange.startOffset)
+    )
+    domHelper.setNodeValue(
+      sRange.endContainer,
+      domHelper.extractElText(sRange.endContainer).slice(sRange.endOffset)
+    )
+
+    // Find blocks that are fully selected and delete them.
+    const toBeDeleted: string[] = []
+    document.querySelectorAll('[data-block-id]').forEach((el) => {
+      const r = document.createRange()
+      r.selectNodeContents(el)
+
+      if (rangeIncludesRange(sRange, r)) {
+        toBeDeleted.push(el.getAttribute('data-block-id')!)
+      }
+    })
+    editor.deleteBlocks(toBeDeleted)
+
+    selection.removeAllRanges()
+
+    event.preventDefault()
+    event.stopPropagation()
+  },
+  selectAll: (event) => {
+    const editorEl = document.querySelector('[data-editor]')
+    const all = editorEl?.querySelectorAll('[data-block-id]') || []
+    if (all.length === 0) return
+
+    const range = document.createRange()
+    range.setStart(all[0], 0)
+    range.setEnd(...domHelper.getRangeValues(all[all.length - 1], 'lastChild'))
+    domHelper.setSelectionRange(range)
+
+    event.preventDefault()
+    event.stopPropagation()
   }
 })
 
-const sharedShortcuts = ({
-  editor,
-  setFocusId
-}: {
-  editor: Editor
-  setFocusId?: (id: string | undefined) => void
-}) => [
+const conditions = (cases: Record<string, any>[]) => (evt: KeyboardEvent) => {
+  for (const { condition, action } of cases) {
+    if (condition(evt)) {
+      action(evt)
+      return
+    }
+  }
+}
+
+const isSelecting = () => {
+  const { selection } = domHelper.getSelectionRange()
+  return selection && !selection.isCollapsed
+}
+
+const isType =
+  (types: string[], { editor }: shortcutOpts) =>
+  (evt: KeyboardEvent) => {
+    const id = (evt.target as HTMLElement).getAttribute('data-block-id')
+    if (!id) return false
+    const block = editor.getBlockById(id)
+    return block && types.includes(block.type)
+  }
+
+const sharedShortcuts = (opts: shortcutOpts) => [
   {
     key: 'shift+Enter',
     title: 'Create new block below',
     description: 'Create a new block below the current block',
-    action: actions({ editor }).createBelow
+    action: actions(opts).createBelow
   },
   {
     key: 'meta+shift+Enter',
     title: 'Create new block above',
     description: 'Create a new block aAbovethe current block',
-    action: actions({ editor }).createAbove
+    action: actions(opts).createAbove
   },
   {
     key: 'Enter',
     title: 'Create new block below',
     description: 'Create a new block below the current block',
-    action: actions({ editor }).createBelow
+    action: conditions([
+      { condition: isType(['listItem'], opts), action: actions(opts).tabEnter },
+      { condition: () => true, action: actions(opts).createBelow }
+    ])
   },
   {
     key: 'Backspace',
     title: 'Delete',
     description: 'Delete selected content',
-    action: actions({ editor }).deleteIfEmpty
+    action: conditions([
+      { condition: isSelecting, action: actions(opts).deleteSelected },
+      { condition: isType(['listItem'], opts), action: actions(opts).tabDelete },
+      { condition: () => true, action: actions(opts).deleteIfEmpty }
+    ])
   },
   {
     key: 'ArrowUp',
     title: 'Arrow Up to move focus to block above',
     description: 'Move focus to block above',
-    action: actions({ editor }).moveCursor({ direction: 'up' })
+    action: actions(opts).moveCursor({ direction: 'up' })
   },
   {
     key: 'ArrowDown',
     title: 'Arrow Down to move focus to block below',
     desceription: 'Move focus to block below',
-    action: actions({ editor }).moveCursor({ direction: 'down' })
+    action: actions(opts).moveCursor({ direction: 'down' })
   },
   {
     key: 'ArrowLeft',
     title: 'Left Arrow move to top block if cursor is at start',
     description: 'Move to top block if cursor is at start',
-    action: actions({ editor }).moveCursor({ direction: 'left' })
+    action: actions(opts).moveCursor({ direction: 'left' })
   },
   {
     key: 'ArrowRight',
     title: 'Arrow Right move to bottom block if cursor is at end',
     description: 'Move to bottom block if cursor is at end',
-    action: actions({ editor }).moveCursor({ direction: 'right' })
+    action: actions(opts).moveCursor({ direction: 'right' })
+  },
+  {
+    key: 'Tab',
+    title: 'Tab to indent list item',
+    description: 'Indent list item',
+    action: actions(opts).tabIndent
+  },
+  {
+    key: 'shift+Tab',
+    title: 'Shift+Tab to unindent list item',
+    description: 'Unindent list item',
+    action: actions(opts).shiftTabIndent
+  },
+  {
+    key: 'meta+a',
+    title: 'Cmd+A to select all blocks',
+    description: 'Select all blocks',
+    action: actions(opts).selectAll
   }
 ]
 
-const blockShortcuts = ({
-  editor,
-  setFocusId
-}: {
-  editor: Editor
-  setFocusId: (id: string | undefined) => void
-}) => ({
-  text: {
-    context: 'text',
-    title: 'Text Block Shortcuts',
-    description: 'Shortcuts for text blocks',
-    shortcuts: sharedShortcuts({ editor }).concat(...[])
-  },
-  header: {
-    context: 'header',
-    title: 'Header Block Shortcuts',
-    description: 'Shortcuts for header blocks',
-    shortcuts: sharedShortcuts({ editor }).concat(...[])
-  },
-  code: {
-    context: 'code',
-    title: 'Code Block Shortcuts',
-    description: 'Shortcuts for code blocks',
-    shortcuts: sharedShortcuts({ editor }).concat(...[])
-  },
-  listItem: {
-    context: 'listItem',
-    title: 'List Item Shortcuts',
-    description: 'Shortcuts for list items',
-    shortcuts: sharedShortcuts({ editor }).concat(
-      ...[
-        {
-          key: 'Tab',
-          title: 'Tab to indent list item',
-          description: 'Indent list item',
-          action: actions({ editor }).tabIndent
-        },
-        {
-          key: 'shift+Tab',
-          title: 'Shift+Tab to unindent list item',
-          description: 'Unindent list item',
-          action: actions({ editor }).shiftTabIndent
-        },
-        {
-          key: 'Backspace',
-          title: 'Delete',
-          description: 'Delete selected content',
-          action: actions({ editor }).tabDelete
-        },
-        {
-          key: 'Enter',
-          title: 'Create new list item below',
-          description: 'Create a new list item below the current list item',
-          action: actions({ editor, setFocusId }).tabEnter
-        }
-      ]
-    )
-  }
+const editorShortcuts = (opts: shortcutOpts) => ({
+  context: 'editor',
+  title: 'Editor Shortcuts',
+  description: 'Shortcuts for the editor',
+  shortcuts: sharedShortcuts(opts)
 })
 
 /**
@@ -359,12 +391,20 @@ export class EditorDom {
    */
   onEditorCreate = (editorEl: HTMLElement) => {
     this.editorEl = editorEl
+    editorEl.dataset.editor = 'true'
 
     const teardown = this.handleTextSelection()
-    const teardownShortcut = this.shortcutManager.register(this.#shortcuts, {
-      container: this.editorEl,
-      activateContext: true
-    })
+    const teardownShortcut = this.shortcutManager.register(
+      editorShortcuts({
+        editor: this.editor,
+        setFocusId: (id) => {
+          this.focusId = id
+        }
+      }),
+      {
+        activateContext: true
+      }
+    )
     function disableTab(evt: KeyboardEvent) {
       if (evt.key === 'Tab') {
         evt.preventDefault()
@@ -386,119 +426,29 @@ export class EditorDom {
   onBlockCreate = (blockEl: HTMLElement, id: string) => {
     blockEl.dataset.blockId = id
 
-    if (this.focusId === id) {
-      blockEl.focus()
-    }
-
-    const block = this.editor.getBlockById(id)
-    if (!block) return
-    const teardown = this.shortcutManager.register(
-      blockShortcuts({
-        editor: this.editor,
-        setFocusId: (id) => {
-          this.focusId = id
-        }
-      })[block.type],
-      {
-        container: blockEl
-      }
-    )
-
     const oninput = (evt: Event) => {
-      if (!evt.target) return
-      const text = domHelper.extractElText(evt.target as HTMLElement)
-      this.editor.updateBlock(id, { properties: { text } })
+      this.editor.updateBlock(id, {
+        properties: { text: domHelper.extractElText(evt.target as HTMLElement) }
+      })
     }
 
     const onfocus = () => {
       this.focusId = id
-      this.shortcutManager.pushActiveContext(block.type)
-    }
-
-    const onblur = () => {
-      this.shortcutManager.popActiveContext(block.type)
     }
 
     blockEl.addEventListener('input', oninput)
     blockEl.addEventListener('focus', onfocus)
-    blockEl.addEventListener('onblur', onblur)
+
+    if (this.focusId === id) {
+      blockEl.focus()
+    }
 
     return {
       destroy: () => {
-        teardown()
         blockEl.removeEventListener('input', oninput)
         blockEl.removeEventListener('focus', onfocus)
-        blockEl.removeEventListener('onblur', onblur)
       }
     }
-  }
-
-  /**
-   * Editor shortcuts.
-   */
-  #shortcuts = {
-    context: 'editor',
-    title: 'Editor Shortcuts',
-    description: 'Shortcuts for the editor',
-    shortcuts: [
-      /**
-       * Handle delete across blocks.
-       * 1. For each block if selection range encompasses the block, delete the block.
-       * 2. Then find block that is partially selected and delete the selected text.
-       */
-      {
-        key: 'Backspace',
-        title: 'Delete',
-        description: 'Delete selected content',
-        action: (event) => {
-          const { selection, sRange } = domHelper.getSelectionRange()
-          if (!selection || selection.isCollapsed || !sRange) return
-
-          domHelper.setNodeValue(
-            sRange.startContainer,
-            domHelper.extractElText(sRange.startContainer).slice(0, sRange.startOffset)
-          )
-          domHelper.setNodeValue(
-            sRange.endContainer,
-            domHelper.extractElText(sRange.endContainer).slice(sRange.endOffset)
-          )
-
-          // Find blocks that are fully selected and delete them.
-          const toBeDeleted: string[] = []
-          document.querySelectorAll('[data-block-id]').forEach((el) => {
-            const r = document.createRange()
-            r.selectNodeContents(el)
-
-            if (rangeIncludesRange(sRange, r)) {
-              toBeDeleted.push(el.getAttribute('data-block-id')!)
-            }
-          })
-          this.editor.deleteBlocks(toBeDeleted)
-
-          selection.removeAllRanges()
-
-          event.preventDefault()
-          event.stopPropagation()
-        }
-      },
-      {
-        key: 'meta+a',
-        title: 'Cmd+A to select all blocks',
-        description: 'Select all blocks',
-        action: (event) => {
-          const all = this.editorEl?.querySelectorAll('[data-block-id]') || []
-          if (all.length === 0) return
-
-          const range = document.createRange()
-          range.setStart(all[0], 0)
-          range.setEnd(...domHelper.getRangeValues(all[all.length - 1], 'lastChild'))
-          domHelper.setSelectionRange(range)
-
-          event.preventDefault()
-          event.stopPropagation()
-        }
-      }
-    ]
   }
 
   /**
@@ -516,7 +466,6 @@ export class EditorDom {
 
     function onMouseDown(evt: MouseEvent) {
       originRange = getMouseEventCaretRange(evt)
-      console.log(document.elementFromPoint(evt.clientX, evt.clientY))
     }
 
     // set selection range to include contents within blocks

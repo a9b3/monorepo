@@ -98,10 +98,8 @@ export default class ShortcutManager {
     window.removeEventListener('keydown', this.keyhandler)
   }
 
-  register(
-    shortcuts: Shortcuts,
-    opts?: { container?: HTMLElement; activateContext?: boolean }
-  ): () => void {
+  register(shortcuts: Shortcuts, opts?: { activateContext?: boolean }): () => void {
+    console.log(`registered`, this.tokenToActions)
     const { context } = shortcuts
     this.shortcuts.set(context, shortcuts)
 
@@ -120,18 +118,12 @@ export default class ShortcutManager {
       if (opts.activateContext) {
         this.pushActiveContext(context)
       }
-      if (opts.container) {
-        opts.container.addEventListener('keydown', this.keyhandler)
-      }
     }
 
     return () => {
       if (opts) {
         if (opts.activateContext) {
           this.popActiveContext(context)
-        }
-        if (opts.container) {
-          opts.container.removeEventListener('keydown', this.keyhandler)
         }
       }
     }
@@ -160,6 +152,7 @@ export default class ShortcutManager {
     for (const context of this.contextStack.fromHighestToLowest()) {
       const action = contextMap.get(context)
       if (action) {
+        console.log(`Shortcut ${action.key} triggered in context ${context}`)
         action.action(event)
         action.preventDefault && event.preventDefault()
         action.stopPropagation && event.stopPropagation()
