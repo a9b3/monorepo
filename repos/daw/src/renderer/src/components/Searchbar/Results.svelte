@@ -13,8 +13,9 @@
   export let onPrev: () => void
   export let onDelete: () => void
 
+  let teardown = () => {}
   onMount(() => {
-    $shortcutManager.manager.register({
+    teardown = $shortcutManager.manager.register({
       context: 'results',
       title: 'Results',
       description: 'Results of the search query',
@@ -51,11 +52,10 @@
         }
       ]
     })
-    $shortcutManager.manager.pushActiveContext('results')
   })
 
   onDestroy(() => {
-    $shortcutManager.manager.popActiveContext('results')
+    teardown()
   })
 </script>
 

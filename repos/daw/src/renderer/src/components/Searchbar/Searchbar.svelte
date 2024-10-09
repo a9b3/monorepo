@@ -61,34 +61,24 @@
     selectedIds = []
   }
 
-  let teardownShortcut = () => {}
-
   onMount(async () => {
     results = (await blockApi.getAllBlocks(queryOpts)) as Page[]
-    teardownShortcut = $shortcutManager.manager.register(
-      {
-        context: 'search',
-        title: 'Search',
-        description: '',
-        shortcuts: [
-          {
-            key: 'meta+l',
-            action: () => {
-              inputEl.focus()
-            }
-          }
-        ]
-      },
-      { activateContext: true }
-    )
-  })
-
-  onDestroy(() => {
-    teardownShortcut()
   })
 </script>
 
-<form class="main" on:submit={handleSubmit}>
+<form class="main" on:submit={handleSubmit} use:shortcutManager.setContext={{
+  context: 'search',
+  title: 'Search',
+  description: '',
+  shortcuts: [
+    {
+      key: 'meta+l',
+      action: () => {
+        inputEl.focus()
+      }
+    }
+  ]
+}}>
   <div class="icon-wrapper">
     {@html searchIcon}
   </div>

@@ -7,9 +7,10 @@
 
   let show = false
 
+  let teardown = () => {}
   onMount(() => {
     $themeStore.theme.applyVariables()
-    $shortcutManager.manager.register({
+    teardown = $shortcutManager.manager.register({
       context: 'CSSVariables',
       title: 'CSS Variables',
       description: 'Shortcuts for CSS Variables',
@@ -29,12 +30,13 @@
           }
         }
       ]
+    }, {
+      activateContext: true
     })
-    $shortcutManager.manager.pushActiveContext('CSSVariables')
   })
 
   onDestroy(() => {
-    $shortcutManager.manager.popActiveContext('CSSVariables')
+    teardown()
   })
 </script>
 

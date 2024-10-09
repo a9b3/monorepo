@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
   import shortcutManager from '@renderer/src/stores/shortcutManager'
   import Table from '@renderer/src/components/generic/Table.svelte'
 
@@ -61,47 +60,43 @@
     const row = data.find((row) => row.id === selectedRow)
     onSelection(row.id, row.properties)
   }
-
-  onMount(() => {
-    $shortcutManager.manager.register({
-      context: 'blockSelection',
-      title: 'Block Selection',
-      description: 'Block selection for the application',
-      shortcuts: [
-        {
-          key: 'meta+j',
-          title: 'Next Block',
-          description: 'Select the next block type',
-          action: nextBlock
-        },
-        {
-          key: 'meta+k',
-          title: 'Previous Block',
-          description: 'Select the previous block type',
-          action: prevBlock
-        },
-        {
-          key: 'Enter',
-          title: 'Select Block',
-          description: 'Select the block type',
-          action: selectBlock,
-          preventDefault: true,
-          stopPropagation: true
-        },
-        {
-          key: 'Escape',
-          title: 'Close',
-          description: 'Close the block selection',
-          action: () => {
-            onClose()
-          }
-        }
-      ]
-    })
-  })
 </script>
 
-<div class="main" use:shortcutManager.setContext={'blockSelection'}>
+<div class="main" use:shortcutManager.setContext={{
+  context: 'blockSelection',
+  title: 'Block Selection',
+  description: 'Block selection for the application',
+  shortcuts: [
+    {
+      key: 'meta+j',
+      title: 'Next Block',
+      description: 'Select the next block type',
+      action: nextBlock
+    },
+    {
+      key: 'meta+k',
+      title: 'Previous Block',
+      description: 'Select the previous block type',
+      action: prevBlock
+    },
+    {
+      key: 'Enter',
+      title: 'Select Block',
+      description: 'Select the block type',
+      action: selectBlock,
+      preventDefault: true,
+      stopPropagation: true
+    },
+    {
+      key: 'Escape',
+      title: 'Close',
+      description: 'Close the block selection',
+      action: () => {
+        onClose()
+      }
+    }
+  ]
+}}>
   <Table
     {data}
     onRowClick={(row) => {

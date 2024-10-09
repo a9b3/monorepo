@@ -26,30 +26,29 @@
       onConfirm = opts.onConfirm
       onCancel = opts.onCancel
     })
-    $shortcutManager.manager.register({
-      context: 'confirmDialogue',
-      title: 'Confirm Dialogue',
-      description: 'Confirm dialogue',
-      shortcuts: [
-        {
-          key: 'Escape',
-          action: () => {
-            handleCancel()
-          }
-        },
-        {
-          key: 'Enter',
-          action: () => {
-            handleConfirm()
-          }
-        }
-      ]
-    })
   })
 </script>
 
 {#if show}
-  <div class="main app-win-border" use:shortcutManager.setContext={'confirmDialogue'}>
+  <div class="main app-win-border" use:shortcutManager.setContext={{
+    context: 'confirmDialogue',
+    title: 'Confirm Dialogue',
+    description: 'Confirm dialogue',
+    shortcuts: [
+      {
+        key: 'Escape',
+        action: () => {
+          handleCancel()
+        }
+      },
+      {
+        key: 'Enter',
+        action: () => {
+          handleConfirm()
+        }
+      }
+    ]
+  }}>
     <div class="content">{message}</div>
     <div class="buttons">
       <Button onClick={handleConfirm}>Confirm</Button>

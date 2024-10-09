@@ -9,12 +9,12 @@ const { subscribe, update } = writable<{
   manager: shortcutManager
 })
 
-function setContext(_: HTMLElement, context: string) {
-  shortcutManager.pushActiveContext(context)
+function setContext(_: HTMLElement, shortcuts: any) {
+  const teardown = shortcutManager.register(shortcuts, {activateContext: true})
 
   return {
     destroy() {
-      shortcutManager.popActiveContext(context)
+      teardown()
     }
   }
 }

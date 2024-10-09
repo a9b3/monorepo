@@ -4,8 +4,9 @@
 
   let show = false
 
+  let teardown = () => {}
   onMount(() => {
-    $shortcutManager.manager.register({
+    teardown = $shortcutManager.manager.register({
       context: 'shortcut-legend',
       title: 'Shortcut Legend',
       description: 'Shortcut legend for the application',
@@ -17,8 +18,13 @@
           }
         }
       ]
+    }, {
+      activateContext: true
     })
-    $shortcutManager.manager.pushActiveContext('shortcut-legend')
+  })
+
+  onDestroy(() => {
+    teardown()
   })
 </script>
 
