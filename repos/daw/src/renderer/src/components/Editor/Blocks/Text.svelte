@@ -27,6 +27,38 @@
     } else {
       showPopover = false
     }
+
+    if (e.target.innerHTML === '-&nbsp;') {
+      e.target.innerHTML = ''
+      $editorStore.editor.updateBlock(block.id, {
+        ...block,
+        type: 'listItem',
+        properties: {
+          text: '',
+          listType: 'bullet',
+          indentLevel: 0
+        },
+      })
+    }
+    if (e.target.innerHTML === '#&nbsp;') {
+      e.target.innerHTML = ''
+      $editorStore.editor.updateBlock(block.id, {
+        ...block,
+        type: 'header',
+        properties: { level: 5, text: '' },
+      })
+    }
+    if (e.target.innerHTML === '```&nbsp;') {
+      e.target.innerHTML = ''
+      $editorStore.editor.updateBlock(block.id, {
+        ...block,
+        type: 'code',
+        properties: {
+          text: '',
+          language: ''
+        },
+      })
+    }
   }}
 >
   {@html textBuffer}
