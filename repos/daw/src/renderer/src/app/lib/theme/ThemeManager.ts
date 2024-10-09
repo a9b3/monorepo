@@ -30,6 +30,7 @@ export default class ThemeManager {
     '--colors-hl': 'var(--primative-colors-yellow1)',
     '--colors-link': 'var(--primative-colors-blue1)',
     '--border': '1px solid var(--colors-fg)',
+    '--border-radius': '2px',
 
     // Spacing
     '--scale-ratio': '1.5',

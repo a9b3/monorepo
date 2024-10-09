@@ -40,9 +40,6 @@
     overflow: auto;
     user-select: none;
   }
-  .main:focus-within {
-    box-shadow: inset 0 0 0 2px var(--colors-hl);
-  }
 
   .wrapper {
     max-width: 40rem;

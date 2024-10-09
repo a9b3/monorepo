@@ -6,7 +6,7 @@
   export let registerBlock: (node: HTMLElement, id: string) => void
   export let block: Code
 
-  let value = block.properties.text
+  let value = block.properties.text || ' '
   let editableElement: HTMLDivElement
   let highlightedElement: HTMLElement
   let containerElement: HTMLDivElement
@@ -64,6 +64,7 @@
     overflow: hidden;
     min-height: 1em;
     padding: var(--spacing-xs);
+    border-radius: var(--border-radius);
   }
 
   .code-editor,

@@ -12,12 +12,16 @@
   }
 </script>
 
-<div class="icon-wrapper" style="--size: {size}; --color: {color}">
+<div class="icon-wrapper" style="--size: {size}; --color: {color};">
   {@html cases[icon]}
 </div>
 
 <style>
   .icon-wrapper :global(svg path) {
+    fill: var(--color);
+    fill-opacity: 1;
+  }
+  .icon-wrapper :global(svg rect) {
     fill: var(--color);
     fill-opacity: 1;
   }

@@ -23,7 +23,7 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
 </script>
 
 <div class="container">
-  <div class="icons"><Icon icon="move" size="var(--spacing-xs)" /></div>
+  <div class="icons"><Icon icon="move" size="var(--spacing-xs)" color="var(--colors-fg2)" /></div>
   <svelte:component this={component} {block} {registerBlock} />
 </div>
 
@@ -44,5 +44,12 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
   .container:hover .icons {
     visibility: visible;
     opacity: 1;
+  }
+  /* When container height is greater than 100px, position icons at top */
+  @container (min-height: 100px) {
+    .icons {
+      top: 0;
+      transform: translate(-100%, 0);
+    }
   }
 </style>
