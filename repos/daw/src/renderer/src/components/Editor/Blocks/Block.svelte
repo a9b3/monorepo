@@ -9,6 +9,7 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
   import Header from './Header.svelte'
   import Code from './Code.svelte'
   import ListItem from './ListItem.svelte'
+  import Icon from '@renderer/src/components/generic/Icon.svelte'
 
   export let registerBlock: (node: HTMLElement, id: string) => void
   export let block: Block
@@ -22,19 +23,26 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
 </script>
 
 <div class="container">
+  <div class="icons"><Icon icon="move" size="var(--spacing-xs)" /></div>
   <svelte:component this={component} {block} {registerBlock} />
 </div>
 
 <style>
-  span {
+  .icons {
     position: absolute;
-    right: 0;
-    color: blue;
+    visibility: hidden;
+    opacity: 0;
+    transform: translate(-100%, -50%);
+    top: 50%;
+    padding-right: var(--spacing-xs);
+    transition: opacity 0.4s ease-in-out;
   }
   .container {
     padding: 0;
+    position: relative;
   }
-  .container:hover {
-    outline: 1px solid rgba(0, 0, 0, 0.08);
+  .container:hover .icons {
+    visibility: visible;
+    opacity: 1;
   }
 </style>

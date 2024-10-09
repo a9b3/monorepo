@@ -5,6 +5,7 @@
   import { EditorDom } from './editorDom'
 
   export let editorDom: EditorDom
+
   let editorEl: HTMLDivElement
 
   onMount(() => {
@@ -35,7 +36,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--spacing-s) var(--spacing-xs);
+    padding: var(--spacing-s) var(--spacing-l);
     overflow: auto;
     user-select: none;
   }

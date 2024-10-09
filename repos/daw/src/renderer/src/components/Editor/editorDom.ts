@@ -299,7 +299,7 @@ const sharedShortcuts = (opts: shortcutOpts) => [
     description: 'Create a new block below the current block',
     action: conditions([
       { condition: isType(['listItem'], opts), action: actions(opts).tabEnter },
-      { condition: () => true, action: actions(opts).createBelow }
+      { condition: isType(['header', 'text'], opts), action: actions(opts).createBelow }
     ])
   },
   {
