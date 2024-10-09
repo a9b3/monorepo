@@ -65,6 +65,7 @@
     min-height: 1em;
     padding: var(--spacing-xs);
     border-radius: var(--border-radius);
+    margin: var(--spacing-xs) 0;
   }
 
   .code-editor,

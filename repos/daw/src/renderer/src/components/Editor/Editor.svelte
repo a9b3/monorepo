@@ -5,8 +5,7 @@
   import { EditorDom } from './editorDom'
 
   export let editorDom: EditorDom
-
-  let editorEl: HTMLDivElement
+  export let editorEl: HTMLDivElement
 
   onMount(() => {
     const teardown = editorDom.onEditorCreate(editorEl)

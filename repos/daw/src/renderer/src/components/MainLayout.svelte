@@ -12,6 +12,7 @@
     editor: $editorStore.editor,
     shortcutManager: $shortcutManagerStore.manager
   })
+  let editorEl
 </script>
 
 <div class="container">
@@ -20,12 +21,14 @@
       $editorStore.editor.setPage(page)
       editorDom.focusId = $editorStore.editor.page?.children[0]?.id
     }}
-    onSubmit={() => {}}
+    onSubmit={() => {
+      console.log(`editorEl`, editorEl)
+    }}
   />
   <div class="editor">
     {#key $editorStore.editor.page?.id}
       {#if $editorStore.editor.page}
-        <Editor {editorDom} />
+        <Editor {editorDom} bind:editorEl />
       {:else}
         <div class="empty">No note selected...</div>
       {/if}

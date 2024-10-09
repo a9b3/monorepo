@@ -19,7 +19,7 @@
 <style>
   .list-item {
     width: 100%;
-    padding-left: calc(var(--spacing-s) + calc(var(--spacing-s) * var(--indent-level)));
+    padding-left: calc(var(--spacing-xs) + calc(var(--spacing-s) * var(--indent-level)));
     position: relative;
   }
 
@@ -29,9 +29,8 @@
     left: calc(calc(var(--spacing-s) * var(--indent-level)));
     top: 50%;
     transform: translateY(-50%);
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
+    width: 4px;
+    height: 4px;
     background: currentColor;
   }
 

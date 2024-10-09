@@ -70,8 +70,12 @@
       onRowClick={(row) => onSelectId(row.id)}
       highlightRows={selectedIds}
       columns={[
-        { field: 'title', header: 'Title' },
-        { field: 'lastModified', header: 'Last Modified' }
+        {
+          field: 'title',
+          header: 'Title',
+          cellProps: { style: 'font-weight: 800;' },
+        },
+        { field: 'lastModified', header: 'Last Modified' },
       ]}
     />
   </div>

@@ -254,7 +254,8 @@ const actions = ({ editor, setFocusId }: shortcutOpts) => ({
 
     event.preventDefault()
     event.stopPropagation()
-  }
+  },
+  shiftArrow: (event) => {}
 })
 
 const conditions = (cases: Record<string, any>[]) => (evt: KeyboardEvent) => {

@@ -36,7 +36,6 @@
   let selectedRow = null
 
   function nextBlock() {
-    console.log(`nextk`)
     if (selectedRow === null) {
       selectedRow = data[0].id
     } else {
@@ -48,7 +47,6 @@
   }
 
   function prevBlock() {
-    console.log(`prev`)
     if (selectedRow === null) {
       selectedRow = data[0].id
     } else {
