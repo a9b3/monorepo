@@ -3,8 +3,8 @@
   import Popover from '@renderer/src/components/generic/Popover.svelte'
   import BlockSelection from './BlockSelection.svelte'
   import editorStore from '@renderer/src/stores/editor'
-  export let registerBlock: (node: HTMLElement, id: string) => void
 
+  export let registerBlock: (node: HTMLElement, id: string) => void
   export let placeholder = `Press '/' to create a block...`
   export let block: TextBlock
 
@@ -22,7 +22,6 @@
   {placeholder}
   on:input={(e) => {
     if (e.target.innerHTML === '/') {
-      e.target.innerHTML = ''
       showPopover = true
     } else {
       showPopover = false
@@ -36,7 +35,7 @@
         properties: {
           text: '',
           listType: 'bullet',
-          indentLevel: 0
+          indentLevel: 0,
         },
       })
     }
@@ -55,7 +54,7 @@
         type: 'code',
         properties: {
           text: '',
-          language: ''
+          language: '',
         },
       })
     }
@@ -71,7 +70,7 @@
       $editorStore.editor.updateBlock(block.id, {
         ...block,
         type,
-        properties
+        properties,
       })
       showPopover = false
     }}
