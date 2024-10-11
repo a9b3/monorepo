@@ -12,15 +12,8 @@
 
   let containerEl: HTMLDivElement
   let showPopover = false
-</script>
 
-<div
-  bind:this={containerEl}
-  class="main"
-  contenteditable={true}
-  use:registerBlock={block.id}
-  {placeholder}
-  on:input={(e) => {
+  function oninput(e: any) {
     if (e.target.innerHTML === '/') {
       showPopover = true
     } else {
@@ -58,7 +51,16 @@
         },
       })
     }
-  }}
+  }
+</script>
+
+<div
+  bind:this={containerEl}
+  class="main"
+  contenteditable={true}
+  use:registerBlock={block.id}
+  {placeholder}
+  on:input={oninput}
 >
   {@html textBuffer}
 </div>
