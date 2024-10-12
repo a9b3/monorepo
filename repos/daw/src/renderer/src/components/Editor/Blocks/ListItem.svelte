@@ -24,13 +24,15 @@
   }
 
   .list-item::before {
+    --height: calc(var(--base-line-height) / 2);
+
     content: '';
     position: absolute;
     left: calc(calc(var(--spacing-s) * var(--indent-level)));
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 4px;
+    top: var(--height);
+    transform: translateY(calc(var(--height) / 2 * -1));
+    width: 5px;
+    height: 5px;
     background: currentColor;
   }
 

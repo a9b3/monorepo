@@ -9,6 +9,7 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
   import Header from './Header.svelte'
   import Code from './Code.svelte'
   import ListItem from './ListItem.svelte'
+  import Url from './Url.svelte'
   import Icon from '@renderer/src/components/generic/Icon.svelte'
 
   export let registerBlock: (node: HTMLElement, id: string) => void
@@ -18,7 +19,8 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
     header: Header,
     text: Text,
     code: Code,
-    listItem: ListItem
+    listItem: ListItem,
+    url: Url,
   }[block.type]
 </script>
 
@@ -29,12 +31,14 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
 
 <style>
   .icons {
+    --height: calc(var(--base-line-height) / 2);
+
     position: absolute;
     visibility: hidden;
     opacity: 0;
     transform: translate(-100%, -50%);
-    top: 50%;
-    padding-right: var(--spacing-xs);
+    top: var(--height);
+    padding-right: var(--spacing-xxs);
     transition: opacity 0.4s ease-in-out;
   }
   .container {
@@ -44,12 +48,5 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
   .container:hover .icons {
     visibility: visible;
     opacity: 1;
-  }
-  /* When container height is greater than 100px, position icons at top */
-  @container (min-height: 100px) {
-    .icons {
-      top: 0;
-      transform: translate(-100%, 0);
-    }
   }
 </style>
