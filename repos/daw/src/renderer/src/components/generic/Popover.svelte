@@ -14,7 +14,7 @@
       popoverElement &&
       !popoverElement.contains(event.target as Node) &&
       triggerElement &&
-      !triggerElement.contains(event.target)
+      !triggerElement.contains(event.target as Node)
     ) {
       isOpen = false
     }
