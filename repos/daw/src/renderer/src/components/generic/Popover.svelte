@@ -1,17 +1,18 @@
-<script>
+<script lang="ts">
   import { onMount, afterUpdate, onDestroy } from 'svelte'
-  import Portal from './Portal.svelte'
+
   export let position = 'bottom'
   export let align = 'center' // New prop for horizontal alignment
   export let isOpen = false
-  export let triggerElement
-  let popoverElement
-  let portalContainer
+  export let triggerElement: HTMLElement
+  export let gap = 2 // Gap between trigger and popover
 
-  function handleClickOutside(event) {
+  let popoverElement: HTMLElement
+
+  function handleClickOutside(event: MouseEvent) {
     if (
       popoverElement &&
-      !popoverElement.contains(event.target) &&
+      !popoverElement.contains(event.target as Node) &&
       triggerElement &&
       !triggerElement.contains(event.target)
     ) {
@@ -19,34 +20,18 @@
     }
   }
 
-  function handleDelete(event) {
-    if (event.key === 'Backspace') {
+  function handleDelete(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
       isOpen = false
     }
   }
-
-  onMount(() => {
-    document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('keydown', handleDelete)
-    portalContainer = document.createElement('div')
-    portalContainer.id = 'popover-portal'
-    document.body.appendChild(portalContainer)
-  })
-
-  onDestroy(() => {
-    document.removeEventListener('mousedown', handleClickOutside)
-    document.removeEventListener('keydown', handleDelete)
-    if (portalContainer && document.body.contains(portalContainer)) {
-      document.body.removeChild(portalContainer)
-    }
-  })
 
   function getPopoverStyle() {
     if (!triggerElement || !popoverElement) return ''
     const triggerRect = triggerElement.getBoundingClientRect()
     const popoverRect = popoverElement.getBoundingClientRect()
-    let top, left
-    const gap = 2 // Gap between trigger and popover
+    let top: number
+    let left: number
 
     switch (position) {
       case 'top':
@@ -85,25 +70,39 @@
     top = Math.max(gap, Math.min(top, window.innerHeight - popoverRect.height - gap))
     left = Math.max(gap, Math.min(left, window.innerWidth - popoverRect.width - gap))
 
+    console.log(triggerRect, top)
+
     return `position: fixed; top: ${top}px; left: ${left}px; z-index: 5000;`
   }
 
+  onMount(() => {
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleDelete)
+  })
+
+  onDestroy(() => {
+    document.removeEventListener('mousedown', handleClickOutside)
+    document.removeEventListener('keydown', handleDelete)
+  })
+
   afterUpdate(() => {
     if (isOpen && popoverElement) {
-      popoverElement.style = getPopoverStyle()
+      console.log(`invoked update`)
+      popoverElement.style.cssText = getPopoverStyle()
     }
   })
 </script>
 
-{#if isOpen && portalContainer}
-  <Portal target={portalContainer}>
-    <div bind:this={popoverElement} class="app-win-border">
-      <slot>
-        <p>Default popover content</p>
-      </slot>
-    </div>
-  </Portal>
+{#if isOpen}
+  <div bind:this={popoverElement} class="app-win-border container">
+    <slot>
+      <p>Default popover content</p>
+    </slot>
+  </div>
 {/if}
 
 <style>
+  .container {
+    position: fixed;
+  }
 </style>
