@@ -22,7 +22,7 @@ const actions = ({ editor, setFocusId }: shortcutOpts) => ({
     const focusId = editor.addBlock({
       blockType: 'text',
       id: block.id,
-      direction: 'above'
+      direction: 'above',
     })
     setFocusId(focusId)
 
@@ -36,7 +36,7 @@ const actions = ({ editor, setFocusId }: shortcutOpts) => ({
     const focusId = editor.addBlock({
       blockType: 'text',
       id: block.id,
-      direction: 'below'
+      direction: 'below',
     })
     setFocusId(focusId)
 
@@ -65,7 +65,7 @@ const actions = ({ editor, setFocusId }: shortcutOpts) => ({
     let curBlock: any = block
     do {
       editor.updateBlock(curBlock.id, {
-        properties: { indentLevel: curBlock.properties.indentLevel + 1 }
+        properties: { indentLevel: curBlock.properties.indentLevel + 1 },
       })
       curBlock = editor.getNextBlockFrom(curBlock.id)
     } while (
@@ -87,7 +87,7 @@ const actions = ({ editor, setFocusId }: shortcutOpts) => ({
     let curBlock: any = block
     do {
       editor.updateBlock(curBlock.id, {
-        properties: { indentLevel: curBlock.properties.indentLevel - 1 }
+        properties: { indentLevel: curBlock.properties.indentLevel - 1 },
       })
       curBlock = editor.getNextBlockFrom(curBlock.id)
     } while (
@@ -108,7 +108,7 @@ const actions = ({ editor, setFocusId }: shortcutOpts) => ({
       const focusId = editor.addBlock({
         blockType: 'text',
         id: block.id,
-        direction: 'below'
+        direction: 'below',
       })
       setFocusId(focusId)
       editor.deleteBlock(block.id)
@@ -122,7 +122,7 @@ const actions = ({ editor, setFocusId }: shortcutOpts) => ({
       blockType: 'listItem',
       args: [block.properties.listType, block.properties.indentLevel],
       id: block.id,
-      direction: 'below'
+      direction: 'below',
     })
     setFocusId(focusId)
 
@@ -218,11 +218,11 @@ const actions = ({ editor, setFocusId }: shortcutOpts) => ({
 
     domHelper.setNodeValue(
       sRange.startContainer,
-      domHelper.extractElText(sRange.startContainer).slice(0, sRange.startOffset)
+      domHelper.extractElText(sRange.startContainer).slice(0, sRange.startOffset),
     )
     domHelper.setNodeValue(
       sRange.endContainer,
-      domHelper.extractElText(sRange.endContainer).slice(sRange.endOffset)
+      domHelper.extractElText(sRange.endContainer).slice(sRange.endOffset),
     )
 
     // Find blocks that are fully selected and delete them.
@@ -255,7 +255,7 @@ const actions = ({ editor, setFocusId }: shortcutOpts) => ({
     event.preventDefault()
     event.stopPropagation()
   },
-  shiftArrow: (event) => {}
+  shiftArrow: (event) => {},
 })
 
 const conditions = (cases: Record<string, any>[]) => (evt: KeyboardEvent) => {
@@ -281,18 +281,22 @@ const isType =
     return block && types.includes(block.type)
   }
 
+const isBlockElement = (event: KeyboardEvent) => {
+  return Boolean((event.target as HTMLElement).getAttribute('data-block-id'))
+}
+
 const sharedShortcuts = (opts: shortcutOpts) => [
   {
     key: 'shift+Enter',
     title: 'Create new block below',
     description: 'Create a new block below the current block',
-    action: actions(opts).createBelow
+    action: actions(opts).createBelow,
   },
   {
     key: 'meta+shift+Enter',
     title: 'Create new block above',
     description: 'Create a new block aAbovethe current block',
-    action: actions(opts).createAbove
+    action: actions(opts).createAbove,
   },
   {
     key: 'Enter',
@@ -300,8 +304,8 @@ const sharedShortcuts = (opts: shortcutOpts) => [
     description: 'Create a new block below the current block',
     action: conditions([
       { condition: isType(['listItem'], opts), action: actions(opts).tabEnter },
-      { condition: isType(['header', 'text'], opts), action: actions(opts).createBelow }
-    ])
+      { condition: isType(['header', 'text', 'url'], opts), action: actions(opts).createBelow },
+    ]),
   },
   {
     key: 'Backspace',
@@ -310,58 +314,61 @@ const sharedShortcuts = (opts: shortcutOpts) => [
     action: conditions([
       { condition: isSelecting, action: actions(opts).deleteSelected },
       { condition: isType(['listItem'], opts), action: actions(opts).tabDelete },
-      { condition: () => true, action: actions(opts).deleteIfEmpty }
-    ])
+      {
+        condition: isType(['header', 'text', 'url', 'code'], opts),
+        action: actions(opts).deleteIfEmpty,
+      },
+    ]),
   },
   {
     key: 'ArrowUp',
     title: 'Arrow Up to move focus to block above',
     description: 'Move focus to block above',
-    action: actions(opts).moveCursor({ direction: 'up' })
+    action: actions(opts).moveCursor({ direction: 'up' }),
   },
   {
     key: 'ArrowDown',
     title: 'Arrow Down to move focus to block below',
     desceription: 'Move focus to block below',
-    action: actions(opts).moveCursor({ direction: 'down' })
+    action: actions(opts).moveCursor({ direction: 'down' }),
   },
   {
     key: 'ArrowLeft',
     title: 'Left Arrow move to top block if cursor is at start',
     description: 'Move to top block if cursor is at start',
-    action: actions(opts).moveCursor({ direction: 'left' })
+    action: actions(opts).moveCursor({ direction: 'left' }),
   },
   {
     key: 'ArrowRight',
     title: 'Arrow Right move to bottom block if cursor is at end',
     description: 'Move to bottom block if cursor is at end',
-    action: actions(opts).moveCursor({ direction: 'right' })
+    action: actions(opts).moveCursor({ direction: 'right' }),
   },
   {
     key: 'Tab',
     title: 'Tab to indent list item',
     description: 'Indent list item',
-    action: actions(opts).tabIndent
+    action: actions(opts).tabIndent,
   },
   {
     key: 'shift+Tab',
     title: 'Shift+Tab to unindent list item',
     description: 'Unindent list item',
-    action: actions(opts).shiftTabIndent
+    action: actions(opts).shiftTabIndent,
   },
   {
     key: 'meta+a',
     title: 'Cmd+A to select all blocks',
     description: 'Select all blocks',
-    action: actions(opts).selectAll
-  }
+    action: conditions([{ condition: isBlockElement, action: actions(opts).selectAll }]),
+  },
 ]
 
 const editorShortcuts = (opts: shortcutOpts) => ({
   context: 'editor',
   title: 'Editor Shortcuts',
   description: 'Shortcuts for the editor',
-  shortcuts: sharedShortcuts(opts)
+  shortcuts: sharedShortcuts(opts),
 })
 
 /**
@@ -400,11 +407,11 @@ export class EditorDom {
         editor: this.editor,
         setFocusId: (id) => {
           this.focusId = id
-        }
+        },
       }),
       {
-        activateContext: true
-      }
+        activateContext: true,
+      },
     )
     function disableTab(evt: KeyboardEvent) {
       if (evt.key === 'Tab') {
@@ -429,7 +436,7 @@ export class EditorDom {
 
     const oninput = (evt: Event) => {
       this.editor.updateBlock(id, {
-        properties: { text: domHelper.extractElText(evt.target as HTMLElement) }
+        properties: { text: domHelper.extractElText(evt.target as HTMLElement) },
       })
     }
 
@@ -448,7 +455,7 @@ export class EditorDom {
       destroy: () => {
         blockEl.removeEventListener('input', oninput)
         blockEl.removeEventListener('focus', onfocus)
-      }
+      },
     }
   }
 
@@ -484,13 +491,13 @@ export class EditorDom {
               originRange.endContainer,
               originRange.endOffset,
               curRange.startContainer,
-              curRange.startOffset
+              curRange.startOffset,
             ]
           : [
               originRange.startContainer,
               originRange.startOffset,
               curRange.endContainer,
-              curRange.endOffset
+              curRange.endOffset,
             ]
 
       selection.removeAllRanges()
