@@ -520,12 +520,6 @@ export class EditorDom {
       },
     )
 
-    function keydownListener(evt: KeyboardEvent) {
-      if (evt.key === 'Tab') {
-        // evt.preventDefault()
-      }
-    }
-
     const inputListener = blockEventListener(
       ({ block, evt }) => {
         console.log(domHelper.extractElText(evt.target as HTMLElement))
@@ -547,14 +541,12 @@ export class EditorDom {
       { editor: this.editor },
     )
 
-    editorEl.addEventListener('keydown', keydownListener)
     editorEl.addEventListener('input', inputListener)
     editorEl.addEventListener('paste', pasteListener)
 
     return () => {
       cleanupTextSelection()
       cleanupShortcut()
-      editorEl.removeEventListener('keydown', keydownListener)
       editorEl.removeEventListener('input', inputListener)
       editorEl.removeEventListener('paste', pasteListener)
     }

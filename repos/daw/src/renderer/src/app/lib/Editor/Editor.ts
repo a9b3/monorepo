@@ -52,7 +52,7 @@ export default class Editor {
     blockType,
     id,
     direction = 'below',
-    args
+    args,
   }: {
     block?: PageChild
     blockType?: 'text' | 'listItem'
@@ -124,6 +124,10 @@ export default class Editor {
     if (idx === undefined || idx === null) return
     this.page.children.splice(idx, 1)
 
+    if (this.page.children.length === 0) {
+      this.page.children.push(createTextBlock())
+    }
+
     this.emitter.emit('*')
   }
 
@@ -134,6 +138,10 @@ export default class Editor {
     if (!this.page) return
 
     this.page.children = this.page.children.filter((b) => !ids.includes(b.id))
+
+    if (this.page.children.length === 0) {
+      this.page.children.push(createTextBlock())
+    }
 
     this.emitter.emit('*')
   }
