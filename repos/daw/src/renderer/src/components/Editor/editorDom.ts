@@ -342,10 +342,6 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
         cursorRange.selectNode(trigger)
       } else if (cursorRange?.collapsed) {
         trigger = cursorRange.startContainer
-        if (trigger) {
-          cursorRange = document.createRange()
-          cursorRange.selectNode(trigger)
-        }
       }
       if (!evt.target.contains(trigger)) {
         trigger = evt.target
@@ -535,14 +531,22 @@ export class EditorDom {
     this.editor = editor
   }
 
-  insertLink = (href: string, text: string, cursor: Range) => {
+  insertLink = ({
+    href,
+    text,
+    insertRange,
+  }: {
+    href: string
+    text: string
+    insertRange: Range
+  }) => {
     const link = document.createElement('a')
     link.href = href
     link.textContent = text
 
-    insertNodeAtCursor(link, cursor)
+    insertNodeAtCursor(link, insertRange)
 
-    cursor.startContainer.dispatchEvent(new Event('input', { bubbles: true, composed: true }))
+    insertRange.startContainer.dispatchEvent(new Event('input', { bubbles: true, composed: true }))
   }
 
   /**
@@ -568,7 +572,6 @@ export class EditorDom {
 
     const inputListener = blockEventListener(
       ({ block, evt }) => {
-        console.log(domHelper.extractElText(evt.target as HTMLElement))
         this.editor.updateBlock(block.id, {
           properties: { text: domHelper.extractElText(evt.target as HTMLElement) },
         })
@@ -581,7 +584,11 @@ export class EditorDom {
         const text = evt.clipboardData?.getData('text/plain') || ''
         if (isValidUrl(text)) {
           evt.preventDefault()
-          this.insertLink(text, text, window.getSelection()?.getRangeAt(0))
+          this.insertLink({
+            href: text,
+            text: text,
+            insertRange: window.getSelection()?.getRangeAt(0) as Range,
+          })
         }
       },
       { editor: this.editor },

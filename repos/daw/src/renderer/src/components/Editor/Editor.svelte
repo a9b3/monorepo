@@ -28,7 +28,7 @@
     cursor: null,
     homeRange: null,
     onSave: function (arg: { href: string; text: string }) {
-      editorDom.insertLink(arg.href, arg.text, urlEditArgs.cursor)
+      editorDom.insertLink({ href: arg.href, text: arg.text, insertRange: urlEditArgs.cursor })
       urlEditArgs.showPopover = false
       window.getSelection().removeAllRanges()
       window.getSelection().addRange(urlEditArgs.homeRange)
