@@ -30,25 +30,28 @@
 </script>
 
 {#if show}
-  <div class="main app-win-border" use:shortcutManager.setContext={{
-    context: 'confirmDialogue',
-    title: 'Confirm Dialogue',
-    description: 'Confirm dialogue',
-    shortcuts: [
-      {
-        key: 'Escape',
-        action: () => {
-          handleCancel()
-        }
-      },
-      {
-        key: 'Enter',
-        action: () => {
-          handleConfirm()
-        }
-      }
-    ]
-  }}>
+  <div
+    class="main app-win-border"
+    use:shortcutManager.setContext={{
+      context: 'confirmDialogue',
+      title: 'Confirm Dialogue',
+      description: 'Confirm dialogue',
+      shortcuts: [
+        {
+          key: 'Escape',
+          action: () => {
+            handleCancel()
+          },
+        },
+        {
+          key: 'Enter',
+          action: () => {
+            handleConfirm()
+          },
+        },
+      ],
+    }}
+  >
     <div class="content">{message}</div>
     <div class="buttons">
       <Button onClick={handleConfirm}>Confirm</Button>
@@ -66,10 +69,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 1rem;
     align-items: center;
     background: var(--colors-bg);
-    padding: var(--spacing-s);
+    padding: var(--spacing-xs);
   }
   .main:hover {
     cursor: default;
@@ -77,6 +79,6 @@
 
   .buttons {
     display: flex;
-    gap: 1rem;
+    gap: var(--spacing-xs);
   }
 </style>

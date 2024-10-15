@@ -1,14 +1,16 @@
 <script lang="ts">
   import searchIcon from '../../assets/icons/search.svg?raw'
   import moveIcon from '../../assets/icons/move.svg?raw'
+  import linkIcon from '../../assets/icons/link.svg?raw'
 
-  export let icon: 'search' | 'move' = 'search'
+  export let icon: 'link' | 'search' | 'move' = 'search'
   export let size: string = '1rem'
   export let color: string = 'var(--colors-fg)'
 
   const cases = {
     search: searchIcon,
-    move: moveIcon
+    move: moveIcon,
+    link: linkIcon,
   }
 </script>
 

@@ -54,7 +54,7 @@
   }
 </script>
 
-<div
+<span
   bind:this={containerEl}
   class="main"
   contenteditable={true}
@@ -63,7 +63,7 @@
   on:input={oninput}
 >
   {@html textBuffer}
-</div>
+</span>
 
 <Popover position="bottom" bind:isOpen={showPopover} triggerElement={containerEl} align="left">
   <BlockSelection
@@ -81,6 +81,8 @@
 
 <style>
   .main {
+    display: inline-block;
+    white-space: pre-wrap;
     width: 100%;
   }
   .main:focus {

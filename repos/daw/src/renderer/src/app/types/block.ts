@@ -41,8 +41,8 @@ export interface BaseBlock {
 
 /********** Block Types **********/
 
-export type Block = Page | Header | Code | ListItem | Text
-export type PageChild = Header | Code | ListItem | Text
+export type Block = Page | Header | Code | ListItem | Text | Url
+export type PageChild = Header | Code | ListItem | Text | Url
 
 export interface Page extends BaseBlock {
   type: 'page'
@@ -81,6 +81,14 @@ export interface ListItem extends BaseBlock {
     listType: 'todo' | 'bullet' | 'numbered'
     indentLevel: number
     checked: boolean
+  }
+}
+
+export interface Url extends BaseBlock {
+  type: 'url'
+  properties: {
+    text: string
+    href: string
   }
 }
 

@@ -3,17 +3,60 @@
   import editorStore from '@renderer/src/stores/editor'
   import Block from './Blocks/Block.svelte'
   import { EditorDom } from './editorDom'
+  import Popover from '@renderer/src/components/generic/Popover.svelte'
+  import UrlEdit from './UrlEdit.svelte'
 
   export let editorDom: EditorDom
-  export let editorEl: HTMLDivElement
+
+  let editorEl: HTMLDivElement
+
+  /**
+   * Open links in new tab.
+   */
+  function handleDocumentClick(event: MouseEvent) {
+    if (event.target.tagName === 'A' && event.target.href.startsWith('http')) {
+      event.preventDefault()
+      window.open(event.target.href, '_blank')
+    }
+  }
+
+  let urlEditArgs = {
+    href: '',
+    text: '',
+    showPopover: false,
+    triggerEl: null,
+    onSave: function (arg: { href: string; text: string }) {
+      editorDom.insertLink(arg.href, arg.text, urlEditArgs.cursor)
+      urlEditArgs.showPopover = false
+    },
+    onCancel: function () {
+      urlEditArgs.showPopover = false
+    },
+    cursor: null,
+  }
+  function toggleUrlEdit({ trigger, href, text, cursor }) {
+    if (urlEditArgs.showPopover) {
+      urlEditArgs.showPopover = false
+    } else {
+      urlEditArgs.showPopover = true
+      urlEditArgs.triggerEl = trigger
+      urlEditArgs.href = href
+      urlEditArgs.text = text
+      urlEditArgs.cursor = cursor
+    }
+  }
 
   onMount(() => {
-    const teardown = editorDom.onEditorCreate(editorEl)
+    const teardown = editorDom.onEditorCreate(editorEl, {
+      toggleUrlEdit,
+    })
+    document.addEventListener('click', handleDocumentClick)
 
     return {
       destroy: () => {
         teardown()
-      }
+        document.removeEventListener('click', handleDocumentClick)
+      },
     }
   })
 </script>
@@ -26,6 +69,20 @@
       {/key}
     {/each}
   </div>
+
+  <Popover
+    position="bottom"
+    bind:isOpen={urlEditArgs.showPopover}
+    triggerElement={urlEditArgs.triggerEl}
+    align="left"
+  >
+    <UrlEdit
+      href={urlEditArgs.href}
+      text={urlEditArgs.text}
+      onSave={urlEditArgs.onSave}
+      onCancel={urlEditArgs.onCancel}
+    />
+  </Popover>
 </div>
 
 <style>
@@ -35,7 +92,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--spacing-s) var(--spacing-l);
+    padding: var(--spacing-xxs) var(--spacing-s);
     overflow: auto;
     user-select: none;
   }
@@ -43,5 +100,11 @@
   .wrapper {
     max-width: 40rem;
     width: 100%;
+  }
+
+  :global(a) {
+    text-decoration: none;
+    color: var(--colors-hl);
+    cursor: pointer;
   }
 </style>

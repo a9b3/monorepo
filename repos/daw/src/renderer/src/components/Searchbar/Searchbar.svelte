@@ -6,15 +6,14 @@
   import blockApi from '@renderer/src/app/db/block'
   import type { Page } from '@renderer/src/app/types/block'
 
-  let inputEl = null
-  let results: Page[] = []
-  let selectedIds: string[] = []
-
   export let onPageChange: (block?: Page) => void
   export let onSubmit: () => void | undefined
 
+  let inputEl = null
+  let results: Page[] = []
+  let selectedIds: string[] = []
   let queryOpts = {
-    sortBy: [{ field: 'lastModified', direction: 'DSC' as 'DSC' }]
+    sortBy: [{ field: 'lastModified', direction: 'DSC' as 'DSC' }],
   }
 
   // if there is an exact title match then select it, otherwise create a new
@@ -26,7 +25,7 @@
 
     let getBlockOpts = {
       ...queryOpts,
-      ...(searchQuery ? { filterBy: [{ field: 'properties.title', value: searchQuery }] } : {})
+      ...(searchQuery ? { filterBy: [{ field: 'properties.title', value: searchQuery }] } : {}),
     }
     results = (await blockApi.getAllBlocks(getBlockOpts)) as Page[]
 
@@ -40,9 +39,9 @@
             type: 'text',
             properties: { text: '' },
             lastModified: new Date().toISOString(),
-            children: []
-          }
-        ]
+            children: [],
+          },
+        ],
       })
       results = (await blockApi.getAllBlocks(getBlockOpts)) as Page[]
       onPageChange(results[0])
@@ -66,19 +65,23 @@
   })
 </script>
 
-<form class="main" on:submit={handleSubmit} use:shortcutManager.setContext={{
-  context: 'search',
-  title: 'Search',
-  description: '',
-  shortcuts: [
-    {
-      key: 'meta+l',
-      action: () => {
-        inputEl.focus()
-      }
-    }
-  ]
-}}>
+<form
+  class="main"
+  on:submit={handleSubmit}
+  use:shortcutManager.setContext={{
+    context: 'search',
+    title: 'Search',
+    description: '',
+    shortcuts: [
+      {
+        key: 'meta+l',
+        action: () => {
+          inputEl.focus()
+        },
+      },
+    ],
+  }}
+>
   <div class="icon-wrapper">
     {@html searchIcon}
   </div>
@@ -128,7 +131,7 @@
     width: 100%;
     color: var(--colors-fg2);
     background: var(--colors-bg);
-    padding: var(--spacing-xxs) var(--spacing-xs);
+    padding: 0 var(--spacing-xxs);
     border-bottom: var(--border);
   }
   .main:focus-within {

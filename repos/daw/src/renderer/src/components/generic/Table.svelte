@@ -31,7 +31,7 @@
       lastHlCell = hlCell
 
       const headerCell = container.querySelector('.grid-table-header')
-      if (hlCell) {
+      if (hlCell && headerCell) {
         const { top, bottom } = hlCell.getBoundingClientRect()
         const { top: containerTop, bottom: containerBottom } = container.getBoundingClientRect()
         if (top < containerTop) {
@@ -94,7 +94,7 @@
 
   .grid-table-header,
   .grid-table-cell {
-    padding: var(--spacing-xxs) var(--spacing-xs);
+    padding: 0 var(--spacing-xxs);
   }
 
   .grid-table-cell {

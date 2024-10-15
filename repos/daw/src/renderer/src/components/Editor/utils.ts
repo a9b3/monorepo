@@ -40,6 +40,30 @@ export function getMouseEventCaretRange(evt) {
   return range
 }
 
+export function isValidUrl(string: string) {
+  try {
+    new URL(string)
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+export function insertNodeAtCursor(node: Node, cursor?: Range): void {
+  const selection: Selection | null = window.getSelection()
+  if (selection && selection.rangeCount) {
+    const range: Range = cursor || selection.getRangeAt(0)
+    range.deleteContents()
+    range.insertNode(node)
+
+    // Move the cursor to the end of the inserted node
+    range.setStartAfter(node)
+    range.setEndAfter(node)
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+}
+
 export class EditorDomHelper {
   blockAttr = 'data-block-id'
 
@@ -65,18 +89,24 @@ export class EditorDomHelper {
     return this.getClientRect(cursor).bottom === this.getClientRect(range).bottom
   }
 
+  /**
+   * Check if cursor is at the top/bottom/left/right of the element.
+   */
   cursorAt(cursor: Range, el: HTMLElement, position: 'top' | 'bottom' | 'left' | 'right') {
-    const c = cursor.cloneRange()
+    const cursorRange = cursor.cloneRange()
     if (['top', 'left'].includes(position)) {
-      c.collapse(true)
+      cursorRange.collapse(true)
     } else {
-      c.collapse()
+      cursorRange.collapse()
     }
-    const range = document.createRange()
+    const elRange = document.createRange()
     const selectFrom = ['top', 'left'].includes(position) ? el.firstChild || el : el.lastChild || el
-    range.selectNodeContents(selectFrom)
+    elRange.selectNode(selectFrom)
 
-    return this.getClientRect(c)[position] === this.getClientRect(range)[position]
+    return (
+      Math.abs(this.getClientRect(cursorRange)[position] - this.getClientRect(elRange)[position]) <
+      4
+    )
   }
 
   setCursorAt(node: Node | null, offset: number) {
@@ -84,7 +114,7 @@ export class EditorDomHelper {
     if (!node) return
     newRange.setStart(
       node.firstChild || node,
-      Math.min(offset, node.firstChild ? node.firstChild.length : node.length)
+      Math.min(offset, node.firstChild ? node.firstChild.length : node.length),
     )
     newRange.collapse(true)
     window.getSelection()?.removeAllRanges()
@@ -110,20 +140,25 @@ export class EditorDomHelper {
   }
 
   extractElText(el: Node) {
+    let ret = ''
     if (el.nodeType === Node.TEXT_NODE) {
-      return el.nodeValue || ''
+      ret = el.nodeValue || ''
     }
     if (el.nodeType === Node.ELEMENT_NODE) {
-      return (el as HTMLElement).innerHTML
+      ret = (el as HTMLElement).innerHTML
     }
-    return ''
+
+    if (ret === '<br>') {
+      ret = ''
+    }
+    return ret
   }
 
   getSelectionRange() {
     const selection = window.getSelection()
     return {
       sRange: selection?.getRangeAt(0),
-      selection: selection
+      selection: selection,
     }
   }
 

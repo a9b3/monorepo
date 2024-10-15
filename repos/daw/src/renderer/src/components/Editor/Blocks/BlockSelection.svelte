@@ -10,16 +10,16 @@
       id: 'header',
       name: 'Header',
       properties: { level: 5, text: '' },
-      description: 'Header text'
+      description: 'Header text',
     },
     {
       id: 'code',
       name: 'Code',
       properties: {
         text: '',
-        language: ''
+        language: '',
       },
-      description: 'Display code with syntax highlighting'
+      description: 'Display code with syntax highlighting',
     },
     {
       id: 'listItem',
@@ -27,10 +27,19 @@
       properties: {
         text: '',
         listType: 'bullet',
-        indentLevel: 0
+        indentLevel: 0,
       },
-      description: 'Bullet list item'
-    }
+      description: 'Bullet list item',
+    },
+    {
+      id: 'url',
+      name: 'URL',
+      properties: {
+        text: '',
+        href: '',
+      },
+      description: 'Hyperlink to a URL',
+    },
   ]
   let selectedRow = null
 
@@ -62,41 +71,44 @@
   }
 </script>
 
-<div class="main" use:shortcutManager.setContext={{
-  context: 'blockSelection',
-  title: 'Block Selection',
-  description: 'Block selection for the application',
-  shortcuts: [
-    {
-      key: 'meta+j',
-      title: 'Next Block',
-      description: 'Select the next block type',
-      action: nextBlock
-    },
-    {
-      key: 'meta+k',
-      title: 'Previous Block',
-      description: 'Select the previous block type',
-      action: prevBlock
-    },
-    {
-      key: 'Enter',
-      title: 'Select Block',
-      description: 'Select the block type',
-      action: selectBlock,
-      preventDefault: true,
-      stopPropagation: true
-    },
-    {
-      key: 'Escape',
-      title: 'Close',
-      description: 'Close the block selection',
-      action: () => {
-        onClose()
-      }
-    }
-  ]
-}}>
+<div
+  class="main"
+  use:shortcutManager.setContext={{
+    context: 'blockSelection',
+    title: 'Block Selection',
+    description: 'Block selection for the application',
+    shortcuts: [
+      {
+        key: 'meta+j',
+        title: 'Next Block',
+        description: 'Select the next block type',
+        action: nextBlock,
+      },
+      {
+        key: 'meta+k',
+        title: 'Previous Block',
+        description: 'Select the previous block type',
+        action: prevBlock,
+      },
+      {
+        key: 'Enter',
+        title: 'Select Block',
+        description: 'Select the block type',
+        action: selectBlock,
+        preventDefault: true,
+        stopPropagation: true,
+      },
+      {
+        key: 'Escape',
+        title: 'Close',
+        description: 'Close the block selection',
+        action: () => {
+          onClose()
+        },
+      },
+    ],
+  }}
+>
   <Table
     {data}
     onRowClick={(row) => {
@@ -107,7 +119,7 @@
     gridTemplateColumns="1fr 2fr"
     columns={[
       { field: 'name', header: 'Name' },
-      { field: 'description', header: 'Description' }
+      { field: 'description', header: 'Description' },
     ]}
   />
 </div>
