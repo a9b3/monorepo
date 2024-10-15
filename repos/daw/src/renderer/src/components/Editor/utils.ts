@@ -92,21 +92,28 @@ export class EditorDomHelper {
   /**
    * Check if cursor is at the top/bottom/left/right of the element.
    */
-  cursorAt(cursor: Range, el: HTMLElement, position: 'top' | 'bottom' | 'left' | 'right') {
-    const cursorRange = cursor.cloneRange()
-    if (['top', 'left'].includes(position)) {
-      cursorRange.collapse(true)
-    } else {
-      cursorRange.collapse()
-    }
-    const elRange = document.createRange()
-    const selectFrom = ['top', 'left'].includes(position) ? el.firstChild || el : el.lastChild || el
-    elRange.selectNode(selectFrom)
+  isRangeAtBoundary(cursor: Range, el: HTMLElement, position: 'top' | 'bottom' | 'left' | 'right') {
+    const elementRect = el.getBoundingClientRect()
+    let cursorRect = cursor.getBoundingClientRect()
+    cursorRect =
+      cursorRect.height === 0 && cursorRect.width === 0
+        ? cursor.startContainer.getBoundingClientRect()
+        : cursorRect
 
-    return (
-      Math.abs(this.getClientRect(cursorRange)[position] - this.getClientRect(elRange)[position]) <
-      4
+    const buffer = 5
+    const padding = Number(
+      window
+        .getComputedStyle(el)
+        ['padding' + position[0].toUpperCase() + position.substring(1)].replace('px', ''),
     )
+    let elValue = elementRect[position]
+    if (position === 'bottom') {
+      elValue = elValue - padding
+    } else {
+      elValue = elValue + padding
+    }
+
+    return Math.abs(elValue - cursorRect[position]) <= buffer
   }
 
   setCursorAt(node: Node | null, offset: number) {

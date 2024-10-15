@@ -22,26 +22,26 @@
   }
   h1 {
     font-size: var(--font-size-h1);
-    line-height: var(--font-size-h1);
+    padding: var(--spacing-xs) 0;
   }
   h2 {
     font-size: var(--font-size-h2);
-    line-height: var(--font-size-h2);
+    padding: var(--spacing-xs) 0;
   }
   h3 {
     font-size: var(--font-size-h3);
-    line-height: var(--font-size-h3);
+    padding: var(--spacing-xs) 0;
   }
   h4 {
     font-size: var(--font-size-h4);
-    line-height: var(--font-size-h4);
+    padding: var(--spacing-xs) 0;
   }
   h5 {
     font-size: var(--font-size-h5);
-    line-height: var(--font-size-h5);
+    padding: var(--spacing-xs) 0;
   }
   h6 {
     font-size: var(--font-size-h6);
-    line-height: var(--font-size-h6);
+    padding: var(--spacing-xs) 0;
   }
 </style>

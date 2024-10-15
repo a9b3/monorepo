@@ -8,12 +8,39 @@ import {
   rangeIncludesRange,
 } from './utils'
 
-function extractBlockFromEvent(evt: KeyboardEvent, editor: Editor) {
-  const id = (evt.target as HTMLElement).getAttribute('data-block-id')
-  if (!id) return false
-  const block = editor.getBlockById(id)
-  if (!block) return false
-  return block
+class Walker {
+  element: HTMLElement
+
+  constructor(element: HTMLElement) {
+    this.element = element
+  }
+
+  firstNode() {
+    const walker = document.createTreeWalker(this.element, NodeFilter.SHOW_TEXT, null)
+    return walker.nextNode()
+  }
+
+  lastNode() {
+    const walker = document.createTreeWalker(this.element, NodeFilter.SHOW_TEXT, null)
+    let node, lastNode
+    while ((node = walker.nextNode())) {
+      lastNode = node
+    }
+    return lastNode
+  }
+}
+
+function isAtStart(range, element) {
+  let node = new Walker(element).firstNode() || element
+  return node === range.startContainer && range.startOffset === 0
+}
+
+function isAtEnd(range, element) {
+  let lastNode = new Walker(element).lastNode() || element
+  return (
+    lastNode === range.endContainer &&
+    (lastNode.length ? range.endOffset === lastNode.length : true)
+  )
 }
 
 function blockEventListener(cb: any, opts: { editor: Editor; types?: string[] }) {
@@ -207,29 +234,24 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
       if (!moveEl) return
       let movedCursor = false
 
-      if (direction === 'up' && domHelper.cursorAt(sRange, curEl, 'top')) {
-        const moveElChild = moveEl.lastChild || moveEl
-        domHelper.setCursorAt(moveElChild, sRange.startOffset)
+      const isStart = isAtStart(sRange, curEl)
+      const isEnd = isAtEnd(sRange, curEl)
+
+      if (direction === 'up' && domHelper.isRangeAtBoundary(sRange, curEl, 'top')) {
+        const to = new Walker(moveEl).lastNode() || moveEl
+        domHelper.setCursorAt(to, Math.min(sRange.startOffset, to.length))
         movedCursor = true
-      } else if (direction === 'down' && domHelper.cursorAt(sRange, curEl, 'bottom')) {
-        const moveElChild = moveEl.firstChild || moveEl
-        domHelper.setCursorAt(moveElChild, sRange.startOffset)
+      } else if (direction === 'down' && domHelper.isRangeAtBoundary(sRange, curEl, 'bottom')) {
+        const to = new Walker(moveEl).firstNode() || moveEl
+        domHelper.setCursorAt(to, Math.min(sRange.startOffset, to.length))
         movedCursor = true
-      } else if (
-        direction === 'left' &&
-        sRange.startOffset === 0 &&
-        domHelper.cursorAt(sRange, curEl, 'top')
-      ) {
-        const moveElChild = moveEl.lastChild || moveEl
-        domHelper.setCursorAt(moveElChild, moveElChild.length)
+      } else if (direction === 'left' && isStart) {
+        const to = new Walker(moveEl).lastNode() || moveEl
+        domHelper.setCursorAt(to, to.length)
         movedCursor = true
-      } else if (
-        direction === 'right' &&
-        domHelper.cursorAt(sRange, curEl, 'bottom') &&
-        sRange.endOffset === (curEl.lastChild?.length || curEl.length || 0)
-      ) {
-        const moveElChild = moveEl.firstChild || moveEl
-        domHelper.setCursorAt(moveElChild, 0)
+      } else if (direction === 'right' && isEnd) {
+        const to = new Walker(moveEl).firstNode() || moveEl
+        domHelper.setCursorAt(to, 0)
         movedCursor = true
       }
 
