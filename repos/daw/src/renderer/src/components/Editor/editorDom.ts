@@ -265,6 +265,10 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
     editor.deleteBlocks(toBeDeleted)
 
     selection.removeAllRanges()
+    const range = document.createRange()
+    range.setStart(sRange.startContainer, sRange.startOffset)
+    range.collapse(true)
+    selection.addRange(range)
 
     event.preventDefault()
     event.stopPropagation()
@@ -286,6 +290,13 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
     event.preventDefault()
     event.stopPropagation()
   },
+  moveToTop: () => {
+    ;(document.querySelector('[data-block-id]') as HTMLElement)?.focus()
+  },
+  moveToBottom: () => {
+    const res = document.querySelectorAll('[data-block-id]')
+    ;(res[res.length - 1] as HTMLElement).focus()
+  },
   shiftArrow: (event) => {},
   editLink: blockEventListener(
     ({ evt, block }) => {
@@ -295,6 +306,7 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
       // the current selection
       // the contiguous text under the cursor
       let cursorRange = window.getSelection()?.getRangeAt(0)
+      let homeRange = cursorRange?.cloneRange()
       let trigger: HTMLElement | null = null
       const sEl = cursorRange?.startContainer.parentElement
       const eEl = cursorRange?.endContainer.parentElement
@@ -326,7 +338,7 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
 
       trigger = trigger instanceof HTMLElement ? trigger : trigger?.parentElement
 
-      toggleUrlEdit({ href, text, trigger, cursor: cursorRange })
+      toggleUrlEdit({ href, text, trigger, cursor: cursorRange, homeRange })
     },
     { editor },
   ),
@@ -445,6 +457,18 @@ const editorShortcuts = (opts: shortcutOpts) => ({
           action: actions(opts).disable,
         },
       ]),
+    },
+    {
+      key: 'meta+ArrowUp',
+      title: 'Cmd+ArrowUp to move to top block',
+      description: 'Move to top block',
+      action: conditions([{ condition: isBlockElement, action: actions(opts).moveToTop }]),
+    },
+    {
+      key: 'meta+ArrowDown',
+      title: 'Cmd+ArrowDown to move to bottom block',
+      description: 'Move to bottom block',
+      action: conditions([{ condition: isBlockElement, action: actions(opts).moveToBottom }]),
     },
     {
       key: 'meta+a',

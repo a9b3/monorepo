@@ -6,6 +6,7 @@
   export let isOpen = false
   export let triggerElement: HTMLElement
   export let gap = 2 // Gap between trigger and popover
+  export let onClose: () => void = () => {}
 
   let popoverElement: HTMLElement
 
@@ -21,8 +22,9 @@
   }
 
   function handleDelete(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' && isOpen) {
       isOpen = false
+      onClose()
     }
   }
 

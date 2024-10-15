@@ -25,16 +25,21 @@
     text: '',
     showPopover: false,
     triggerEl: null,
+    cursor: null,
+    homeRange: null,
     onSave: function (arg: { href: string; text: string }) {
       editorDom.insertLink(arg.href, arg.text, urlEditArgs.cursor)
       urlEditArgs.showPopover = false
+      window.getSelection().removeAllRanges()
+      window.getSelection().addRange(urlEditArgs.homeRange)
     },
     onCancel: function () {
       urlEditArgs.showPopover = false
+      window.getSelection().removeAllRanges()
+      window.getSelection().addRange(urlEditArgs.homeRange)
     },
-    cursor: null,
   }
-  function toggleUrlEdit({ trigger, href, text, cursor }) {
+  function toggleUrlEdit({ trigger, href, text, cursor, homeRange }) {
     if (urlEditArgs.showPopover) {
       urlEditArgs.showPopover = false
     } else {
@@ -43,6 +48,7 @@
       urlEditArgs.href = href
       urlEditArgs.text = text
       urlEditArgs.cursor = cursor
+      urlEditArgs.homeRange = homeRange
     }
   }
 
@@ -75,6 +81,7 @@
     bind:isOpen={urlEditArgs.showPopover}
     triggerElement={urlEditArgs.triggerEl}
     align="left"
+    onClose={urlEditArgs.onCancel}
   >
     <UrlEdit
       href={urlEditArgs.href}
