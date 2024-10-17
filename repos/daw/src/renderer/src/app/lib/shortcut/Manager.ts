@@ -1,7 +1,7 @@
 import Stack from '@renderer/src/app/lib/ds/stack/stack'
 
 export interface Shortcut {
-  key: string
+  key: string | string[]
   action: (e: KeyboardEvent) => void
   title?: string
   description?: string
@@ -59,7 +59,7 @@ const keyParser = {
       metaKeys.push('shift')
     }
     return metaKeys.sort().concat(event.key).join('+')
-  }
+  },
 }
 
 /**
@@ -103,14 +103,19 @@ export default class ShortcutManager {
     this.shortcuts.set(context, shortcuts)
 
     shortcuts.shortcuts.forEach((shortcut) => {
-      const token = keyParser.fromString(shortcut.key)
-      if (!this.tokenToActions.has(token)) {
-        this.tokenToActions.set(token, new Map())
+      const keys = Array.isArray(shortcut.key) ? shortcut.key : [shortcut.key]
+
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i]
+        const token = keyParser.fromString(key)
+        if (!this.tokenToActions.has(token)) {
+          this.tokenToActions.set(token, new Map())
+        }
+        if (this.tokenToActions.get(token)!.has(context)) {
+          console.debug(`Shortcut ${shortcut.key} is already registered for context ${context}`)
+        }
+        this.tokenToActions.get(token)!.set(context, shortcut)
       }
-      if (this.tokenToActions.get(token)!.has(context)) {
-        console.debug(`Shortcut ${shortcut.key} is already registered for context ${context}`)
-      }
-      this.tokenToActions.get(token)!.set(context, shortcut)
     })
 
     if (opts) {
