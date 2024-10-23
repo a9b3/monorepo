@@ -1,8 +1,99 @@
-export function rangeIncludesRange(range1, range2) {
+import Editor from '@renderer/src/app/lib/Editor'
+
+export type shortcutOpts = {
+  editor: Editor
+  setFocusId: (id: string | undefined) => void
+  toggleUrlEdit: (arg: { href: string; text: string; trigger: HTMLElement; cursor: Range }) => void
+}
+
+export class Walker {
+  element: HTMLElement
+
+  constructor(element: HTMLElement) {
+    this.element = element
+  }
+
+  firstNode() {
+    const walker = document.createTreeWalker(this.element, NodeFilter.SHOW_TEXT, null)
+    return walker.nextNode()
+  }
+
+  lastNode() {
+    const walker = document.createTreeWalker(this.element, NodeFilter.SHOW_TEXT, null)
+    let node: Node | null
+    let lastNode: Node | null = null
+    while ((node = walker.nextNode())) {
+      lastNode = node
+    }
+    return lastNode
+  }
+}
+
+export function isAtStart(range: Range, element: HTMLElement) {
+  let node = new Walker(element).firstNode() || element
+  return node === range.startContainer && range.startOffset === 0
+}
+
+export function isAtEnd(range: Range, element: HTMLElement) {
+  let lastNode = new Walker(element).lastNode() || element
+  return (
+    lastNode === range.endContainer &&
+    (lastNode.length ? range.endOffset === lastNode.length : true)
+  )
+}
+
+export function rangeIncludesRange(range1: Range, range2: Range) {
   return (
     range1.compareBoundaryPoints(Range.START_TO_START, range2) <= 0 &&
     range1.compareBoundaryPoints(Range.END_TO_END, range2) >= 0
   )
+}
+
+export function blockEventListener(cb: any, opts: { editor: Editor; types?: string[] }) {
+  return (evt: Event) => {
+    const id = (evt.target as HTMLElement).getAttribute('data-block-id')
+    if (!id) {
+      return
+    }
+
+    const block = opts.editor.getBlockById(id)
+    if (!block) {
+      return
+    }
+
+    if (opts.types && !opts.types.includes(block.type)) {
+      return
+    }
+
+    cb({ evt, block })
+  }
+}
+
+export const conditions = (cases: Record<string, any>[]) => (evt: KeyboardEvent) => {
+  for (const { condition, action } of cases) {
+    if (condition(evt)) {
+      action(evt)
+      return
+    }
+  }
+}
+
+export const isSelecting = () => {
+  const { selection } = getSelectionRange()
+  return selection && !selection.isCollapsed
+}
+
+export const isType =
+  (types: string[], { editor }: shortcutOpts) =>
+  (evt: KeyboardEvent) => {
+    const id = (evt.target as HTMLElement).getAttribute('data-block-id')
+    if (!id) return false
+    const block = editor.getBlockById(id)
+    return block && types.includes(block.type)
+  }
+
+export const isBlockElement = (event: KeyboardEvent) => {
+  return Boolean((event.target as HTMLElement).getAttribute('data-block-id'))
 }
 
 export function getMouseEventCaretRange(evt) {
@@ -64,7 +155,7 @@ export function insertNodeAtCursor(node: Node, cursor?: Range): void {
   }
 }
 
-export class EditorDomHelper {
+class EditorDomHelper {
   blockAttr = 'data-block-id'
 
   getById(id: string): HTMLDivElement | null {
@@ -160,27 +251,20 @@ export class EditorDomHelper {
     }
     return ret
   }
+}
 
-  getSelectionRange() {
-    const selection = window.getSelection()
-    return {
-      sRange: selection?.getRangeAt(0),
-      selection: selection,
-    }
-  }
+export function replaceCurrentRange(range: Range) {
+  const selection = window.getSelection()
+  selection?.removeAllRanges()
+  selection?.addRange(range)
+  return selection
+}
 
-  setSelectionRange(range: Range) {
-    const selection = window.getSelection()
-    selection?.removeAllRanges()
-    selection?.addRange(range)
-    return selection
-  }
-
-  focusBlockEl(id: string) {
-    const el = this.getById(id)
-    if (el) {
-      el.focus()
-    }
+export function getSelectionRange() {
+  const selection = window.getSelection()
+  return {
+    sRange: selection?.getRangeAt(0),
+    selection: selection,
   }
 }
 

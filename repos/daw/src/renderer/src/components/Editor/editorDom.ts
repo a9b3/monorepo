@@ -6,68 +6,18 @@ import {
   domHelper,
   getMouseEventCaretRange,
   rangeIncludesRange,
+  replaceCurrentRange,
+  Walker,
+  isAtEnd,
+  isAtStart,
+  blockEventListener,
+  getSelectionRange,
+  conditions,
+  isSelecting,
+  isType,
+  isBlockElement,
 } from './utils'
-
-class Walker {
-  element: HTMLElement
-
-  constructor(element: HTMLElement) {
-    this.element = element
-  }
-
-  firstNode() {
-    const walker = document.createTreeWalker(this.element, NodeFilter.SHOW_TEXT, null)
-    return walker.nextNode()
-  }
-
-  lastNode() {
-    const walker = document.createTreeWalker(this.element, NodeFilter.SHOW_TEXT, null)
-    let node, lastNode
-    while ((node = walker.nextNode())) {
-      lastNode = node
-    }
-    return lastNode
-  }
-}
-
-function isAtStart(range, element) {
-  let node = new Walker(element).firstNode() || element
-  return node === range.startContainer && range.startOffset === 0
-}
-
-function isAtEnd(range, element) {
-  let lastNode = new Walker(element).lastNode() || element
-  return (
-    lastNode === range.endContainer &&
-    (lastNode.length ? range.endOffset === lastNode.length : true)
-  )
-}
-
-function blockEventListener(cb: any, opts: { editor: Editor; types?: string[] }) {
-  return (evt: Event) => {
-    const id = (evt.target as HTMLElement).getAttribute('data-block-id')
-    if (!id) {
-      return
-    }
-
-    const block = opts.editor.getBlockById(id)
-    if (!block) {
-      return
-    }
-
-    if (opts.types && !opts.types.includes(block.type)) {
-      return
-    }
-
-    cb({ evt, block })
-  }
-}
-
-type shortcutOpts = {
-  editor: Editor
-  setFocusId: (id: string | undefined) => void
-  toggleUrlEdit: (arg: { href: string; text: string; trigger: HTMLElement; cursor: Range }) => void
-}
+import type { shortcutOpts } from './utils'
 
 const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
   createAbove: blockEventListener(
@@ -209,7 +159,7 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
 
         const range = document.createRange()
         range.selectNodeContents(nextEl)
-        domHelper.setSelectionRange(range)?.collapseToEnd()
+        replaceCurrentRange(range)?.collapseToEnd()
 
         evt.stopPropagation()
         evt.preventDefault()
@@ -224,7 +174,7 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
     return (evt: KeyboardEvent) => {
       const id = (evt.target as HTMLElement).getAttribute('data-block-id')
       if (!id) return
-      const { sRange, selection } = domHelper.getSelectionRange()
+      const { sRange, selection } = getSelectionRange()
       if (!selection || !sRange) return
       const curEl = evt.target
       const moveId = ['up', 'left'].includes(direction)
@@ -262,7 +212,7 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
     }
   },
   deleteSelected: (event) => {
-    const { selection, sRange } = domHelper.getSelectionRange()
+    const { selection, sRange } = getSelectionRange()
     if (!selection || selection.isCollapsed || !sRange) return
 
     domHelper.setNodeValue(
@@ -303,7 +253,7 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
     const range = document.createRange()
     range.setStart(all[0], 0)
     range.setEnd(...domHelper.getRangeValues(all[all.length - 1], 'lastChild'))
-    domHelper.setSelectionRange(range)
+    replaceCurrentRange(range)
 
     event.preventDefault()
     event.stopPropagation()
@@ -361,33 +311,6 @@ const actions = ({ editor, setFocusId, toggleUrlEdit }: shortcutOpts) => ({
     { editor },
   ),
 })
-
-const conditions = (cases: Record<string, any>[]) => (evt: KeyboardEvent) => {
-  for (const { condition, action } of cases) {
-    if (condition(evt)) {
-      action(evt)
-      return
-    }
-  }
-}
-
-const isSelecting = () => {
-  const { selection } = domHelper.getSelectionRange()
-  return selection && !selection.isCollapsed
-}
-
-const isType =
-  (types: string[], { editor }: shortcutOpts) =>
-  (evt: KeyboardEvent) => {
-    const id = (evt.target as HTMLElement).getAttribute('data-block-id')
-    if (!id) return false
-    const block = editor.getBlockById(id)
-    return block && types.includes(block.type)
-  }
-
-const isBlockElement = (event: KeyboardEvent) => {
-  return Boolean((event.target as HTMLElement).getAttribute('data-block-id'))
-}
 
 const editorShortcuts = (opts: shortcutOpts) => ({
   context: 'editor',
@@ -520,33 +443,20 @@ const editorShortcuts = (opts: shortcutOpts) => ({
  *    - Sets an attribute with the block id.
  */
 export class EditorDom {
-  editorEl: HTMLElement | null = null
-  editor: Editor
-  shortcutManager: ShortcutManager
-  // Represents the block id that has focus (text cursor).
-  focusId: string | undefined
+  private editorEl: HTMLElement | null = null
+  private editor: Editor
+  private shortcutManager: ShortcutManager
+  private focusId: string | undefined
 
+  /**
+   * Constructor.
+   *
+   * @param editor - Editor instance.
+   * @param shortcutManager - ShortcutManager instance.
+   */
   constructor({ editor, shortcutManager }: { editor: Editor; shortcutManager: ShortcutManager }) {
     this.shortcutManager = shortcutManager
     this.editor = editor
-  }
-
-  insertLink = ({
-    href,
-    text,
-    insertRange,
-  }: {
-    href: string
-    text: string
-    insertRange: Range
-  }) => {
-    const link = document.createElement('a')
-    link.href = href
-    link.textContent = text
-
-    insertNodeAtCursor(link, insertRange)
-
-    insertRange.startContainer.dispatchEvent(new Event('input', { bubbles: true, composed: true }))
   }
 
   /**
@@ -556,52 +466,14 @@ export class EditorDom {
     this.editorEl = editorEl
     editorEl.dataset.editor = 'true'
 
-    const cleanupTextSelection = this.handleTextSelection()
-    const cleanupShortcut = this.shortcutManager.register(
-      editorShortcuts({
-        editor: this.editor,
-        setFocusId: (id) => {
-          this.focusId = id
-        },
-        toggleUrlEdit,
-      }),
-      {
-        activateContext: true,
-      },
-    )
-
-    const inputListener = blockEventListener(
-      ({ block, evt }) => {
-        this.editor.updateBlock(block.id, {
-          properties: { text: domHelper.extractElText(evt.target as HTMLElement) },
-        })
-      },
-      { editor: this.editor },
-    )
-
-    const pasteListener = blockEventListener(
-      ({ evt }) => {
-        const text = evt.clipboardData?.getData('text/plain') || ''
-        if (isValidUrl(text)) {
-          evt.preventDefault()
-          this.insertLink({
-            href: text,
-            text: text,
-            insertRange: window.getSelection()?.getRangeAt(0) as Range,
-          })
-        }
-      },
-      { editor: this.editor },
-    )
-
-    editorEl.addEventListener('input', inputListener)
-    editorEl.addEventListener('paste', pasteListener)
+    const cleanups = [
+      this.setupEditorListeners(),
+      this.setupShortcuts(toggleUrlEdit),
+      this.setupTextSelection(),
+    ]
 
     return () => {
-      cleanupTextSelection()
-      cleanupShortcut()
-      editorEl.removeEventListener('input', inputListener)
-      editorEl.removeEventListener('paste', pasteListener)
+      cleanups.forEach((cleanup) => cleanup())
     }
   }
 
@@ -630,6 +502,68 @@ export class EditorDom {
   }
 
   /**
+   * Register editor event listeners.
+   */
+  private setupEditorListeners() {
+    const listeners = {
+      input: blockEventListener(
+        ({ block, evt }) => {
+          this.editor.updateBlock(block.id, {
+            properties: { text: domHelper.extractElText(evt.target as HTMLElement) },
+          })
+        },
+        { editor: this.editor },
+      ),
+      paste: blockEventListener(
+        ({ evt }) => {
+          const text = evt.clipboardData?.getData('text/plain') || ''
+          if (isValidUrl(text)) {
+            evt.preventDefault()
+            this.insertLink({
+              href: text,
+              text: text,
+              insertRange: window.getSelection()?.getRangeAt(0) as Range,
+            })
+          }
+        },
+        { editor: this.editor },
+      ),
+      click: (event: MouseEvent) => {
+        if (event.target instanceof HTMLAnchorElement && event.target.href.startsWith('http')) {
+          event.preventDefault()
+          window.open(event.target.href, '_blank')
+        }
+      },
+    }
+
+    Object.entries(listeners).forEach(([event, listener]) => {
+      this.editorEl?.addEventListener(event, listener as EventListener)
+    })
+
+    return () => {
+      Object.entries(listeners).forEach(([event, listener]) => {
+        this.editorEl?.removeEventListener(event, listener as EventListener)
+      })
+    }
+  }
+
+  /**
+   * Register editor shortcuts.
+   */
+  private setupShortcuts(toggleUrlEdit: () => void) {
+    return this.shortcutManager.register(
+      editorShortcuts({
+        editor: this.editor,
+        setFocusId: (id) => {
+          this.focusId = id
+        },
+        toggleUrlEdit,
+      }),
+      { activateContext: true },
+    )
+  }
+
+  /**
    * Setup text selection behavior.
    * This is to allow selecting text across multiple blocks.
    * This is a workaround for the default behavior of contenteditable elements.
@@ -639,7 +573,7 @@ export class EditorDom {
    *    current range.
    * 3. On mouseup reset origin range.
    */
-  handleTextSelection() {
+  private setupTextSelection() {
     let originRange: Range | null = null
 
     function onMouseDown(evt: MouseEvent) {
@@ -690,5 +624,26 @@ export class EditorDom {
       this.editorEl?.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('mouseup', onMouseUp)
     }
+  }
+
+  /**
+   * Insert a link element at the current cursor position.
+   */
+  insertLink = ({
+    href,
+    text,
+    insertRange,
+  }: {
+    href: string
+    text: string
+    insertRange: Range
+  }) => {
+    const link = document.createElement('a')
+    link.href = href
+    link.textContent = text
+
+    insertNodeAtCursor(link, insertRange)
+
+    insertRange.startContainer.dispatchEvent(new Event('input', { bubbles: true, composed: true }))
   }
 }

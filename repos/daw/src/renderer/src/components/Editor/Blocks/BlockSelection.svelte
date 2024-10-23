@@ -79,16 +79,20 @@
     description: 'Block selection for the application',
     shortcuts: [
       {
-        key: 'meta+j',
+        key: ['meta+j', 'ArrowDown'],
         title: 'Next Block',
         description: 'Select the next block type',
         action: nextBlock,
+        preventDefault: true,
+        stopPropagation: true,
       },
       {
-        key: 'meta+k',
+        key: ['meta+k', 'ArrowUp'],
         title: 'Previous Block',
         description: 'Select the previous block type',
         action: prevBlock,
+        preventDefault: true,
+        stopPropagation: true,
       },
       {
         key: 'Enter',
@@ -99,7 +103,7 @@
         stopPropagation: true,
       },
       {
-        key: 'Escape',
+        key: ['Escape', 'Backspace'],
         title: 'Close',
         description: 'Close the block selection',
         action: () => {

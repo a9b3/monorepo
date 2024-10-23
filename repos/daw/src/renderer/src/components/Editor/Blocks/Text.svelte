@@ -20,7 +20,7 @@
       showPopover = false
     }
 
-    if (e.target.innerHTML === '-&nbsp;') {
+    if (e.target.innerHTML === '- ') {
       e.target.innerHTML = ''
       $editorStore.editor.updateBlock(block.id, {
         ...block,
@@ -32,7 +32,7 @@
         },
       })
     }
-    if (e.target.innerHTML === '#&nbsp;') {
+    if (e.target.innerHTML === '# ') {
       e.target.innerHTML = ''
       $editorStore.editor.updateBlock(block.id, {
         ...block,
@@ -40,7 +40,7 @@
         properties: { level: 5, text: '' },
       })
     }
-    if (e.target.innerHTML === '```&nbsp;') {
+    if (e.target.innerHTML === '``` ') {
       e.target.innerHTML = ''
       $editorStore.editor.updateBlock(block.id, {
         ...block,

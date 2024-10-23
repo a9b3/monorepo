@@ -10,16 +10,6 @@
 
   let editorEl: HTMLDivElement
 
-  /**
-   * Open links in new tab.
-   */
-  function handleDocumentClick(event: MouseEvent) {
-    if (event.target.tagName === 'A' && event.target.href.startsWith('http')) {
-      event.preventDefault()
-      window.open(event.target.href, '_blank')
-    }
-  }
-
   let urlEditArgs = {
     href: '',
     text: '',
@@ -56,12 +46,10 @@
     const teardown = editorDom.onEditorCreate(editorEl, {
       toggleUrlEdit,
     })
-    document.addEventListener('click', handleDocumentClick)
 
     return {
       destroy: () => {
         teardown()
-        document.removeEventListener('click', handleDocumentClick)
       },
     }
   })
@@ -99,7 +87,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--spacing-xxs) var(--spacing-s);
+    padding: var(--spacing-m) var(--spacing-m);
     overflow: auto;
     user-select: none;
   }
