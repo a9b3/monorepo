@@ -2,13 +2,17 @@
   import { useDelta } from '@renderer/src/app/lib/ui/mouseDelta'
   import { onMount } from 'svelte'
 
+  export let id = 'resizable-container'
   export let allowedEdges: ('top' | 'left' | 'bottom' | 'right')[] = []
-  export let initialHeight: number = 200
+  export let initialHeight: number = localStorage.getItem(id + '-height')
+    ? parseInt(localStorage.getItem(id + '-height'))
+    : 200
 
   let containerEl: HTMLElement
 
   let deltaset = useDelta(({ y }) => {
     containerEl.style.height = containerEl.offsetHeight - y + 'px'
+    localStorage.setItem(id + '-height', containerEl.offsetHeight - y)
   })
 
   onMount(() => {
