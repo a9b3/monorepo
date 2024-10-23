@@ -3,12 +3,19 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { initDatabase } from './database/init'
+import windowStateKeeper from 'electron-window-state'
 
 function createWindow(): void {
   // Create the browser window.
+  let mainWindowState = windowStateKeeper({
+    defaultWidth: 400,
+    defaultHeight: 670,
+  })
   const mainWindow = new BrowserWindow({
-    width: 400,
-    height: 670,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
     show: false,
     frame: false,
     transparent: true,
@@ -20,6 +27,7 @@ function createWindow(): void {
       sandbox: false,
     },
   })
+  mainWindowState.manage(mainWindow)
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
