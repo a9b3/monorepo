@@ -85,11 +85,16 @@ export default class Editor {
     return block.id
   }
 
-  // moveBlock(idx: number, toIdx: number): void {
-  //   throw new Error('Method not implemented.')
-  //   this.emitter.emit('*')
-  // }
-  //
+  moveBlock(idx: number, toIdx: number): void {
+    if (!this.page) return
+    const block = this.page.children[idx]
+    if (!block) return
+    this.page.children.splice(idx, 1)
+    this.page.children.splice(toIdx, 0, block)
+
+    this.emitter.emit('*')
+  }
+
   // moveBlocks(ids: string[], toIdx: number): void {
   //   throw new Error('Method not implemented.')
   //   this.emitter.emit('*')

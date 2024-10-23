@@ -31,22 +31,26 @@ Also houses block manipulation logic such as drag and drop, resizing, etc.
 
 <style>
   .icons {
-    --height: calc(var(--base-line-height) / 2);
-
     position: absolute;
     visibility: hidden;
     opacity: 0;
     transform: translate(-100%, -50%);
-    top: var(--height);
+    top: 50%;
     padding-right: var(--spacing-xxs);
-    transition: opacity 0.4s ease-in-out;
+    transition: opacity 0.2s ease;
+    cursor: move;
   }
   .container {
-    padding: 0;
+    padding: 0 var(--spacing-s);
     position: relative;
+    outline: none;
   }
   .container:hover .icons {
     visibility: visible;
     opacity: 1;
+  }
+  .container:has(.icons:hover) {
+    outline: 1px dashed black;
+    outline-offset: -1px;
   }
 </style>

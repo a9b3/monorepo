@@ -87,7 +87,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--spacing-m) var(--spacing-m);
+    padding: var(--spacing-m) var(--spacing-s);
     overflow: auto;
     user-select: none;
   }
